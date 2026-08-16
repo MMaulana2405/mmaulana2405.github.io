@@ -51,7 +51,6 @@
             position: relative; z-index: 1;
         }
 
-        /* ── Avatar ── */
         .avatar-wrap {
             position: relative;
             width: 88px; height: 88px;
@@ -84,7 +83,6 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ── Name & tagline ── */
         .name {
             font-size: 22px; font-weight: 700;
             letter-spacing: -0.4px; text-align: center;
@@ -97,7 +95,6 @@
             max-width: 340px;
         }
 
-        /* ── Mantra ── */
         .mantra {
             display: flex; align-items: center;
             gap: 10px; flex-wrap: wrap;
@@ -117,7 +114,6 @@
             background: var(--white-25);
         }
 
-        /* ── Quote ── */
         .quote {
             width: 100%;
             border-left: 2px solid rgba(0,212,255,0.35);
@@ -128,13 +124,11 @@
             font-style: italic;
         }
 
-        /* ── Divider ── */
         .divider {
             width: 100%; height: 1px;
             background: linear-gradient(90deg, transparent, rgba(0,212,255,0.12), transparent);
         }
 
-        /* ── Section label ── */
         .label {
             width: 100%;
             font-size: 10px; font-weight: 600;
@@ -143,7 +137,6 @@
             padding-left: 2px;
         }
 
-        /* ── Cards ── */
         .card {
             width: 100%;
             display: flex; align-items: center; gap: 14px;
@@ -155,6 +148,7 @@
             transition: all 0.22s ease;
             backdrop-filter: blur(12px);
             position: relative; overflow: hidden;
+            cursor: pointer;
         }
         .card::after {
             content: '';
@@ -194,14 +188,12 @@
         }
         .card:hover .arrow { color: var(--accent); transform: translateX(3px); }
 
-        /* ── Footer ── */
         .footer {
             margin-top: 8px;
             font-size: 11px; color: var(--white-25);
             text-align: center; line-height: 2;
         }
 
-        /* ── Responsive ── */
         @media (max-width: 480px) {
             body { padding: 36px 16px 56px; }
             .name { font-size: 20px; }
@@ -215,7 +207,6 @@
             .name { font-size: 24px; }
         }
 
-        /* ── Particles ── */
         .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
         .p {
             position: absolute; border-radius: 50%;
@@ -236,7 +227,7 @@
 <!-- Avatar -->
 <div class="avatar-wrap">
 <div class="avatar">
-<img alt="Mochammad Maulana Ibrahim" onerror="this.style.display='none'; this.parentElement.innerHTML='MMI';" src="FotoProfil.jpeg?expires=1789493506&amp;signature=c4529d33966850e6bbbea9a1c7a08c0748f2a8659afa95b2918de42e9949fa39&amp;kid=prod-250922"/>
+<img alt="Mochammad Maulana Ibrahim" onerror="this.style.display='none'; this.parentElement.innerHTML='MMI';" src="FotoProfil.jpeg?expires=1789494816&amp;signature=992cf71e84152310c911a92b39a073bc8b3f1d46bd65c82beb6e5c0eeb59e5a9&amp;kid=prod-250922"/>
 </div>
 <div class="avatar-ring"></div>
 </div>
@@ -277,7 +268,7 @@
 </div>
 <div class="arrow">→</div>
 </a>
-<a class="card" href="https://bit.ly/PortofolioMMI" id="link-portfolio">
+<a class="card" href="https://bit.ly/PortofolioMMI" id="link-portfolio" rel="noopener noreferrer" target="_blank">
 <div class="icon i-port">🛠️</div>
 <div class="card-text">
 <div class="card-title">Project Portfolio</div>
@@ -287,7 +278,7 @@
 </a>
 <div class="divider"></div>
 <div class="label">Connect</div>
-<a class="card" href="https://www.linkedin.com/in/mmi01/" id="link-linkedin">
+<a class="card" href="https://www.linkedin.com/in/mmi01/" id="link-linkedin" rel="noopener noreferrer" target="_blank">
 <div class="icon i-li" style="font-weight:700;font-size:15px;color:#fff;font-family:serif;">in</div>
 <div class="card-text">
 <div class="card-title">LinkedIn</div>
@@ -295,14 +286,15 @@
 </div>
 <div class="arrow">→</div>
 </a>
-<a class="card" href="https://wa.me/628989210565" id="link-whatsapp">
+<!-- WhatsApp: pakai onclick JS sebagai fallback -->
+<div class="card" id="link-whatsapp" onclick="window.open('https://wa.me/628989210565','_blank');">
 <div class="icon i-wa">💬</div>
 <div class="card-text">
 <div class="card-title">WhatsApp</div>
 <div class="card-sub">Let's have a conversation</div>
 </div>
 <div class="arrow">→</div>
-</a>
+
 <div class="footer">
         Cikarang, Indonesia  ·  Always learning, always building.
     </div>
@@ -317,5 +309,5 @@
         c.appendChild(p);
     }
 </script>
-</body>
+</div></body>
 </html>
