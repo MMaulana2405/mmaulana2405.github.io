@@ -72,6 +72,7 @@
                 radial-gradient(ellipse at 78% 65%, rgba(0,212,255,0.07) 0%, transparent 50%),
                 #050810;
             position: relative; overflow: hidden;
+            perspective: 4000px;
         }
         .stage::before {
             content: '';
@@ -87,6 +88,7 @@
         #book {
             position: relative;
             display: flex;
+            transform-style: preserve-3d;
             filter: drop-shadow(0 40px 80px rgba(0,0,0,0.8));
         }
 
@@ -97,9 +99,10 @@
             flex-shrink: 0;
         }
 
-        /* Spine */
+        /* Spine shadow */
         #spine {
-            width: 8px; flex-shrink: 0;
+            width: 8px;
+            flex-shrink: 0;
             background: linear-gradient(180deg,
                 transparent 0%,
                 rgba(0,212,255,0.15) 10%,
@@ -110,29 +113,36 @@
             align-self: stretch;
         }
 
-        /* ── FLIP CONTAINER — sits on LEFT page, flips RIGHT ── */
+        /* ── FLIP CONTAINER ── */
         #flipContainer {
             position: absolute;
-            top: 0; left: 0;
-            transform-origin: right center;
-            z-index: 10;
+            top: 0; right: 0;
+            transform-origin: left center;
+            transform-style: preserve-3d;
             cursor: grab;
+            z-index: 10;
         }
         #flipContainer.grabbing { cursor: grabbing; }
 
-        /* Corner hint — bottom RIGHT of left page */
-        .corner-hint {
+        .flip-front, .flip-back {
             position: absolute;
-            bottom: 0; right: 0;
-            width: 44px; height: 44px;
-            background: linear-gradient(135deg, transparent 50%, rgba(0,212,255,0.18) 50%);
-            cursor: pointer;
-            z-index: 15;
-            transition: all 0.2s;
+            inset: 0;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            overflow: hidden;
         }
-        .corner-hint:hover {
-            width: 64px; height: 64px;
-            background: linear-gradient(135deg, transparent 50%, rgba(0,212,255,0.28) 50%);
+        .flip-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Shadow overlay on flip */
+        #flipShadow {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0;
+            transition: opacity 0.1s;
         }
 
         /* ── COVER PAGE ── */
@@ -202,7 +212,10 @@
             display: inline-block;
             animation: pulse 2s ease-in-out infinite;
         }
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.55} }
+        @keyframes pulse {
+            0%,100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
 
         /* Blank page */
         .blank-page {
@@ -265,6 +278,21 @@
             justify-content: center; gap: 8px;
         }
         .bc-icon { color: #00D4FF; user-select: none; }
+
+        /* Corner hint */
+        .corner-hint {
+            position: absolute;
+            bottom: 0; right: 0;
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, transparent 50%, rgba(0,212,255,0.15) 50%);
+            cursor: pointer;
+            z-index: 15;
+            transition: all 0.2s;
+        }
+        .corner-hint:hover {
+            width: 60px; height: 60px;
+            background: linear-gradient(135deg, transparent 50%, rgba(0,212,255,0.25) 50%);
+        }
 
         /* ── BOTTOM BAR ── */
         .bottombar {
@@ -339,16 +367,28 @@
 <!-- Stage -->
 <div class="stage" id="stage" style="display:none;">
 <div id="book">
-<!-- LEFT PAGE: Cover (spread 1) / CV image (spread 2) -->
+<!-- Left page -->
 <div class="book-page" id="leftPage">
-<div id="leftContent">
-<!-- Default: Cover -->
-<div class="cover-page">
+<!-- Shows blank when cover visible, shows CV when open -->
+<div class="blank-page" id="leftContent">
+<div class="blank-inner">
+<div style="font-size:22px;margin-bottom:8px;">✦</div>
+<div>Mochammad Maulana Ibrahim</div>
+</div>
+</div>
+</div>
+<!-- Spine -->
+<div id="spine"></div>
+<!-- Right page -->
+<div class="book-page" id="rightPage">
+<!-- Static right content (cover or back cover) -->
+<div id="rightContent">
+<div class="cover-page" id="coverContent">
 <div class="cover-grid"></div>
 <div class="cover-inner">
 <div class="cover-eyebrow">Curriculum Vitae · 2026</div>
 <div class="cover-photo">
-<img alt="MMI" onerror="this.style.display='none';this.parentElement.innerHTML='MMI';" src="../FotoProfil.jpeg?expires=1790263530&amp;signature=78425ff619b35aa883ef0c0ef1641231cfb2f57719626b5be6bad35bdaa95cd7&amp;kid=prod-250922"/>
+<img alt="MMI" onerror="this.style.display='none';this.parentElement.innerHTML='MMI';" src="../FotoProfil.jpeg?expires=1790262507&amp;signature=5b688c0f9b3c5a3c618c59fd4aec417c083722d6bcb09a1b130914c240486e1a&amp;kid=prod-250922"/>
 </div>
 <div class="cover-name">Mochammad<br/>Maulana Ibrahim</div>
 <div class="cover-rule"></div>
@@ -357,28 +397,17 @@
                             when gathered with patience,<br/>
                             becomes the clearest insight."
                         </div>
-<div class="cover-cta">Drag corner to open →</div>
+<div class="cover-cta">← Drag corner to open</div>
 </div>
 </div>
 </div>
-<!-- Flip canvas — on left page, flips to the right -->
-<canvas id="flipCanvas" style="position:absolute;top:0;left:0;pointer-events:none;"></canvas>
-<!-- Corner hint — bottom right of left page -->
+<!-- Flip container (the page being flipped) -->
+<div id="flipContainer">
+<canvas id="flipCanvas"></canvas>
+<div id="flipShadow"></div>
+</div>
+<!-- Corner hint -->
 <div class="corner-hint" id="cornerHint" onclick="flipToOpen()"></div>
-</div>
-<!-- SPINE -->
-<div id="spine"></div>
-<!-- RIGHT PAGE: Blank (spread 1) / Back cover (spread 2) -->
-<div class="book-page" id="rightPage">
-<div id="rightContent">
-<!-- Default: Blank -->
-<div class="blank-page">
-<div class="blank-inner">
-<div style="font-size:22px;margin-bottom:8px;">✦</div>
-<div>Mochammad Maulana Ibrahim</div>
-</div>
-</div>
-</div>
 </div>
 </div>
 </div>
@@ -427,20 +456,23 @@
 </script>
 <script>
 // ══════════════════════════════════════════════
-//  PAGE FLIP ENGINE — Cover LEFT, Blank RIGHT
-//  Flip goes LEFT → RIGHT (cover opens rightward)
+//  REALISTIC PAGE FLIP ENGINE
+//  Mouse-following curl with canvas shadow
 // ══════════════════════════════════════════════
 
-let PW, PH;
-let isOpen      = false;
+let PW, PH; // page width, height
+let isOpen = false;
 let isAnimating = false;
-let isDragging  = false;
-let dragStartX  = 0;
-let currentProgress = 0; // 0 = closed, 1 = open
+let isDragging = false;
+let dragStartX = 0;
+let currentAngle = 0; // 0 = cover, 180 = open
 
-const coverImg = new Image();
-const cvImg    = new Image();
+// Preload images for canvas rendering
+const coverImg  = new Image();
+const cvImg     = new Image();
+const blankImg  = new Image();
 
+// Canvas for flip effect
 let canvas, ctx;
 
 function initBook() {
@@ -455,232 +487,280 @@ function initBook() {
     PH = Math.floor(pH);
 
     // Size pages
-    document.getElementById('leftPage').style.cssText  += `width:${PW}px;height:${PH}px;`;
-    document.getElementById('rightPage').style.cssText += `width:${PW}px;height:${PH}px;`;
-    document.getElementById('leftContent').style.cssText  = `width:${PW}px;height:${PH}px;position:absolute;top:0;left:0;`;
-    document.getElementById('rightContent').style.cssText = `width:${PW}px;height:${PH}px;position:absolute;top:0;left:0;`;
+    document.getElementById('leftPage').style.width  = PW + 'px';
+    document.getElementById('leftPage').style.height = PH + 'px';
+    document.getElementById('rightPage').style.width  = PW + 'px';
+    document.getElementById('rightPage').style.height = PH + 'px';
+    document.getElementById('rightContent').style.width  = PW + 'px';
+    document.getElementById('rightContent').style.height = PH + 'px';
+    document.getElementById('coverContent').style.width  = PW + 'px';
+    document.getElementById('coverContent').style.height = PH + 'px';
     document.getElementById('spine').style.height = PH + 'px';
 
-    // Canvas
+    // Setup flip container & canvas
+    const fc = document.getElementById('flipContainer');
+    fc.style.width  = PW + 'px';
+    fc.style.height = PH + 'px';
+    fc.style.top    = '0';
+    fc.style.right  = '0';
+    fc.style.left   = 'auto';
+    fc.style.position = 'absolute';
+
     canvas = document.getElementById('flipCanvas');
     canvas.width  = PW;
     canvas.height = PH;
     canvas.style.width  = PW + 'px';
     canvas.style.height = PH + 'px';
-    canvas.style.zIndex = '10';
-    canvas.style.display = 'none';
+    canvas.style.position = 'absolute';
+    canvas.style.top  = '0';
+    canvas.style.left = '0';
     ctx = canvas.getContext('2d');
 
-    // Preload images
-    cvImg.src    = 'pages/page-1.jpg';
+    // Load images
+    cvImg.src = 'pages/page-1.jpg';
     coverImg.src = '../FotoProfil.jpeg';
 
+    // Setup drag on right page
     setupDrag();
 
+    // Keyboard
     document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight' && !isOpen) flipToOpen();
         if (e.key === 'ArrowLeft'  && isOpen)  flipToClose();
     });
 
-    window.addEventListener('resize', initBook);
+    window.addEventListener('resize', () => {
+        initBook();
+    });
+
+    // Initial render
+    renderFlip(0);
 }
 
-// ── DRAG ──
-function getX(e) { return e.touches ? e.touches[0].clientX : e.clientX; }
-
+// ── DRAG SETUP ──
 function setupDrag() {
-    const lp = document.getElementById('leftPage');
-    lp.addEventListener('mousedown',  onDown);
-    lp.addEventListener('touchstart', onDown, { passive: true });
-    window.addEventListener('mousemove',  onMove);
-    window.addEventListener('touchmove',  onMove, { passive: true });
-    window.addEventListener('mouseup',    onUp);
-    window.addEventListener('touchend',   onUp);
+    const rightPage = document.getElementById('rightPage');
+
+    rightPage.addEventListener('mousedown', onDragStart);
+    rightPage.addEventListener('touchstart', onDragStart, { passive: true });
+    window.addEventListener('mousemove', onDragMove);
+    window.addEventListener('touchmove', onDragMove, { passive: true });
+    window.addEventListener('mouseup', onDragEnd);
+    window.addEventListener('touchend', onDragEnd);
 }
 
-function onDown(e) {
-    if (isAnimating) return;
+function getClientX(e) {
+    return e.touches ? e.touches[0].clientX : e.clientX;
+}
+
+function onDragStart(e) {
+    // Don't drag if clicking on selectable text (back cover)
+    if (isOpen && e.target.closest('.bc-content')) return;
     isDragging = true;
-    dragStartX = getX(e);
-    canvas.style.cursor = 'grabbing';
+    dragStartX = getClientX(e);
+    document.getElementById('flipContainer').classList.add('grabbing');
 }
 
-function onMove(e) {
+function onDragMove(e) {
     if (!isDragging) return;
-    const dx   = getX(e) - dragStartX;
-    const lp   = document.getElementById('leftPage');
-    const rect = lp.getBoundingClientRect();
+    const x = getClientX(e);
+    const dx = x - dragStartX;
+    const rightPage = document.getElementById('rightPage');
+    const rect = rightPage.getBoundingClientRect();
 
-    let prog;
+    // Calculate angle based on drag
+    let angle;
     if (!isOpen) {
-        // Drag right to open (cover flips right)
-        prog = Math.max(0, Math.min(1, dx / PW));
+        // Dragging left to open: 0 → 180
+        angle = Math.max(0, Math.min(180, (-dx / PW) * 180));
     } else {
-        // Drag left to close
-        prog = Math.max(0, Math.min(1, 1 + dx / PW));
+        // Dragging right to close: 180 → 0
+        angle = Math.max(0, Math.min(180, 180 + (dx / PW) * 180));
     }
 
-    currentProgress = prog;
-    renderFlip(prog);
+    currentAngle = angle;
+    renderFlip(angle);
 }
 
-function onUp() {
+function onDragEnd(e) {
     if (!isDragging) return;
     isDragging = false;
-    canvas.style.cursor = 'grab';
+    document.getElementById('flipContainer').classList.remove('grabbing');
 
+    // Snap based on current angle
     if (!isOpen) {
-        currentProgress > 0.4 ? animateTo(1, true) : animateTo(0, false);
+        if (currentAngle > 60) animateFlip(currentAngle, 180, true);
+        else animateFlip(currentAngle, 0, false);
     } else {
-        currentProgress < 0.6 ? animateTo(0, false) : animateTo(1, true);
+        if (currentAngle < 120) animateFlip(currentAngle, 0, false);
+        else animateFlip(currentAngle, 180, true);
     }
 }
 
-// ── ANIMATE ──
-function animateTo(target, openState) {
+// ── ANIMATE FLIP ──
+function animateFlip(fromAngle, toAngle, openState) {
     if (isAnimating) return;
     isAnimating = true;
-    const from     = currentProgress;
-    const diff     = target - from;
-    const duration = 650;
-    const start    = performance.now();
+
+    const duration = 600;
+    const start = performance.now();
+    const diff = toAngle - fromAngle;
 
     function step(now) {
-        const t    = Math.min((now - start) / duration, 1);
-        const ease = t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2;
-        currentProgress = from + diff * ease;
-        renderFlip(currentProgress);
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        // Ease in-out cubic
+        const ease = progress < 0.5
+            ? 4 * progress * progress * progress
+            : 1 - Math.pow(-2 * progress + 2, 3) / 2;
 
-        if (t < 1) {
+        const angle = fromAngle + diff * ease;
+        currentAngle = angle;
+        renderFlip(angle);
+
+        if (progress < 1) {
             requestAnimationFrame(step);
         } else {
-            isAnimating      = false;
-            isOpen           = openState;
-            currentProgress  = target;
-            renderFlip(target);
-            updatePageContent();
+            isAnimating = false;
+            isOpen = openState;
+            currentAngle = toAngle;
+            renderFlip(toAngle);
             updateUI();
+            updatePageContent();
         }
     }
     requestAnimationFrame(step);
 }
 
-// ── RENDER ──
-function renderFlip(prog) {
-    // prog: 0 = cover visible, 1 = fully flipped open
-
-    if (prog <= 0) {
-        canvas.style.display = 'none';
-        showCover();
-        return;
-    }
-    if (prog >= 1) {
-        canvas.style.display = 'none';
-        showCV();
-        return;
-    }
-
-    canvas.style.display = 'block';
+// ── RENDER FLIP ON CANVAS ──
+function renderFlip(angle) {
     ctx.clearRect(0, 0, PW, PH);
 
-    // The fold moves from right edge (prog=0) to left edge (prog=1)
-    const foldX = PW * (1 - prog);
+    if (angle <= 0) {
+        // Show cover (no flip)
+        canvas.style.display = 'none';
+        document.getElementById('rightContent').style.display = 'block';
+        return;
+    }
 
-    // ── LEFT PART: back of flipping page = CV image ──
+    if (angle >= 180) {
+        // Fully open — show back cover
+        canvas.style.display = 'none';
+        document.getElementById('rightContent').style.display = 'block';
+        return;
+    }
+
+    // Show canvas during flip
+    canvas.style.display = 'block';
+    document.getElementById('rightContent').style.display = 'none';
+
+    // Normalized progress 0→1
+    const t = angle / 180;
+
+    // The fold x position (moves from right to left)
+    const foldX = PW * (1 - t);
+
+    // Draw the visible part of the page being flipped
+    // Left part: back of page (CV image)
     if (foldX > 0) {
         ctx.save();
         ctx.beginPath();
         ctx.rect(0, 0, foldX, PH);
         ctx.clip();
 
+        // Draw CV image (back of cover page)
         if (cvImg.complete && cvImg.naturalWidth > 0) {
             ctx.drawImage(cvImg, 0, 0, PW, PH);
         } else {
-            ctx.fillStyle = '#fff';
+            ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, PW, PH);
-            ctx.fillStyle = '#aaa';
-            ctx.font = '13px Inter';
+            ctx.fillStyle = '#333';
+            ctx.font = '14px Inter';
             ctx.textAlign = 'center';
-            ctx.fillText('Loading CV...', PW/2, PH/2);
+            ctx.fillText('CV Loading...', PW/2, PH/2);
         }
 
-        // Shadow near fold
-        const sw2 = Math.min(50, foldX);
-        const sg  = ctx.createLinearGradient(foldX - sw2, 0, foldX, 0);
-        sg.addColorStop(0, 'rgba(0,0,0,0)');
-        sg.addColorStop(1, `rgba(0,0,0,${0.4 * prog})`);
-        ctx.fillStyle = sg;
-        ctx.fillRect(foldX - sw2, 0, sw2, PH);
+        // Shadow on the left edge of fold
+        const shadowW = Math.min(40, foldX);
+        const grad = ctx.createLinearGradient(foldX - shadowW, 0, foldX, 0);
+        grad.addColorStop(0, 'rgba(0,0,0,0)');
+        grad.addColorStop(1, 'rgba(0,0,0,0.35)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(foldX - shadowW, 0, shadowW, PH);
 
         ctx.restore();
     }
 
-    // ── RIGHT PART: front of flipping page = cover (compressed) ──
+    // Right part: front of page (cover) — compressed/squeezed
     if (foldX < PW) {
-        const scaleX = Math.cos(prog * Math.PI);
+        const visibleW = PW - foldX;
+        const scaleX = Math.cos(angle * Math.PI / 180);
         const absScale = Math.abs(scaleX);
 
-        if (absScale > 0.01) {
-            ctx.save();
-            ctx.beginPath();
-            ctx.rect(foldX, 0, PW - foldX, PH);
-            ctx.clip();
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(foldX, 0, visibleW, PH);
+        ctx.clip();
 
+        if (absScale > 0.01) {
             ctx.translate(foldX, 0);
             ctx.scale(absScale, 1);
-            drawCoverCanvas(0, 0, PW, PH);
+
+            // Draw cover content
+            drawCoverOnCanvas(ctx, PW, PH);
+
             ctx.scale(1/absScale, 1);
             ctx.translate(-foldX, 0);
-
-            // Fold shadow
-            const fw  = Math.min(60, PW - foldX);
-            const fg  = ctx.createLinearGradient(foldX, 0, foldX + fw, 0);
-            fg.addColorStop(0, `rgba(0,0,0,${0.45 * (1 - absScale)})`);
-            fg.addColorStop(1, 'rgba(0,0,0,0)');
-            ctx.fillStyle = fg;
-            ctx.fillRect(foldX, 0, fw, PH);
-
-            ctx.restore();
         }
+
+        // Shadow gradient on fold
+        const foldShadowW = Math.min(60, visibleW);
+        const foldGrad = ctx.createLinearGradient(foldX, 0, foldX + foldShadowW, 0);
+        foldGrad.addColorStop(0, `rgba(0,0,0,${0.5 * (1 - absScale)})`);
+        foldGrad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = foldGrad;
+        ctx.fillRect(foldX, 0, foldShadowW, PH);
+
+        ctx.restore();
     }
 
     // Fold line
     ctx.beginPath();
     ctx.moveTo(foldX, 0);
     ctx.lineTo(foldX, PH);
-    ctx.strokeStyle = `rgba(0,0,0,${0.25 * Math.sin(prog * Math.PI)})`;
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = `rgba(0,0,0,${0.3 * Math.sin(angle * Math.PI / 180)})`;
+    ctx.lineWidth = 2;
     ctx.stroke();
 }
 
-function drawCoverCanvas(x, y, w, h) {
-    // BG gradient
-    const bg = ctx.createLinearGradient(x, y, x+w, y+h);
-    bg.addColorStop(0,    '#0A1628');
-    bg.addColorStop(0.45, '#0D1F3C');
-    bg.addColorStop(1,    '#080D1A');
-    ctx.fillStyle = bg;
-    ctx.fillRect(x, y, w, h);
+function drawCoverOnCanvas(ctx, w, h) {
+    // Background
+    const grad = ctx.createLinearGradient(0, 0, w, h);
+    grad.addColorStop(0,   '#0A1628');
+    grad.addColorStop(0.45,'#0D1F3C');
+    grad.addColorStop(1,   '#080D1A');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
 
     // Grid
     ctx.strokeStyle = 'rgba(0,212,255,0.05)';
     ctx.lineWidth = 1;
-    for (let gx = x; gx < x+w; gx += 36) {
-        ctx.beginPath(); ctx.moveTo(gx,y); ctx.lineTo(gx,y+h); ctx.stroke();
+    for (let x = 0; x < w; x += 36) {
+        ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke();
     }
-    for (let gy = y; gy < y+h; gy += 36) {
-        ctx.beginPath(); ctx.moveTo(x,gy); ctx.lineTo(x+w,gy); ctx.stroke();
+    for (let y = 0; y < h; y += 36) {
+        ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke();
     }
 
     // Glow
-    const gl = ctx.createRadialGradient(x+w*0.4, y+h*0.35, 0, x+w*0.4, y+h*0.35, w*0.6);
-    gl.addColorStop(0, 'rgba(0,100,220,0.3)');
-    gl.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = gl;
-    ctx.fillRect(x, y, w, h);
+    const glow = ctx.createRadialGradient(w*0.4, h*0.35, 0, w*0.4, h*0.35, w*0.6);
+    glow.addColorStop(0, 'rgba(0,100,220,0.32)');
+    glow.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, w, h);
 
-    // Photo
-    const cx = x + w/2, cy = y + h*0.32, r = Math.min(w,h)*0.1;
+    // Photo circle
+    const cx = w/2, cy = h * 0.32, r = Math.min(w,h) * 0.1;
     ctx.save();
     ctx.beginPath();
     ctx.arc(cx, cy, r, 0, Math.PI*2);
@@ -688,97 +768,104 @@ function drawCoverCanvas(x, y, w, h) {
     if (coverImg.complete && coverImg.naturalWidth > 0) {
         ctx.drawImage(coverImg, cx-r, cy-r, r*2, r*2);
     } else {
-        const pg = ctx.createLinearGradient(cx-r,cy-r,cx+r,cy+r);
-        pg.addColorStop(0,'#0050B8'); pg.addColorStop(1,'#00D4FF');
+        const pg = ctx.createLinearGradient(cx-r, cy-r, cx+r, cy+r);
+        pg.addColorStop(0, '#0050B8');
+        pg.addColorStop(1, '#00D4FF');
         ctx.fillStyle = pg;
         ctx.fillRect(cx-r, cy-r, r*2, r*2);
     }
     ctx.restore();
 
-    // Name
-    ctx.fillStyle = '#fff';
+    // Name text
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `bold ${Math.floor(w*0.07)}px 'Playfair Display', serif`;
     ctx.textAlign = 'center';
-    ctx.font = `bold ${Math.floor(w*0.065)}px serif`;
     ctx.fillText('Mochammad', cx, cy + r + h*0.08);
-    ctx.fillText('Maulana Ibrahim', cx, cy + r + h*0.145);
+    ctx.fillText('Maulana Ibrahim', cx, cy + r + h*0.14);
 
-    // Line
+    // Accent line
     ctx.strokeStyle = 'rgba(0,212,255,0.5)';
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(cx-20, cy+r+h*0.175);
-    ctx.lineTo(cx+20, cy+r+h*0.175);
+    ctx.moveTo(cx - 18, cy + r + h*0.17);
+    ctx.lineTo(cx + 18, cy + r + h*0.17);
     ctx.stroke();
 }
 
-// ── CONTENT SWAP ──
-function showCover() {
-    document.getElementById('leftContent').innerHTML = `
-    <div class="cover-page">
-        <div class="cover-grid"></div>
-        <div class="cover-inner">
-            <div class="cover-eyebrow">Curriculum Vitae · 2026</div>
-            <div class="cover-photo">
-                <img src="../FotoProfil.jpeg" alt="MMI"
-                     onerror="this.style.display='none';this.parentElement.innerHTML='MMI';">
-            </div>
-            <div class="cover-name">Mochammad<br>Maulana Ibrahim</div>
-            <div class="cover-rule"></div>
-            <div class="cover-quote">
-                "The most overlooked data,<br>
-                when gathered with patience,<br>
-                becomes the clearest insight."
-            </div>
-            <div class="cover-cta">Drag corner to open →</div>
-        </div>
-    </div>`;
-    document.getElementById('rightContent').innerHTML = `
-    <div class="blank-page">
-        <div class="blank-inner">
-            <div style="font-size:22px;margin-bottom:8px;">✦</div>
-            <div>Mochammad Maulana Ibrahim</div>
-        </div>
-    </div>`;
-    document.getElementById('cornerHint').style.display = 'block';
-}
-
-function showCV() {
-    document.getElementById('leftContent').innerHTML = `
-    <div class="cv-page">
-        <img src="pages/page-1.jpg" alt="CV">
-    </div>`;
-    document.getElementById('rightContent').innerHTML = `
-    <div class="backcover-page">
-        <div class="bc-content">
-            <div class="bc-title">Get In Touch</div>
-            <div class="bc-quote">
-                "I turn ignored data into<br>
-                meaningful insights<br>
-                that transform systems."
-            </div>
-            <div class="bc-contacts">
-                <div class="bc-item"><span class="bc-icon">✉</span><span>mochammad.maulana.i.01@gmail.com</span></div>
-                <div class="bc-item"><span class="bc-icon">📱</span><span>(+62) 898-9210-565</span></div>
-                <div class="bc-item"><span class="bc-icon">🔗</span><span>linkedin.com/in/mmi01</span></div>
-                <div class="bc-item"><span class="bc-icon">🌐</span><span>mmaulana2405.github.io</span></div>
-            </div>
-        </div>
-    </div>`;
-    document.getElementById('cornerHint').style.display = 'none';
-}
-
+// ── UPDATE PAGE CONTENT ──
 function updatePageContent() {
-    if (isOpen) showCV();
-    else showCover();
+    const leftContent  = document.getElementById('leftContent');
+    const rightContent = document.getElementById('rightContent');
+
+    if (isOpen) {
+        // Left: CV image
+        leftContent.innerHTML = `<div class="cv-page"><img src="pages/page-1.jpg" alt="CV"></div>`;
+        // Right: Back cover
+        rightContent.innerHTML = `
+        <div class="backcover-page">
+            <div class="bc-content">
+                <div class="bc-title">Get In Touch</div>
+                <div class="bc-quote">
+                    "I turn ignored data into<br>
+                    meaningful insights<br>
+                    that transform systems."
+                </div>
+                <div class="bc-contacts">
+                    <div class="bc-item"><span class="bc-icon">✉</span><span>mochammad.maulana.i.01@gmail.com</span></div>
+                    <div class="bc-item"><span class="bc-icon">📱</span><span>(+62) 898-9210-565</span></div>
+                    <div class="bc-item"><span class="bc-icon">🔗</span><span>linkedin.com/in/mmi01</span></div>
+                    <div class="bc-item"><span class="bc-icon">🌐</span><span>mmaulana2405.github.io</span></div>
+                </div>
+            </div>
+        </div>`;
+        document.getElementById('cornerHint').style.display = 'none';
+    } else {
+        // Left: blank
+        leftContent.innerHTML = `
+        <div class="blank-page">
+            <div class="blank-inner">
+                <div style="font-size:22px;margin-bottom:8px;">✦</div>
+                <div>Mochammad Maulana Ibrahim</div>
+            </div>
+        </div>`;
+        // Right: cover
+        rightContent.innerHTML = `
+        <div class="cover-page" id="coverContent">
+            <div class="cover-grid"></div>
+            <div class="cover-inner">
+                <div class="cover-eyebrow">Curriculum Vitae · 2026</div>
+                <div class="cover-photo">
+                    <img src="../FotoProfil.jpeg" alt="MMI"
+                         onerror="this.style.display='none';this.parentElement.innerHTML='MMI';">
+                </div>
+                <div class="cover-name">Mochammad<br>Maulana Ibrahim</div>
+                <div class="cover-rule"></div>
+                <div class="cover-quote">
+                    "The most overlooked data,<br>
+                    when gathered with patience,<br>
+                    becomes the clearest insight."
+                </div>
+                <div class="cover-cta">← Drag corner to open</div>
+            </div>
+        </div>`;
+        document.getElementById('cornerHint').style.display = 'block';
+    }
 }
 
-// ── PUBLIC ──
-window.flipToOpen  = () => { if (!isOpen  && !isAnimating) animateTo(1, true);  };
-window.flipToClose = () => { if (isOpen   && !isAnimating) animateTo(0, false); };
+// ── PUBLIC FUNCTIONS ──
+window.flipToOpen = function() {
+    if (isOpen || isAnimating) return;
+    animateFlip(currentAngle, 180, true);
+};
+
+window.flipToClose = function() {
+    if (!isOpen || isAnimating) return;
+    animateFlip(currentAngle, 0, false);
+};
 
 function updateUI() {
     document.getElementById('btnPrev').disabled = !isOpen;
-    document.getElementById('btnNext').disabled =  isOpen;
+    document.getElementById('btnNext').disabled = isOpen;
     document.getElementById('pageLabel').textContent = isOpen ? 'CV' : 'Cover';
 }
 </script>
