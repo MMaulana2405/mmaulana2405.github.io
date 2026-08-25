@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CV — Mochammad Maulana Ibrahim</title>
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #050810;
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .topbar {
+            height: 50px; flex-shrink: 0;
+            background: rgba(8,13,26,0.98);
+            border-bottom: 1px solid rgba(0,212,255,0.12);
+            display: flex; align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            backdrop-filter: blur(12px);
+            z-index: 100;
+        }
+        .topbar-left { display: flex; align-items: center; gap: 10px; }
+        .topbar-avatar {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: linear-gradient(135deg, #0050B8, #00D4FF);
+            overflow: hidden; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: 700;
+        }
+        .topbar-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .topbar-name  { font-size: 13px; font-weight: 600; }
+        .topbar-label { font-size: 10px; color: #00D4FF; }
+        .topbar-right { display: flex; align-items: center; gap: 12px; }
+        .btn-download {
+            display: flex; align-items: center; gap: 6px;
+            padding: 6px 14px;
+            background: rgba(0,212,255,0.1);
+            border: 1px solid rgba(0,212,255,0.25);
+            border-radius: 20px; color: #00D4FF;
+            font-size: 11px; font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer; text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-download:hover { background: rgba(0,212,255,0.18); }
+        .btn-signout {
+            font-size: 11px; color: rgba(255,255,255,0.25);
+            background: none; border: none;
+            cursor: pointer; font-family: 'Inter', sans-serif;
+        }
+        .btn-signout:hover { color: #00D4FF; }
+
+        .stage {
+            flex: 1;
+            display: flex; align-items: center; justify-content: center;
+            background:
+                radial-gradient(ellipse at 25% 40%, rgba(0,60,160,0.2) 0%, transparent 55%),
+                radial-gradient(ellipse at 78% 65%, rgba(0,212,255,0.07) 0%, transparent 50%),
+                #050810;
+            position: relative; overflow: hidden;
+        }
+        .stage::before {
+            content: '';
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px);
+            background-size: 48px 48px;
+            pointer-events: none;
+        }
+
+        /* Turn.js container — sized by JS before init */
+        #flipbook {
+            display: none; /* hidden until sized */
+        }
+
+        /* All pages must have explicit size set by JS */
+        #flipbook .page {
+            overflow: hidden;
+        }
+
+        /* Blank */
+        .p-blank {
+            background: #0A1220;
+            display: flex; align-items: center; justify-content: center;
+            width: 100%; height: 100%;
+        }
+        .blank-inner {
+            text-align: center; opacity: 0.15;
+            font-size: 11px; color: rgba(255,255,255,0.6);
+        }
+
+        /* Cover */
+        .p-cover {
+            background: linear-gradient(145deg, #0A1628 0%, #0D1F3C 45%, #080D1A 100%);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 36px 28px; text-align: center;
+            position: relative; width: 100%; height: 100%;
+        }
+        .p-cover::before {
+            content: '';
+            position: absolute; inset: 0;
+            background:
+                radial-gradient(ellipse at 40% 35%, rgba(0,100,220,0.32) 0%, transparent 55%),
+                radial-gradient(ellipse at 70% 75%, rgba(0,212,255,0.12) 0%, transparent 45%);
+            pointer-events: none;
+        }
+        .cover-grid {
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(0,212,255,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,212,255,0.05) 1px, transparent 1px);
+            background-size: 36px 36px;
+            pointer-events: none;
+        }
+        .cover-inner { position: relative; z-index: 1; }
+        .cover-eyebrow {
+            font-size: 9px; font-weight: 600;
+            letter-spacing: 3px; text-transform: uppercase;
+            color: #00D4FF; margin-bottom: 20px; opacity: 0.85;
+        }
+        .cover-photo {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: linear-gradient(135deg, #0050B8, #00D4FF);
+            margin: 0 auto 18px;
+            box-shadow: 0 0 32px rgba(0,212,255,0.3);
+            overflow: hidden;
+        }
+        .cover-photo img {
+            width: 100%; height: 100%;
+            object-fit: cover; object-position: center top;
+        }
+        .cover-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px; font-weight: 700;
+            color: #fff; line-height: 1.25; margin-bottom: 12px;
+        }
+        .cover-rule {
+            width: 36px; height: 1px;
+            background: rgba(0,212,255,0.5);
+            margin: 0 auto 14px;
+        }
+        .cover-quote {
+            font-size: 11px; color: rgba(255,255,255,0.6);
+            line-height: 1.75; font-style: italic;
+            max-width: 210px; margin: 0 auto 22px;
+        }
+        .cover-cta {
+            font-size: 10px; font-weight: 600;
+            letter-spacing: 1.5px; text-transform: uppercase;
+            color: #00D4FF;
+            border: 1px solid rgba(0,212,255,0.35);
+            padding: 7px 16px; border-radius: 20px;
+            background: rgba(0,212,255,0.07);
+            display: inline-block;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.55} }
+
+        /* CV */
+        .p-cv {
+            background: #fff;
+            width: 100%; height: 100%;
+        }
+        .p-cv img {
+            width: 100%; height: 100%;
+            object-fit: contain;
+            object-position: top center;
+            display: block;
+        }
+
+        /* Back cover */
+        .p-back {
+            background: linear-gradient(145deg, #080D1A, #0D1A35);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 36px 28px; text-align: center;
+            position: relative; width: 100%; height: 100%;
+        }
+        .p-back::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse at 50% 50%, rgba(0,80,180,0.18) 0%, transparent 65%);
+            pointer-events: none;
+        }
+        .bc-content {
+            position: relative; z-index: 1;
+            user-select: text;
+            -webkit-user-select: text;
+        }
+        .bc-title {
+            font-size: 10px; letter-spacing: 2.5px;
+            text-transform: uppercase; color: #00D4FF;
+            margin-bottom: 18px; user-select: none;
+        }
+        .bc-quote {
+            font-family: 'Playfair Display', serif;
+            font-size: 13px; font-style: italic;
+            color: rgba(255,255,255,0.65); line-height: 1.85;
+            margin-bottom: 28px;
+        }
+        .bc-contacts { display: flex; flex-direction: column; gap: 10px; }
+        .bc-item {
+            font-size: 11px; color: rgba(255,255,255,0.7);
+            display: flex; align-items: center;
+            justify-content: center; gap: 8px;
+        }
+        .bc-icon { color: #00D4FF; user-select: none; }
+
+        .bottombar {
+            height: 50px; flex-shrink: 0;
+            background: rgba(8,13,26,0.98);
+            border-top: 1px solid rgba(0,212,255,0.1);
+            display: flex; align-items: center;
+            justify-content: center; gap: 16px;
+            backdrop-filter: blur(12px);
+        }
+        .nav-btn {
+            display: flex; align-items: center; gap: 6px;
+            padding: 7px 18px;
+            background: rgba(0,212,255,0.08);
+            border: 1px solid rgba(0,212,255,0.2);
+            border-radius: 20px; color: #00D4FF;
+            font-size: 12px; font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .nav-btn:hover:not(:disabled) {
+            background: rgba(0,212,255,0.16);
+            transform: translateY(-1px);
+        }
+        .nav-btn:disabled { opacity: 0.25; cursor: not-allowed; transform: none; }
+        .page-label {
+            font-size: 11px; color: rgba(255,255,255,0.25);
+            min-width: 80px; text-align: center;
+        }
+
+        .loading-screen {
+            position: fixed; inset: 0;
+            background: #080D1A;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 14px;
+            z-index: 200;
+        }
+        .spinner {
+            width: 32px; height: 32px;
+            border: 2px solid rgba(0,212,255,0.15);
+            border-top-color: #00D4FF;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text { font-size: 12px; color: rgba(255,255,255,0.6); }
+    </style>
+</head>
+<body>
+<div class="loading-screen" id="loadingScreen">
+<div class="spinner"></div>
+<div class="loading-text">Verifying access...</div>
+</div>
+<div class="topbar" id="topbar" style="display:none;">
+<div class="topbar-left">
+<div class="topbar-avatar">
+<img alt="" id="topAvatarImg" onerror="this.style.display='none';" src=""/>
+</div>
+<div>
+<div class="topbar-name" id="topName">—</div>
+<div class="topbar-label">Viewing CV · Access Recorded</div>
+</div>
+</div>
+<div class="topbar-right">
+<a class="btn-download" download="" href="../CV - Mochammad Maulana Ibrahim - 2026.pdf">⬇ Download PDF</a>
+<button class="btn-signout" onclick="doSignOut()">Sign out</button>
+</div>
+</div>
+<div class="stage" id="stage" style="display:none;">
+<div id="flipbook">
+<div class="page hard" id="p1">
+<div class="p-blank">
+<div class="blank-inner">
+<div style="font-size:22px;margin-bottom:8px;">✦</div>
+<div>Mochammad Maulana Ibrahim</div>
+</div>
+</div>
+</div>
+<div class="page hard" id="p2">
+<div class="p-cover">
+<div class="cover-grid"></div>
+<div class="cover-inner">
+<div class="cover-eyebrow">Curriculum Vitae · 2026</div>
+<div class="cover-photo">
+<img alt="MMI" onerror="this.style.display='none';this.parentElement.innerHTML='MMI';" src="../FotoProfil.jpeg?expires=1790265701&amp;signature=3eb68df58940254ae7aa8edf7a972e5e72e4a7b1443c89fb1d06a055b297fa1f&amp;kid=prod-250922"/>
+</div>
+<div class="cover-name">Mochammad<br/>Maulana Ibrahim</div>
+<div class="cover-rule"></div>
+<div class="cover-quote">
+                        "The most overlooked data,<br/>
+                        when gathered with patience,<br/>
+                        becomes the clearest insight."
+                    </div>
+<div class="cover-cta">Drag corner or click →</div>
+</div>
+</div>
+</div>
+<div class="page" id="p3">
+<div class="p-cv">
+<img alt="CV" src="pages/page-1.jpg?expires=1790265701&amp;signature=180f4576d70cc0eb9666fe61de10d886e23f3e229105c354a3fba48e18746ef0&amp;kid=prod-250922"/>
+</div>
+</div>
+<div class="page hard" id="p4">
+<div class="p-back">
+<div class="bc-content">
+<div class="bc-title">Get In Touch</div>
+<div class="bc-quote">
+                        "I turn ignored data into<br/>
+                        meaningful insights<br/>
+                        that transform systems."
+                    </div>
+<div class="bc-contacts">
+<div class="bc-item"><span class="bc-icon">✉</span><span>mochammad.maulana.i.01@gmail.com</span></div>
+<div class="bc-item"><span class="bc-icon">📱</span><span>(+62) 898-9210-565</span></div>
+<div class="bc-item"><span class="bc-icon">🔗</span><span>linkedin.com/in/mmi01</span></div>
+<div class="bc-item"><span class="bc-icon">🌐</span><span>mmaulana2405.github.io</span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bottombar" id="bottombar" style="display:none;">
+<button class="nav-btn" disabled="" id="btnPrev" onclick="doPrev()">← Back</button>
+<span class="page-label" id="pageLabel">Cover</span>
+<button class="nav-btn" id="btnNext" onclick="doNext()">Open →</button>
+</div>
+<script src="jquery.min.js"></script>
+<script src="turn.min.js"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut }
+        from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBv4VrPdi1E7CByp79T6Ios4MGYpYRm9Uc",
+        authDomain: "personal-website-mmi.firebaseapp.com",
+        projectId: "personal-website-mmi",
+        storageBucket: "personal-website-mmi.firebasestorage.app",
+        messagingSenderId: "57812235771",
+        appId: "1:57812235771:web:5cd823cee44e095fc1475e"
+    };
+
+    const app  = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, (user) => {
+        if (!user) { window.location.href = "index.html"; return; }
+        document.getElementById('topName').textContent = user.displayName || user.email;
+        const img = document.getElementById('topAvatarImg');
+        if (user.photoURL) img.src = user.photoURL;
+
+        document.getElementById('loadingScreen').style.display = 'none';
+        document.getElementById('topbar').style.display    = 'flex';
+        document.getElementById('stage').style.display     = 'flex';
+        document.getElementById('bottombar').style.display = 'flex';
+
+        // Wait for stage to be visible and sized
+        requestAnimationFrame(function() {
+            requestAnimationFrame(function() {
+                initFlip();
+            });
+        });
+    });
+
+    window.doSignOut = async () => {
+        await signOut(auth);
+        window.location.href = "index.html";
+    };
+</script>
+<script>
+function calcSize() {
+    var stage = document.getElementById('stage');
+    var sw = stage.clientWidth  || window.innerWidth;
+    var sh = stage.clientHeight || (window.innerHeight - 100);
+    var pH = Math.min(sh * 0.88, 580);
+    var pW = Math.min(pH / 1.414, (sw * 0.88) / 2);
+    pH = Math.floor(pW * 1.414);
+    pW = Math.floor(pW);
+    return { w: pW, h: pH };
+}
+
+function initFlip() {
+    var s = calcSize();
+    var bW = s.w * 2;
+    var bH = s.h;
+
+    // ── CRITICAL: set explicit pixel size on each page BEFORE turn() ──
+    $('#flipbook .page').css({ width: s.w + 'px', height: s.h + 'px' });
+    $('#flipbook .page > div').css({ width: s.w + 'px', height: s.h + 'px' });
+
+    // Show flipbook
+    $('#flipbook').css({ display: 'block', width: bW + 'px', height: bH + 'px' });
+
+    // Init Turn.js
+    $('#flipbook').turn({
+        width:        bW,
+        height:       bH,
+        autoCenter:   true,
+        display:      'double',
+        acceleration: true,
+        gradients:    true,
+        elevation:    50,
+        showCover:    true,
+        duration:     800,
+        when: {
+            turned: function(e, page) {
+                updateNav(page);
+            }
+        }
+    });
+
+    updateNav(1);
+
+    // Keyboard nav
+    $(document).off('keydown.flip').on('keydown.flip', function(e) {
+        if (e.keyCode === 39) $('#flipbook').turn('next');
+        if (e.keyCode === 37) $('#flipbook').turn('previous');
+    });
+
+    // Resize
+    $(window).off('resize.flip').on('resize.flip', function() {
+        var s2 = calcSize();
+        $('#flipbook .page').css({ width: s2.w + 'px', height: s2.h + 'px' });
+        $('#flipbook .page > div').css({ width: s2.w + 'px', height: s2.h + 'px' });
+        try {
+            $('#flipbook').turn('size', s2.w * 2, s2.h);
+            $('#flipbook').turn('center');
+        } catch(err) {}
+    });
+}
+
+function updateNav(page) {
+    var atStart = (page <= 1);
+    var atEnd   = (page >= 3); // last spread starts at page 3
+    document.getElementById('btnPrev').disabled = atStart;
+    document.getElementById('btnNext').disabled = atEnd;
+    if (page <= 2)      document.getElementById('pageLabel').textContent = 'Cover';
+    else if (page <= 3) document.getElementById('pageLabel').textContent = 'CV';
+    else                document.getElementById('pageLabel').textContent = 'End';
+}
+
+window.doNext = function() {
+    try { $('#flipbook').turn('next'); } catch(e) {}
+};
+window.doPrev = function() {
+    try { $('#flipbook').turn('previous'); } catch(e) {}
+};
+</script>
+</body>
+</html>
