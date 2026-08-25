@@ -80,11 +80,15 @@
             pointer-events: none;
         }
 
+        /* Turn.js container — sized by JS before init */
         #flipbook {
-            box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+            display: none; /* hidden until sized */
         }
 
-        .page { overflow: hidden; }
+        /* All pages must have explicit size set by JS */
+        #flipbook .page {
+            overflow: hidden;
+        }
 
         /* Blank */
         .p-blank {
@@ -283,8 +287,7 @@
 </div>
 <div class="stage" id="stage" style="display:none;">
 <div id="flipbook">
-<!-- Page 1: Blank LEFT of cover spread -->
-<div class="page hard">
+<div class="page hard" id="p1">
 <div class="p-blank">
 <div class="blank-inner">
 <div style="font-size:22px;margin-bottom:8px;">✦</div>
@@ -292,14 +295,13 @@
 </div>
 </div>
 </div>
-<!-- Page 2: Cover RIGHT of cover spread -->
-<div class="page hard">
+<div class="page hard" id="p2">
 <div class="p-cover">
 <div class="cover-grid"></div>
 <div class="cover-inner">
 <div class="cover-eyebrow">Curriculum Vitae · 2026</div>
 <div class="cover-photo">
-<img alt="MMI" onerror="this.style.display='none';this.parentElement.innerHTML='MMI';" src="../FotoProfil.jpeg?expires=1790265251&amp;signature=e4fe28b5ca0c6fb9340754a9f68d3f9a6410daff0bc82970ebff9ed3d0824d0b&amp;kid=prod-250922"/>
+<img alt="MMI" onerror="this.style.display='none';this.parentElement.innerHTML='MMI';" src="../FotoProfil.jpeg?expires=1790265701&amp;signature=3eb68df58940254ae7aa8edf7a972e5e72e4a7b1443c89fb1d06a055b297fa1f&amp;kid=prod-250922"/>
 </div>
 <div class="cover-name">Mochammad<br/>Maulana Ibrahim</div>
 <div class="cover-rule"></div>
@@ -312,14 +314,12 @@
 </div>
 </div>
 </div>
-<!-- Page 3: CV image LEFT of second spread -->
-<div class="page">
+<div class="page" id="p3">
 <div class="p-cv">
-<img alt="CV Mochammad Maulana Ibrahim" src="pages/page-1.jpg?expires=1790265251&amp;signature=475ee454316c2abb079bc22df4cab5383d5c231d3c8fabed502a8c9b0904eb87&amp;kid=prod-250922"/>
+<img alt="CV" src="pages/page-1.jpg?expires=1790265701&amp;signature=180f4576d70cc0eb9666fe61de10d886e23f3e229105c354a3fba48e18746ef0&amp;kid=prod-250922"/>
 </div>
 </div>
-<!-- Page 4: Back cover RIGHT of second spread -->
-<div class="page hard">
+<div class="page hard" id="p4">
 <div class="p-back">
 <div class="bc-content">
 <div class="bc-title">Get In Touch</div>
@@ -374,7 +374,12 @@
         document.getElementById('stage').style.display     = 'flex';
         document.getElementById('bottombar').style.display = 'flex';
 
-        setTimeout(initFlip, 150);
+        // Wait for stage to be visible and sized
+        requestAnimationFrame(function() {
+            requestAnimationFrame(function() {
+                initFlip();
+            });
+        });
     });
 
     window.doSignOut = async () => {
@@ -383,24 +388,33 @@
     };
 </script>
 <script>
-var TOTAL_PAGES = 4;
-
-function getSize() {
+function calcSize() {
     var stage = document.getElementById('stage');
-    var sw = stage.clientWidth;
-    var sh = stage.clientHeight;
-    var pH = Math.min(sh * 0.88, 600);
+    var sw = stage.clientWidth  || window.innerWidth;
+    var sh = stage.clientHeight || (window.innerHeight - 100);
+    var pH = Math.min(sh * 0.88, 580);
     var pW = Math.min(pH / 1.414, (sw * 0.88) / 2);
-    pH = pW * 1.414;
-    return { w: Math.floor(pW), h: Math.floor(pH) };
+    pH = Math.floor(pW * 1.414);
+    pW = Math.floor(pW);
+    return { w: pW, h: pH };
 }
 
 function initFlip() {
-    var s = getSize();
+    var s = calcSize();
+    var bW = s.w * 2;
+    var bH = s.h;
 
+    // ── CRITICAL: set explicit pixel size on each page BEFORE turn() ──
+    $('#flipbook .page').css({ width: s.w + 'px', height: s.h + 'px' });
+    $('#flipbook .page > div').css({ width: s.w + 'px', height: s.h + 'px' });
+
+    // Show flipbook
+    $('#flipbook').css({ display: 'block', width: bW + 'px', height: bH + 'px' });
+
+    // Init Turn.js
     $('#flipbook').turn({
-        width:        s.w * 2,
-        height:       s.h,
+        width:        bW,
+        height:       bH,
         autoCenter:   true,
         display:      'double',
         acceleration: true,
@@ -409,7 +423,7 @@ function initFlip() {
         showCover:    true,
         duration:     800,
         when: {
-            turned: function(e, page, view) {
+            turned: function(e, page) {
                 updateNav(page);
             }
         }
@@ -417,46 +431,39 @@ function initFlip() {
 
     updateNav(1);
 
-    $(document).keydown(function(e) {
+    // Keyboard nav
+    $(document).off('keydown.flip').on('keydown.flip', function(e) {
         if (e.keyCode === 39) $('#flipbook').turn('next');
         if (e.keyCode === 37) $('#flipbook').turn('previous');
     });
 
-    $(window).resize(function() {
-        var s = getSize();
+    // Resize
+    $(window).off('resize.flip').on('resize.flip', function() {
+        var s2 = calcSize();
+        $('#flipbook .page').css({ width: s2.w + 'px', height: s2.h + 'px' });
+        $('#flipbook .page > div').css({ width: s2.w + 'px', height: s2.h + 'px' });
         try {
-            $('#flipbook').turn('size', s.w * 2, s.h);
+            $('#flipbook').turn('size', s2.w * 2, s2.h);
             $('#flipbook').turn('center');
         } catch(err) {}
     });
 }
 
 function updateNav(page) {
-    var btnPrev = document.getElementById('btnPrev');
-    var btnNext = document.getElementById('btnNext');
-    var lbl     = document.getElementById('pageLabel');
-
-    // In double display with showCover:
-    // page 1 = cover spread (blank+cover)
-    // page 3 = second spread (cv+backcover)
-    btnPrev.disabled = (page <= 1);
-    btnNext.disabled = (page >= TOTAL_PAGES - 1);
-
-    if (page <= 2)      lbl.textContent = 'Cover';
-    else if (page <= 3) lbl.textContent = 'CV';
-    else                lbl.textContent = 'End';
+    var atStart = (page <= 1);
+    var atEnd   = (page >= 3); // last spread starts at page 3
+    document.getElementById('btnPrev').disabled = atStart;
+    document.getElementById('btnNext').disabled = atEnd;
+    if (page <= 2)      document.getElementById('pageLabel').textContent = 'Cover';
+    else if (page <= 3) document.getElementById('pageLabel').textContent = 'CV';
+    else                document.getElementById('pageLabel').textContent = 'End';
 }
 
 window.doNext = function() {
-    if (!$('#flipbook').turn('is')) return;
-    var cur = $('#flipbook').turn('page');
-    if (cur < TOTAL_PAGES - 1) $('#flipbook').turn('next');
+    try { $('#flipbook').turn('next'); } catch(e) {}
 };
-
 window.doPrev = function() {
-    if (!$('#flipbook').turn('is')) return;
-    var cur = $('#flipbook').turn('page');
-    if (cur > 1) $('#flipbook').turn('previous');
+    try { $('#flipbook').turn('previous'); } catch(e) {}
 };
 </script>
 </body>
