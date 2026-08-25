@@ -80,34 +80,34 @@
             pointer-events: none;
         }
 
-        /* Turn.js container — sized by JS before init */
-        #flipbook {
-            display: none; /* hidden until sized */
+        /* PageFlip container */
+        #flipbook-container {
+            position: relative;
         }
 
-        /* All pages must have explicit size set by JS */
-        #flipbook .page {
+        /* Page content styles */
+        .page {
             overflow: hidden;
+            background: #0A1220;
         }
 
-        /* Blank */
         .p-blank {
+            width: 100%; height: 100%;
             background: #0A1220;
             display: flex; align-items: center; justify-content: center;
-            width: 100%; height: 100%;
         }
         .blank-inner {
             text-align: center; opacity: 0.15;
             font-size: 11px; color: rgba(255,255,255,0.6);
         }
 
-        /* Cover */
         .p-cover {
+            width: 100%; height: 100%;
             background: linear-gradient(145deg, #0A1628 0%, #0D1F3C 45%, #080D1A 100%);
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             padding: 36px 28px; text-align: center;
-            position: relative; width: 100%; height: 100%;
+            position: relative;
         }
         .p-cover::before {
             content: '';
@@ -169,10 +169,9 @@
         }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.55} }
 
-        /* CV */
         .p-cv {
-            background: #fff;
             width: 100%; height: 100%;
+            background: #fff;
         }
         .p-cv img {
             width: 100%; height: 100%;
@@ -181,13 +180,13 @@
             display: block;
         }
 
-        /* Back cover */
         .p-back {
+            width: 100%; height: 100%;
             background: linear-gradient(145deg, #080D1A, #0D1A35);
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             padding: 36px 28px; text-align: center;
-            position: relative; width: 100%; height: 100%;
+            position: relative;
         }
         .p-back::before {
             content: '';
@@ -286,8 +285,10 @@
 </div>
 </div>
 <div class="stage" id="stage" style="display:none;">
+<div id="flipbook-container">
 <div id="flipbook">
-<div class="page hard" id="p1">
+<!-- Page 1: Blank -->
+<div class="page">
 <div class="p-blank">
 <div class="blank-inner">
 <div style="font-size:22px;margin-bottom:8px;">✦</div>
@@ -295,39 +296,42 @@
 </div>
 </div>
 </div>
-<div class="page hard" id="p2">
+<!-- Page 2: Cover -->
+<div class="page">
 <div class="p-cover">
 <div class="cover-grid"></div>
 <div class="cover-inner">
 <div class="cover-eyebrow">Curriculum Vitae · 2026</div>
 <div class="cover-photo">
-<img alt="MMI" onerror="this.style.display='none';this.parentElement.innerHTML='MMI';" src="../FotoProfil.jpeg?expires=1790265701&amp;signature=3eb68df58940254ae7aa8edf7a972e5e72e4a7b1443c89fb1d06a055b297fa1f&amp;kid=prod-250922"/>
+<img alt="MMI" onerror="this.style.display='none';this.parentElement.innerHTML='MMI';" src="../FotoProfil.jpeg?expires=1790266637&amp;signature=c65e363a84b5d7816261d8f7885476aa29380911b124df87d8ec6057bd2b4345&amp;kid=prod-250922"/>
 </div>
 <div class="cover-name">Mochammad<br/>Maulana Ibrahim</div>
 <div class="cover-rule"></div>
 <div class="cover-quote">
-                        "The most overlooked data,<br/>
-                        when gathered with patience,<br/>
-                        becomes the clearest insight."
-                    </div>
+                            "The most overlooked data,<br/>
+                            when gathered with patience,<br/>
+                            becomes the clearest insight."
+                        </div>
 <div class="cover-cta">Drag corner or click →</div>
 </div>
 </div>
 </div>
-<div class="page" id="p3">
+<!-- Page 3: CV image -->
+<div class="page">
 <div class="p-cv">
-<img alt="CV" src="pages/page-1.jpg?expires=1790265701&amp;signature=180f4576d70cc0eb9666fe61de10d886e23f3e229105c354a3fba48e18746ef0&amp;kid=prod-250922"/>
+<img alt="CV Mochammad Maulana Ibrahim" src="pages/page-1.jpg?expires=1790266637&amp;signature=1d7338b6af34963e4c9a0b9d84ef365a95987372c4e404513062df82d3bd2f99&amp;kid=prod-250922"/>
 </div>
 </div>
-<div class="page hard" id="p4">
+<!-- Page 4: Back cover -->
+<div class="page">
 <div class="p-back">
 <div class="bc-content">
 <div class="bc-title">Get In Touch</div>
 <div class="bc-quote">
-                        "I turn ignored data into<br/>
-                        meaningful insights<br/>
-                        that transform systems."
-                    </div>
+                            "I turn ignored data into<br/>
+                            meaningful insights<br/>
+                            that transform systems."
+                        </div>
 <div class="bc-contacts">
 <div class="bc-item"><span class="bc-icon">✉</span><span>mochammad.maulana.i.01@gmail.com</span></div>
 <div class="bc-item"><span class="bc-icon">📱</span><span>(+62) 898-9210-565</span></div>
@@ -339,13 +343,15 @@
 </div>
 </div>
 </div>
+</div>
 <div class="bottombar" id="bottombar" style="display:none;">
 <button class="nav-btn" disabled="" id="btnPrev" onclick="doPrev()">← Back</button>
 <span class="page-label" id="pageLabel">Cover</span>
 <button class="nav-btn" id="btnNext" onclick="doNext()">Open →</button>
 </div>
-<script src="jquery.min.js"></script>
-<script src="turn.min.js"></script>
+<!-- PageFlip library (local) -->
+<script src="page-flip.js"></script>
+<!-- Firebase -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut }
@@ -374,12 +380,7 @@
         document.getElementById('stage').style.display     = 'flex';
         document.getElementById('bottombar').style.display = 'flex';
 
-        // Wait for stage to be visible and sized
-        requestAnimationFrame(function() {
-            requestAnimationFrame(function() {
-                initFlip();
-            });
-        });
+        requestAnimationFrame(() => requestAnimationFrame(() => initBook()));
     });
 
     window.doSignOut = async () => {
@@ -388,83 +389,67 @@
     };
 </script>
 <script>
+let pageFlip = null;
+
 function calcSize() {
-    var stage = document.getElementById('stage');
-    var sw = stage.clientWidth  || window.innerWidth;
-    var sh = stage.clientHeight || (window.innerHeight - 100);
-    var pH = Math.min(sh * 0.88, 580);
-    var pW = Math.min(pH / 1.414, (sw * 0.88) / 2);
+    const stage = document.getElementById('stage');
+    const sw = stage.clientWidth  || window.innerWidth;
+    const sh = stage.clientHeight || (window.innerHeight - 100);
+    let pH = Math.min(sh * 0.88, 580);
+    let pW = Math.min(pH / 1.414, (sw * 0.88) / 2);
     pH = Math.floor(pW * 1.414);
     pW = Math.floor(pW);
     return { w: pW, h: pH };
 }
 
-function initFlip() {
-    var s = calcSize();
-    var bW = s.w * 2;
-    var bH = s.h;
+function initBook() {
+    const { w, h } = calcSize();
 
-    // ── CRITICAL: set explicit pixel size on each page BEFORE turn() ──
-    $('#flipbook .page').css({ width: s.w + 'px', height: s.h + 'px' });
-    $('#flipbook .page > div').css({ width: s.w + 'px', height: s.h + 'px' });
-
-    // Show flipbook
-    $('#flipbook').css({ display: 'block', width: bW + 'px', height: bH + 'px' });
-
-    // Init Turn.js
-    $('#flipbook').turn({
-        width:        bW,
-        height:       bH,
-        autoCenter:   true,
-        display:      'double',
-        acceleration: true,
-        gradients:    true,
-        elevation:    50,
-        showCover:    true,
-        duration:     800,
-        when: {
-            turned: function(e, page) {
-                updateNav(page);
-            }
-        }
+    pageFlip = new St.PageFlip(document.getElementById('flipbook'), {
+        width:              w,
+        height:             h,
+        size:               'fixed',
+        minWidth:           200,
+        maxWidth:           600,
+        minHeight:          300,
+        maxHeight:          900,
+        showCover:          true,
+        drawShadow:         true,
+        flippingTime:       700,
+        usePortrait:        false,
+        startZIndex:        0,
+        autoSize:           false,
+        maxShadowOpacity:   0.6,
+        mobileScrollSupport: true,
+        clickEventForward:  false,
+        useMouseEvents:     true,
+        swipeDistance:      10,
+        showPageCorners:    true,
+        disableFlipByClick: false,
     });
 
-    updateNav(1);
+    pageFlip.loadFromHTML(document.querySelectorAll('#flipbook .page'));
 
-    // Keyboard nav
-    $(document).off('keydown.flip').on('keydown.flip', function(e) {
-        if (e.keyCode === 39) $('#flipbook').turn('next');
-        if (e.keyCode === 37) $('#flipbook').turn('previous');
-    });
+    pageFlip.on('flip', (e) => updateNav(e.data));
+    pageFlip.on('changeState', () => updateNav(pageFlip.getCurrentPageIndex()));
 
-    // Resize
-    $(window).off('resize.flip').on('resize.flip', function() {
-        var s2 = calcSize();
-        $('#flipbook .page').css({ width: s2.w + 'px', height: s2.h + 'px' });
-        $('#flipbook .page > div').css({ width: s2.w + 'px', height: s2.h + 'px' });
-        try {
-            $('#flipbook').turn('size', s2.w * 2, s2.h);
-            $('#flipbook').turn('center');
-        } catch(err) {}
-    });
+    updateNav(0);
+
+    
+
+function updateNav(pageIndex) {
+    // pageIndex: 0-based
+    // 0,1 = cover spread; 2,3 = cv spread
+    document.getElementById('btnPrev').disabled = (pageIndex <= 0);
+    document.getElementById('btnNext').disabled = (pageIndex >= 2);
+
+    if (pageIndex <= 1)      document.getElementById('pageLabel').textContent = 'Cover';
+    else if (pageIndex <= 2) document.getElementById('pageLabel').textContent = 'CV';
+    else                     document.getElementById('pageLabel').textContent = 'End';
 }
 
-function updateNav(page) {
-    var atStart = (page <= 1);
-    var atEnd   = (page >= 3); // last spread starts at page 3
-    document.getElementById('btnPrev').disabled = atStart;
-    document.getElementById('btnNext').disabled = atEnd;
-    if (page <= 2)      document.getElementById('pageLabel').textContent = 'Cover';
-    else if (page <= 3) document.getElementById('pageLabel').textContent = 'CV';
-    else                document.getElementById('pageLabel').textContent = 'End';
-}
-
-window.doNext = function() {
-    try { $('#flipbook').turn('next'); } catch(e) {}
-};
-window.doPrev = function() {
-    try { $('#flipbook').turn('previous'); } catch(e) {}
-};
+window.doNext = () => { if (pageFlip) pageFlip.flipNext(); };
+window.doPrev = () => { if (pageFlip) pageFlip.flipPrev(); };
 </script>
 </body>
 </html>
