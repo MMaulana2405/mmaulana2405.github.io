@@ -6,713 +6,433 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>CV — Mochammad Maulana Ibrahim</title>
 <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body {
-            font-family:'Inter',sans-serif;
-            background:#050810; color:#fff;
-            height:100vh; display:flex; flex-direction:column; overflow:hidden;
-        }
-        .topbar {
-            height:50px; flex-shrink:0;
-            background:rgba(8,13,26,0.98);
-            border-bottom:1px solid rgba(0,212,255,0.12);
-            display:flex; align-items:center; justify-content:space-between;
-            padding:0 20px; backdrop-filter:blur(12px); z-index:100;
-        }
-        .topbar-left { display:flex; align-items:center; gap:10px; }
-        .topbar-avatar {
-            width:28px; height:28px; border-radius:50%;
-            background:linear-gradient(135deg,#0050B8,#00D4FF);
-            overflow:hidden; flex-shrink:0;
-            display:flex; align-items:center; justify-content:center;
-            font-size:10px; font-weight:700;
-        }
-        .topbar-avatar img { width:100%; height:100%; object-fit:cover; }
-        .topbar-name  { font-size:13px; font-weight:600; }
-        .topbar-label { font-size:10px; color:#00D4FF; }
-        .topbar-right { display:flex; align-items:center; gap:12px; }
-        .btn-dl {
-            display:flex; align-items:center; gap:6px; padding:6px 14px;
-            background:rgba(0,212,255,0.1); border:1px solid rgba(0,212,255,0.25);
-            border-radius:20px; color:#00D4FF; font-size:11px; font-weight:500;
-            font-family:'Inter',sans-serif; cursor:pointer; text-decoration:none;
-            transition:all 0.2s;
-        }
-        .btn-dl:hover { background:rgba(0,212,255,0.18); }
-        .btn-so {
-            font-size:11px; color:rgba(255,255,255,0.25);
-            background:none; border:none; cursor:pointer; font-family:'Inter',sans-serif;
-        }
-        .btn-so:hover { color:#00D4FF; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#050810;color:#fff;height:100vh;display:flex;flex-direction:column;overflow:hidden}
 
-        .stage {
-            flex:1; display:flex; align-items:center; justify-content:center;
-            background:
-                radial-gradient(ellipse at 25% 40%, rgba(0,60,160,0.2) 0%, transparent 55%),
-                radial-gradient(ellipse at 78% 65%, rgba(0,212,255,0.07) 0%, transparent 50%),
-                #050810;
-            position:relative; overflow:hidden;
-        }
-        .stage::before {
-            content:''; position:absolute; inset:0;
-            background-image:
-                linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px);
-            background-size:48px 48px; pointer-events:none;
-        }
+/* topbar */
+.tb{height:50px;flex-shrink:0;background:rgba(8,13,26,.98);border-bottom:1px solid rgba(0,212,255,.12);display:flex;align-items:center;justify-content:space-between;padding:0 20px;backdrop-filter:blur(12px);z-index:100}
+.tbl{display:flex;align-items:center;gap:10px}
+.av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#0050B8,#00D4FF);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.av img{width:100%;height:100%;object-fit:cover}
+.tn{font-size:13px;font-weight:600}
+.tl{font-size:10px;color:#00D4FF}
+.tbr{display:flex;align-items:center;gap:12px}
+.bdl{display:flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.25);border-radius:20px;color:#00D4FF;font-size:11px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;text-decoration:none;transition:all .2s}
+.bdl:hover{background:rgba(0,212,255,.18)}
+.bso{font-size:11px;color:rgba(255,255,255,.25);background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif}
+.bso:hover{color:#00D4FF}
 
-        /* Book wrapper */
-        #book {
-            display:flex; position:relative;
-            box-shadow:0 30px 80px rgba(0,0,0,0.8);
-        }
+/* stage */
+.stage{flex:1;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 25% 40%,rgba(0,60,160,.2) 0%,transparent 55%),radial-gradient(ellipse at 78% 65%,rgba(0,212,255,.07) 0%,transparent 50%),#050810;position:relative;overflow:hidden}
+.stage::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,212,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.025) 1px,transparent 1px);background-size:48px 48px;pointer-events:none}
 
-        /* Each half */
-        .half {
-            position:relative; overflow:hidden; flex-shrink:0;
-        }
+/* book */
+#book{position:relative;display:flex;box-shadow:0 30px 80px rgba(0,0,0,.8)}
+.half{position:relative;overflow:hidden;flex-shrink:0}
+#spine{width:6px;flex-shrink:0;background:linear-gradient(180deg,transparent,rgba(0,212,255,.3) 20%,rgba(0,212,255,.5) 50%,rgba(0,212,255,.3) 80%,transparent);z-index:5}
 
-        /* Spine */
-        #spine {
-            width:6px; flex-shrink:0;
-            background:linear-gradient(180deg,
-                transparent, rgba(0,212,255,0.3) 20%,
-                rgba(0,212,255,0.5) 50%,
-                rgba(0,212,255,0.3) 80%, transparent);
-            z-index:5;
-        }
+/* full-book canvas for flip */
+#fc{position:absolute;top:0;left:0;pointer-events:none;z-index:30;display:none}
+/* curl canvas on right half */
+#cc{position:absolute;top:0;left:0;pointer-events:none;z-index:20;display:none}
 
-        /* Page content */
-        .p-blank {
-            width:100%; height:100%; background:#0A1220;
-            display:flex; align-items:center; justify-content:center;
-        }
-        .blank-inner { text-align:center; opacity:0.15; font-size:11px; color:rgba(255,255,255,0.6); }
+/* page content */
+.pg-blank{width:100%;height:100%;background:#0A1220;display:flex;align-items:center;justify-content:center}
+.pg-blank span{opacity:.12;font-size:11px;color:rgba(255,255,255,.6);text-align:center}
 
-        .p-cover {
-            width:100%; height:100%;
-            background:linear-gradient(145deg,#0A1628 0%,#0D1F3C 45%,#080D1A 100%);
-            display:flex; flex-direction:column; align-items:center; justify-content:center;
-            padding:36px 28px; text-align:center; position:relative;
-        }
-        .p-cover::before {
-            content:''; position:absolute; inset:0;
-            background:
-                radial-gradient(ellipse at 40% 35%, rgba(0,100,220,0.32) 0%, transparent 55%),
-                radial-gradient(ellipse at 70% 75%, rgba(0,212,255,0.12) 0%, transparent 45%);
-            pointer-events:none;
-        }
-        .cover-grid {
-            position:absolute; inset:0;
-            background-image:
-                linear-gradient(rgba(0,212,255,0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,212,255,0.05) 1px, transparent 1px);
-            background-size:36px 36px; pointer-events:none;
-        }
-        .cover-inner { position:relative; z-index:1; }
-        .cover-eyebrow { font-size:9px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#00D4FF; margin-bottom:20px; opacity:0.85; }
-        .cover-photo {
-            width:80px; height:80px; border-radius:50%;
-            background:linear-gradient(135deg,#0050B8,#00D4FF);
-            margin:0 auto 18px; box-shadow:0 0 32px rgba(0,212,255,0.3); overflow:hidden;
-        }
-        .cover-photo img { width:100%; height:100%; object-fit:cover; object-position:center top; }
-        .cover-name { font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:#fff; line-height:1.25; margin-bottom:12px; }
-        .cover-rule { width:36px; height:1px; background:rgba(0,212,255,0.5); margin:0 auto 14px; }
-        .cover-quote { font-size:11px; color:rgba(255,255,255,0.6); line-height:1.75; font-style:italic; max-width:210px; margin:0 auto 22px; }
-        .cover-cta {
-            font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase;
-            color:#00D4FF; border:1px solid rgba(0,212,255,0.35); padding:7px 16px;
-            border-radius:20px; background:rgba(0,212,255,0.07); display:inline-block;
-            animation:pulse 2s ease-in-out infinite;
-        }
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.55} }
+.pg-cover{width:100%;height:100%;background:linear-gradient(145deg,#0A1628,#0D1F3C 45%,#080D1A);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 28px;text-align:center;position:relative}
+.pg-cover::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 40% 35%,rgba(0,100,220,.32) 0%,transparent 55%),radial-gradient(ellipse at 70% 75%,rgba(0,212,255,.12) 0%,transparent 45%);pointer-events:none}
+.cg{position:absolute;inset:0;background-image:linear-gradient(rgba(0,212,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.05) 1px,transparent 1px);background-size:36px 36px;pointer-events:none}
+.ci{position:relative;z-index:1}
+.ce{font-size:9px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#00D4FF;margin-bottom:20px;opacity:.85}
+.cp{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#0050B8,#00D4FF);margin:0 auto 18px;box-shadow:0 0 32px rgba(0,212,255,.3);overflow:hidden}
+.cp img{width:100%;height:100%;object-fit:cover;object-position:center top}
+.cn{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#fff;line-height:1.25;margin-bottom:12px}
+.cr{width:36px;height:1px;background:rgba(0,212,255,.5);margin:0 auto 14px}
+.cq{font-size:11px;color:rgba(255,255,255,.6);line-height:1.75;font-style:italic;max-width:210px;margin:0 auto 22px}
+.cc2{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#00D4FF;border:1px solid rgba(0,212,255,.35);padding:7px 16px;border-radius:20px;background:rgba(0,212,255,.07);display:inline-block;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
 
-        .p-cv { width:100%; height:100%; background:#fff; }
-        .p-cv img { width:100%; height:100%; object-fit:contain; object-position:top center; display:block; }
+.pg-cv{width:100%;height:100%;background:#fff}
+.pg-cv img{width:100%;height:100%;object-fit:contain;object-position:top center;display:block}
 
-        .p-back {
-            width:100%; height:100%;
-            background:linear-gradient(145deg,#080D1A,#0D1A35);
-            display:flex; flex-direction:column; align-items:center; justify-content:center;
-            padding:36px 28px; text-align:center; position:relative;
-        }
-        .p-back::before {
-            content:''; position:absolute; inset:0;
-            background:radial-gradient(ellipse at 50% 50%, rgba(0,80,180,0.18) 0%, transparent 65%);
-            pointer-events:none;
-        }
-        .bc-content { position:relative; z-index:1; user-select:text; -webkit-user-select:text; cursor:text; }
-        .bc-title { font-size:10px; letter-spacing:2.5px; text-transform:uppercase; color:#00D4FF; margin-bottom:18px; user-select:none; }
-        .bc-quote { font-family:'Playfair Display',serif; font-size:13px; font-style:italic; color:rgba(255,255,255,0.65); line-height:1.85; margin-bottom:28px; }
-        .bc-contacts { display:flex; flex-direction:column; gap:10px; }
-        .bc-item { font-size:11px; color:rgba(255,255,255,0.7); display:flex; align-items:center; justify-content:center; gap:8px; }
-        .bc-icon { color:#00D4FF; user-select:none; }
+.pg-back{width:100%;height:100%;background:linear-gradient(145deg,#080D1A,#0D1A35);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 28px;text-align:center;position:relative}
+.pg-back::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(0,80,180,.18) 0%,transparent 65%);pointer-events:none}
+.bc{position:relative;z-index:1;user-select:text;-webkit-user-select:text;cursor:text}
+.bt{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#00D4FF;margin-bottom:18px;user-select:none}
+.bq{font-family:'Playfair Display',serif;font-size:13px;font-style:italic;color:rgba(255,255,255,.65);line-height:1.85;margin-bottom:28px}
+.bcs{display:flex;flex-direction:column;gap:10px}
+.bi{font-size:11px;color:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;gap:8px}
+.bic{color:#00D4FF;user-select:none}
 
-        /* The flip canvas — overlays the right half */
-        #flipCanvas {
-            position:absolute; top:0; left:0;
-            pointer-events:none; z-index:20; display:none;
-        }
+/* bottombar */
+.bb{height:50px;flex-shrink:0;background:rgba(8,13,26,.98);border-top:1px solid rgba(0,212,255,.1);display:flex;align-items:center;justify-content:center;gap:16px;backdrop-filter:blur(12px)}
+.nb{display:flex;align-items:center;gap:6px;padding:7px 18px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:20px;color:#00D4FF;font-size:12px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s}
+.nb:hover:not(:disabled){background:rgba(0,212,255,.16);transform:translateY(-1px)}
+.nb:disabled{opacity:.25;cursor:not-allowed;transform:none}
+.pl{font-size:11px;color:rgba(255,255,255,.25);min-width:80px;text-align:center}
 
-        .bottombar {
-            height:50px; flex-shrink:0;
-            background:rgba(8,13,26,0.98);
-            border-top:1px solid rgba(0,212,255,0.1);
-            display:flex; align-items:center; justify-content:center; gap:16px;
-            backdrop-filter:blur(12px);
-        }
-        .nav-btn {
-            display:flex; align-items:center; gap:6px; padding:7px 18px;
-            background:rgba(0,212,255,0.08); border:1px solid rgba(0,212,255,0.2);
-            border-radius:20px; color:#00D4FF; font-size:12px; font-weight:500;
-            font-family:'Inter',sans-serif; cursor:pointer; transition:all 0.2s;
-        }
-        .nav-btn:hover:not(:disabled) { background:rgba(0,212,255,0.16); transform:translateY(-1px); }
-        .nav-btn:disabled { opacity:0.25; cursor:not-allowed; transform:none; }
-        .page-label { font-size:11px; color:rgba(255,255,255,0.25); min-width:80px; text-align:center; }
-
-        .loading-screen {
-            position:fixed; inset:0; background:#080D1A;
-            display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; z-index:200;
-        }
-        .spinner {
-            width:32px; height:32px;
-            border:2px solid rgba(0,212,255,0.15); border-top-color:#00D4FF;
-            border-radius:50%; animation:spin 0.8s linear infinite;
-        }
-        @keyframes spin { to { transform:rotate(360deg); } }
-        .loading-text { font-size:12px; color:rgba(255,255,255,0.6); }
-    </style>
+/* loading */
+.ls{position:fixed;inset:0;background:#080D1A;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:200}
+.sp{width:32px;height:32px;border:2px solid rgba(0,212,255,.15);border-top-color:#00D4FF;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.lt{font-size:12px;color:rgba(255,255,255,.6)}
+</style>
 </head>
 <body>
-<div class="loading-screen" id="loadingScreen">
-<div class="spinner"></div>
-<div class="loading-text">Verifying access...</div>
+<div class="ls" id="ls"><div class="sp"></div><div class="lt">Verifying access...</div></div>
+<div class="tb" id="tb" style="display:none">
+<div class="tbl">
+<div class="av"><img alt="" id="avi" onerror="this.style.display='none'" src=""/></div>
+<div><div class="tn" id="tn">—</div><div class="tl">Viewing CV · Access Recorded</div></div>
 </div>
-<div class="topbar" id="topbar" style="display:none;">
-<div class="topbar-left">
-<div class="topbar-avatar"><img alt="" id="topAvatarImg" onerror="this.style.display='none';" src=""/></div>
-<div>
-<div class="topbar-name" id="topName">—</div>
-<div class="topbar-label">Viewing CV · Access Recorded</div>
-</div>
-</div>
-<div class="topbar-right">
-<a class="btn-dl" download="" href="../CV - Mochammad Maulana Ibrahim - 2026.pdf">⬇ Download PDF</a>
-<button class="btn-so" onclick="doSignOut()">Sign out</button>
+<div class="tbr">
+<a class="bdl" download="" href="../CV - Mochammad Maulana Ibrahim - 2026.pdf">⬇ Download PDF</a>
+<button class="bso" onclick="doSO()">Sign out</button>
 </div>
 </div>
-<div class="stage" id="stage" style="display:none;">
+<div class="stage" id="st" style="display:none">
 <div id="book">
-<div class="half" id="leftHalf">
-<div id="leftContent"></div>
-</div>
+<div class="half" id="lh"><div id="lc"></div></div>
 <div id="spine"></div>
-<div class="half" id="rightHalf">
-<div id="rightContent"></div>
-<canvas id="flipCanvas"></canvas>
+<div class="half" id="rh">
+<div id="rc"></div>
+<canvas id="cc"></canvas><!-- curl canvas, right half only -->
+</div>
+<canvas id="fc"></canvas><!-- flip canvas, full book -->
 </div>
 </div>
-</div>
-<div class="bottombar" id="bottombar" style="display:none;">
-<button class="nav-btn" disabled="" id="btnPrev" onclick="triggerFlip(false)">← Back</button>
-<span class="page-label" id="pageLabel">Cover</span>
-<button class="nav-btn" id="btnNext" onclick="triggerFlip(true)">Open →</button>
+<div class="bb" id="bb" style="display:none">
+<button class="nb" disabled="" id="bp" onclick="flip(false)">← Back</button>
+<span class="pl" id="pl">Cover</span>
+<button class="nb" id="bn" onclick="flip(true)">Open →</button>
 </div>
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    const cfg = {
-        apiKey:"AIzaSyBv4VrPdi1E7CByp79T6Ios4MGYpYRm9Uc",
-        authDomain:"personal-website-mmi.firebaseapp.com",
-        projectId:"personal-website-mmi",
-        storageBucket:"personal-website-mmi.firebasestorage.app",
-        messagingSenderId:"57812235771",
-        appId:"1:57812235771:web:5cd823cee44e095fc1475e"
-    };
-    const auth = getAuth(initializeApp(cfg));
-    onAuthStateChanged(auth, user => {
-        if (!user) { window.location.href="index.html"; return; }
-        document.getElementById('topName').textContent = user.displayName||user.email;
-        const img = document.getElementById('topAvatarImg');
-        if (user.photoURL) img.src = user.photoURL;
-        ['loadingScreen'].forEach(id => document.getElementById(id).style.display='none');
-        ['topbar','stage','bottombar'].forEach(id => document.getElementById(id).style.display=id==='topbar'||id==='bottombar'?'flex':'flex');
-        requestAnimationFrame(()=>requestAnimationFrame(()=>init()));
-    });
-    window.doSignOut = async()=>{ await signOut(auth); window.location.href="index.html"; };
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+const auth=getAuth(initializeApp({apiKey:"AIzaSyBv4VrPdi1E7CByp79T6Ios4MGYpYRm9Uc",authDomain:"personal-website-mmi.firebaseapp.com",projectId:"personal-website-mmi",storageBucket:"personal-website-mmi.firebasestorage.app",messagingSenderId:"57812235771",appId:"1:57812235771:web:5cd823cee44e095fc1475e"}));
+onAuthStateChanged(auth,u=>{
+  if(!u){window.location.href="index.html";return}
+  document.getElementById('tn').textContent=u.displayName||u.email;
+  if(u.photoURL)document.getElementById('avi').src=u.photoURL;
+  document.getElementById('ls').style.display='none';
+  document.getElementById('tb').style.display='flex';
+  document.getElementById('st').style.display='flex';
+  document.getElementById('bb').style.display='flex';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>init()));
+});
+window.doSO=async()=>{await signOut(auth);window.location.href="index.html"};
 </script>
 <script>
-// ═══════════════════════════════════════════════════════════
-//  PAGE CURL ENGINE
-//  - Pojok kertas mengikuti mouse (hover effect)
-//  - Drag untuk flip penuh
-//  - Click pojok untuk flip otomatis
-// ═══════════════════════════════════════════════════════════
+// ─────────────────────────────────────────────────
+//  MAGAZINE FLIP — clean & correct
+// ─────────────────────────────────────────────────
+let PW,PH,SW=6; // page width, height, spine width
+let open=false,anim=false,drag=false;
+let dragX=0,dragP=0;
+let curlX=0,curlY=0,tcX=0,tcY=0,craf=null;
 
-let PW, PH;
-let isOpen = false;
-let isAnimating = false;
+const iCover=new Image(),iCV=new Image();
+let fc,fctx,cc,cctx; // flip canvas, curl canvas
 
-// Curl state
-let curlActive = false;   // mouse hovering corner
-let curlX = 0, curlY = 0; // current curl position (from bottom-right)
-let targetCurlX = 0, targetCurlY = 0;
-let curlRaf = null;
+function init(){
+  const s=document.getElementById('st');
+  let pH=Math.min(s.clientHeight*.88,580);
+  let pW=Math.min(pH/1.414,(s.clientWidth*.88)/2);
+  pH=Math.floor(pW*1.414); pW=Math.floor(pW);
+  PW=pW; PH=pH;
 
-// Drag state
-let isDragging = false;
-let dragStartX = 0, dragStartY = 0;
-let dragProgress = 0;
+  // size halves
+  ['lh','rh'].forEach(id=>{const e=document.getElementById(id);e.style.width=PW+'px';e.style.height=PH+'px'});
+  document.getElementById('spine').style.height=PH+'px';
 
-// Images
-const imgCover = new Image();
-const imgCV    = new Image();
-let canvas, ctx;
+  // flip canvas = full book width
+  const BW=PW*2+SW;
+  fc=document.getElementById('fc');
+  fc.width=BW; fc.height=PH;
+  fc.style.cssText=`position:absolute;top:0;left:0;width:${BW}px;height:${PH}px;z-index:30;pointer-events:none;display:none`;
+  fctx=fc.getContext('2d');
 
-// ── INIT ──────────────────────────────────────────────────
-function init() {
-    const stage = document.getElementById('stage');
-    const sw = stage.clientWidth, sh = stage.clientHeight;
-    let pH = Math.min(sh*0.88, 580);
-    let pW = Math.min(pH/1.414, (sw*0.88)/2);
-    pH = Math.floor(pW*1.414); pW = Math.floor(pW);
-    PW = pW; PH = pH;
+  // curl canvas = right half only
+  cc=document.getElementById('cc');
+  cc.width=PW; cc.height=PH;
+  cc.style.cssText=`position:absolute;top:0;left:0;width:${PW}px;height:${PH}px;z-index:20;pointer-events:none;display:none`;
+  cctx=cc.getContext('2d');
 
-    ['leftHalf','rightHalf'].forEach(id=>{
-        const el=document.getElementById(id);
-        el.style.width=PW+'px'; el.style.height=PH+'px';
-    });
-    document.getElementById('spine').style.height=PH+'px';
+  iCV.src='pages/page-1.jpg';
+  iCover.src='../FotoProfil.jpeg';
 
-    canvas = document.getElementById('flipCanvas');
-    canvas.width=PW; canvas.height=PH;
-    canvas.style.width=PW+'px'; canvas.style.height=PH+'px';
-    ctx = canvas.getContext('2d');
+  drawStatic();
+  events();
 
-    imgCV.src    = 'pages/page-1.jpg';
-    imgCover.src = '../FotoProfil.jpeg';
-
-    renderStatic();
-    setupEvents();
-
-    document.addEventListener('keydown', e=>{
-        if(e.key==='ArrowRight'&&!isOpen) triggerFlip(true);
-        if(e.key==='ArrowLeft'&&isOpen)   triggerFlip(false);
-    });
-    window.addEventListener('resize', ()=>{ init(); });
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'&&!open)flip(true);
+    if(e.key==='ArrowLeft'&&open)flip(false);
+  });
+  window.addEventListener('resize',init);
 }
 
-// ── STATIC RENDER ─────────────────────────────────────────
-function renderStatic() {
-    const lc = document.getElementById('leftContent');
-    const rc = document.getElementById('rightContent');
-    lc.style.cssText = `width:${PW}px;height:${PH}px;`;
-    rc.style.cssText = `width:${PW}px;height:${PH}px;`;
+// ── STATIC HTML ──────────────────────────────────
+function drawStatic(){
+  const lc=document.getElementById('lc'),rc=document.getElementById('rc');
+  lc.style.cssText=`width:${PW}px;height:${PH}px`;
+  rc.style.cssText=`width:${PW}px;height:${PH}px`;
+  fc.style.display='none'; fctx.clearRect(0,0,fc.width,PH);
+  cc.style.display='none'; cctx.clearRect(0,0,PW,PH);
 
-    if (!isOpen) {
-        lc.innerHTML = `<div class="p-blank" style="width:${PW}px;height:${PH}px;">
-            <div class="blank-inner"><div style="font-size:22px;margin-bottom:8px;">✦</div><div>Mochammad Maulana Ibrahim</div></div></div>`;
-        rc.innerHTML = `<div class="p-cover" style="width:${PW}px;height:${PH}px;">
-            <div class="cover-grid"></div>
-            <div class="cover-inner">
-                <div class="cover-eyebrow">Curriculum Vitae · 2026</div>
-                <div class="cover-photo"><img src="../FotoProfil.jpeg" alt="MMI" onerror="this.style.display='none';this.parentElement.innerHTML='MMI';"></div>
-                <div class="cover-name">Mochammad<br>Maulana Ibrahim</div>
-                <div class="cover-rule"></div>
-                <div class="cover-quote">"The most overlooked data,<br>when gathered with patience,<br>becomes the clearest insight."</div>
-                <div class="cover-cta">← Drag corner to open</div>
-            </div></div>`;
+  if(!open){
+    lc.innerHTML=`<div class="pg-blank" style="width:${PW}px;height:${PH}px"><span>✦<br>Mochammad Maulana Ibrahim</span></div>`;
+    rc.innerHTML=`<div class="pg-cover" style="width:${PW}px;height:${PH}px"><div class="cg"></div><div class="ci"><div class="ce">Curriculum Vitae · 2026</div><div class="cp"><img src="../FotoProfil.jpeg" alt="MMI" onerror="this.style.display='none';this.parentElement.innerHTML='MMI'"></div><div class="cn">Mochammad<br>Maulana Ibrahim</div><div class="cr"></div><div class="cq">"The most overlooked data,<br>when gathered with patience,<br>becomes the clearest insight."</div><div class="cc2">← Drag corner to open</div></div></div>`;
+  } else {
+    lc.innerHTML=`<div class="pg-cv" style="width:${PW}px;height:${PH}px"><img src="pages/page-1.jpg" alt="CV"></div>`;
+    rc.innerHTML=`<div class="pg-back" style="width:${PW}px;height:${PH}px"><div class="bc"><div class="bt">Get In Touch</div><div class="bq">"I turn ignored data into<br>meaningful insights<br>that transform systems."</div><div class="bcs"><div class="bi"><span class="bic">✉</span><span>mochammad.maulana.i.01@gmail.com</span></div><div class="bi"><span class="bic">📱</span><span>(+62) 898-9210-565</span></div><div class="bi"><span class="bic">🔗</span><span>linkedin.com/in/mmi01</span></div><div class="bi"><span class="bic">🌐</span><span>mmaulana2405.github.io</span></div></div></div></div>`;
+  }
+  updateUI();
+}
+
+// ── EVENTS ───────────────────────────────────────
+function rpos(e){
+  const r=document.getElementById('rh').getBoundingClientRect();
+  return{x:(e.touches?e.touches[0].clientX:e.clientX)-r.left,
+         y:(e.touches?e.touches[0].clientY:e.clientY)-r.top};
+}
+function inCorner(x,y,s=100){return x>PW-s&&y>PH-s}
+
+function events(){
+  const rh=document.getElementById('rh');
+  const bk=document.getElementById('book');
+
+  // hover curl (only when closed)
+  rh.addEventListener('mousemove',e=>{
+    if(anim||drag||open)return;
+    const{x,y}=rpos(e);
+    if(inCorner(x,y)){tcX=PW-x;tcY=PH-y;rh.style.cursor='pointer'}
+    else{tcX=0;tcY=0;rh.style.cursor='default'}
+    startCurl();
+  });
+  rh.addEventListener('mouseleave',()=>{tcX=0;tcY=0;rh.style.cursor='default';startCurl()});
+
+  // drag — on entire book
+  bk.addEventListener('mousedown',e=>{
+    if(anim)return;
+    if(e.target.closest&&e.target.closest('.bc'))return;
+    drag=true;dragX=e.clientX;dragP=0;
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove',e=>{
+    if(!drag||anim)return;
+    const dx=e.clientX-dragX;
+    dragP=open?Math.max(0,Math.min(1,1+dx/PW)):Math.max(0,Math.min(1,-dx/PW));
+    drawFlip(dragP,!open);
+  });
+  document.addEventListener('mouseup',()=>{
+    if(!drag)return;drag=false;
+    const snap=dragP>.35;
+    if(!open)snap?animate(dragP,1,true):animate(dragP,0,false);
+    else     snap?animate(dragP,0,false):animate(dragP,1,true);
+  });
+
+  // touch
+  bk.addEventListener('touchstart',e=>{if(anim)return;drag=true;dragX=e.touches[0].clientX;dragP=0},{passive:true});
+  document.addEventListener('touchmove',e=>{
+    if(!drag||anim)return;
+    const dx=e.touches[0].clientX-dragX;
+    dragP=open?Math.max(0,Math.min(1,1+dx/PW)):Math.max(0,Math.min(1,-dx/PW));
+    drawFlip(dragP,!open);
+  },{passive:true});
+  document.addEventListener('touchend',()=>{
+    if(!drag)return;drag=false;
+    const snap=dragP>.35;
+    if(!open)snap?animate(dragP,1,true):animate(dragP,0,false);
+    else     snap?animate(dragP,0,false):animate(dragP,1,true);
+  });
+
+  // click corner
+  rh.addEventListener('click',e=>{
+    if(anim||drag)return;
+    const{x,y}=rpos(e);
+    if(inCorner(x,y,100))flip(!open);
+  });
+}
+
+// ── CURL HOVER ───────────────────────────────────
+function startCurl(){if(!craf)craf=requestAnimationFrame(doCurl)}
+function doCurl(){
+  curlX+=(tcX-curlX)*.18; curlY+=(tcY-curlY)*.18;
+  const mv=Math.abs(curlX-tcX)>.5||Math.abs(curlY-tcY)>.5;
+  if(curlX>1||curlY>1)drawCurl(curlX,curlY);
+  else{cc.style.display='none';cctx.clearRect(0,0,PW,PH)}
+  craf=mv?requestAnimationFrame(doCurl):null;
+}
+function drawCurl(cx,cy){
+  cc.style.display='block';
+  cctx.clearRect(0,0,PW,PH);
+  const px=PW-cx,py=PH-cy;
+  // triangle showing back (CV)
+  cctx.save();
+  cctx.beginPath();cctx.moveTo(PW,PH);cctx.lineTo(px,PH);cctx.lineTo(PW,py);cctx.closePath();cctx.clip();
+  if(iCV.complete&&iCV.naturalWidth>0)cctx.drawImage(iCV,0,0,PW,PH);
+  else{cctx.fillStyle='#fff';cctx.fillRect(0,0,PW,PH)}
+  const g=cctx.createLinearGradient(px,py,PW,PH);
+  g.addColorStop(0,'rgba(0,0,0,.35)');g.addColorStop(1,'rgba(0,0,0,0)');
+  cctx.fillStyle=g;cctx.fillRect(0,0,PW,PH);
+  cctx.restore();
+  // fold line
+  cctx.beginPath();cctx.moveTo(px,PH);cctx.lineTo(PW,py);
+  cctx.strokeStyle='rgba(0,0,0,.2)';cctx.lineWidth=1;cctx.stroke();
+}
+
+// ── FLIP DRAW ────────────────────────────────────
+// prog: 0=start, 1=end
+// opening=true: cover→CV; opening=false: CV→cover
+function drawFlip(prog,opening){
+  if(prog<=0){fc.style.display='none';return}
+  if(prog>=1){fc.style.display='none';return}
+
+  const BW=PW*2+SW;
+  fc.style.display='block';
+  cc.style.display='none';
+  fctx.clearRect(0,0,BW,PH);
+
+  // ── LEFT HALF (static) ──
+  if(opening){
+    // left shows blank
+    fctx.fillStyle='#0A1220';fctx.fillRect(0,0,PW,PH);
+    fctx.fillStyle='rgba(255,255,255,.08)';fctx.font='18px serif';fctx.textAlign='center';
+    fctx.fillText('✦',PW/2,PH/2-8);
+    fctx.font='10px Inter';fctx.fillText('Mochammad Maulana Ibrahim',PW/2,PH/2+12);
+  } else {
+    // left shows CV
+    if(iCV.complete&&iCV.naturalWidth>0)fctx.drawImage(iCV,0,0,PW,PH);
+    else{fctx.fillStyle='#fff';fctx.fillRect(0,0,PW,PH)}
+  }
+
+  // ── SPINE ──
+  const sg=fctx.createLinearGradient(PW,0,PW+SW,0);
+  sg.addColorStop(0,'rgba(0,212,255,.1)');sg.addColorStop(.5,'rgba(0,212,255,.5)');sg.addColorStop(1,'rgba(0,212,255,.1)');
+  fctx.fillStyle=sg;fctx.fillRect(PW,0,SW,PH);
+
+  // ── RIGHT HALF (static, behind flipping page) ──
+  const RX=PW+SW;
+  if(opening){
+    // right shows back cover (destination)
+    drawBC(RX,0,PW,PH);
+  } else {
+    // right shows cover (destination)
+    drawCV_cover(RX,0,PW,PH);
+  }
+
+  // ── FLIPPING PAGE ──
+  // starts at right half, fold moves left as prog increases
+  const foldX=RX+PW*(1-prog);
+
+  // left of fold = back of flipping page
+  if(foldX>RX){
+    fctx.save();
+    fctx.beginPath();fctx.rect(RX,0,foldX-RX,PH);fctx.clip();
+    if(opening){
+      if(iCV.complete&&iCV.naturalWidth>0)fctx.drawImage(iCV,RX,0,PW,PH);
+      else{fctx.fillStyle='#fff';fctx.fillRect(RX,0,PW,PH)}
     } else {
-        lc.innerHTML = `<div class="p-cv" style="width:${PW}px;height:${PH}px;"><img src="pages/page-1.jpg" alt="CV"></div>`;
-        rc.innerHTML = `<div class="p-back" style="width:${PW}px;height:${PH}px;">
-            <div class="bc-content">
-                <div class="bc-title">Get In Touch</div>
-                <div class="bc-quote">"I turn ignored data into<br>meaningful insights<br>that transform systems."</div>
-                <div class="bc-contacts">
-                    <div class="bc-item"><span class="bc-icon">✉</span><span>mochammad.maulana.i.01@gmail.com</span></div>
-                    <div class="bc-item"><span class="bc-icon">📱</span><span>(+62) 898-9210-565</span></div>
-                    <div class="bc-item"><span class="bc-icon">🔗</span><span>linkedin.com/in/mmi01</span></div>
-                    <div class="bc-item"><span class="bc-icon">🌐</span><span>mmaulana2405.github.io</span></div>
-                </div>
-            </div></div>`;
+      drawCV_cover(RX,0,PW,PH);
     }
-    canvas.style.display='none';
-    ctx.clearRect(0,0,PW,PH);
-}
+    // shadow near fold
+    const sw=Math.min(60,foldX-RX);
+    const shg=fctx.createLinearGradient(foldX-sw,0,foldX,0);
+    shg.addColorStop(0,'rgba(0,0,0,0)');shg.addColorStop(1,`rgba(0,0,0,${.4*prog})`);
+    fctx.fillStyle=shg;fctx.fillRect(foldX-sw,0,sw,PH);
+    fctx.restore();
+  }
 
-// ── EVENTS ────────────────────────────────────────────────
-function getPos(e) {
-    const rect = document.getElementById('rightHalf').getBoundingClientRect();
-    const cx = (e.touches?e.touches[0].clientX:e.clientX) - rect.left;
-    const cy = (e.touches?e.touches[0].clientY:e.clientY) - rect.top;
-    return { x:cx, y:cy };
-}
-
-function inCornerZone(x, y, size=120) {
-    return x > PW-size && y > PH-size;
-}
-
-function setupEvents() {
-    const rh = document.getElementById('rightHalf');
-
-    // ── MOUSE MOVE: curl effect ──
-    rh.addEventListener('mousemove', e=>{
-        if(isAnimating||isDragging) return;
-        const {x,y} = getPos(e);
-        if(inCornerZone(x,y)) {
-            curlActive = true;
-            // How deep into corner (0=edge, 1=deep)
-            const dx = (PW-x)/120;
-            const dy = (PH-y)/120;
-            const depth = Math.min(1, Math.sqrt(dx*dx+dy*dy));
-            targetCurlX = PW - x;
-            targetCurlY = PH - y;
-            rh.style.cursor='pointer';
-            startCurlAnim();
-        } else {
-            if(curlActive) {
-                curlActive=false;
-                targetCurlX=0; targetCurlY=0;
-                rh.style.cursor='default';
-                startCurlAnim();
-            }
-        }
-    });
-
-    rh.addEventListener('mouseleave', ()=>{
-        curlActive=false;
-        targetCurlX=0; targetCurlY=0;
-        rh.style.cursor='default';
-        startCurlAnim();
-    });
-
-    // ── MOUSE DOWN: start drag ──
-    rh.addEventListener('mousedown', e=>{
-        if(isAnimating) return;
-        if(e.target.closest&&e.target.closest('.bc-content')) return;
-        isDragging=true;
-        dragStartX=e.clientX; dragStartY=e.clientY;
-        dragProgress=0;
-        e.preventDefault();
-    });
-
-    
-
-    document.addEventListener('mouseup', e=>{
-        if(!isDragging) return;
-        isDragging=false;
-        const snap = dragProgress>0.35;
-        if(!isOpen) snap ? animateFlip(dragProgress,1,true) : animateFlip(dragProgress,0,false);
-        else        snap ? animateFlip(dragProgress,0,false) : animateFlip(dragProgress,1,true);
-    });
-
-    // ── TOUCH ──
-    rh.addEventListener('touchstart', e=>{
-        if(isAnimating) return;
-        isDragging=true;
-        dragStartX=e.touches[0].clientX;
-        dragProgress=0;
-    },{passive:true});
-
-    document.addEventListener('touchmove', e=>{
-        if(!isDragging||isAnimating) return;
-        const dx=e.touches[0].clientX-dragStartX;
-        dragProgress = isOpen
-            ? Math.max(0,Math.min(1,1+dx/PW))
-            : Math.max(0,Math.min(1,-dx/PW));
-        renderFlipDirectional(dragProgress, !isOpen);
-    },{passive:true});
-
-    document.addEventListener('touchend', ()=>{
-        if(!isDragging) return;
-        isDragging=false;
-        const snap=dragProgress>0.35;
-        if(!isOpen) snap?animateFlip(dragProgress,1,true):animateFlip(dragProgress,0,false);
-        else        snap?animateFlip(dragProgress,0,false):animateFlip(dragProgress,1,true);
-    });
-
-    // Click corner to flip
-    rh.addEventListener('click', e=>{
-        if(isAnimating||isDragging) return;
-        const {x,y}=getPos(e);
-        if(inCornerZone(x,y,120)) triggerFlip(!isOpen);
-    });
-}
-
-// ── CURL ANIMATION (hover effect) ─────────────────────────
-function startCurlAnim() {
-    if(curlRaf) return;
-    curlRaf = requestAnimationFrame(animateCurl);
-}
-
-function animateCurl() {
-    const speed = 0.18;
-    curlX += (targetCurlX-curlX)*speed;
-    curlY += (targetCurlY-curlY)*speed;
-
-    const moving = Math.abs(curlX-targetCurlX)>0.5 || Math.abs(curlY-targetCurlY)>0.5;
-
-    if(curlX>1||curlY>1) {
-        drawCurl(curlX, curlY);
-    } else {
-        canvas.style.display='none';
-        ctx.clearRect(0,0,PW,PH);
+  // right of fold = front of flipping page (compressed)
+  if(foldX<RX+PW){
+    const sx=Math.abs(Math.cos(prog*Math.PI));
+    if(sx>.01){
+      fctx.save();
+      fctx.beginPath();fctx.rect(foldX,0,RX+PW-foldX,PH);fctx.clip();
+      fctx.translate(foldX,0);fctx.scale(sx,1);
+      if(opening)drawCV_cover(0,0,PW,PH);
+      else{
+        if(iCV.complete&&iCV.naturalWidth>0)fctx.drawImage(iCV,0,0,PW,PH);
+        else{fctx.fillStyle='#fff';fctx.fillRect(0,0,PW,PH)}
+      }
+      fctx.scale(1/sx,1);fctx.translate(-foldX,0);
+      const fg=fctx.createLinearGradient(foldX,0,foldX+70,0);
+      fg.addColorStop(0,`rgba(0,0,0,${.5*(1-sx)})`);fg.addColorStop(1,'rgba(0,0,0,0)');
+      fctx.fillStyle=fg;fctx.fillRect(foldX,0,70,PH);
+      fctx.restore();
     }
+  }
 
-    if(moving) {
-        curlRaf = requestAnimationFrame(animateCurl);
-    } else {
-        curlRaf=null;
-        if(curlX<=1&&curlY<=1) {
-            canvas.style.display='none';
-            ctx.clearRect(0,0,PW,PH);
-        }
-    }
+  // fold line
+  fctx.beginPath();fctx.moveTo(foldX,0);fctx.lineTo(foldX,PH);
+  fctx.strokeStyle=`rgba(0,0,0,${.3*Math.sin(prog*Math.PI)})`;fctx.lineWidth=1.5;fctx.stroke();
 }
 
-// ── DRAW CURL (corner peel effect) ────────────────────────
-function drawCurl(cx, cy) {
-    // cx, cy = how much the corner is peeled (pixels from bottom-right)
-    canvas.style.display='block';
-    ctx.clearRect(0,0,PW,PH);
-
-    const maxPeel = Math.max(cx,cy);
-    if(maxPeel<2) return;
-
-    // Corner peel triangle
-    const px = PW-cx;
-    const py = PH-cy;
-
-    // Draw the peeled-back triangle (showing back = CV image)
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(PW, PH);       // bottom-right corner
-    ctx.lineTo(px, PH);       // left edge of peel
-    ctx.lineTo(PW, py);       // top edge of peel
-    ctx.closePath();
-    ctx.clip();
-
-    // Back of page = CV image
-    if(imgCV.complete&&imgCV.naturalWidth>0) {
-        ctx.drawImage(imgCV, 0, 0, PW, PH);
-    } else {
-        ctx.fillStyle='#fff';
-        ctx.fillRect(0,0,PW,PH);
-    }
-
-    // Gradient shadow on back
-    const grad = ctx.createLinearGradient(px,py,PW,PH);
-    grad.addColorStop(0,'rgba(0,0,0,0.3)');
-    grad.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=grad;
-    ctx.fillRect(0,0,PW,PH);
-
-    ctx.restore();
-
-    // Shadow under the peel
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(px, PH);
-    ctx.lineTo(PW, py);
-    ctx.lineTo(PW, PH);
-    ctx.closePath();
-
-    const shadowGrad = ctx.createLinearGradient(px,py,PW,PH);
-    shadowGrad.addColorStop(0,'rgba(0,0,0,0.25)');
-    shadowGrad.addColorStop(0.5,'rgba(0,0,0,0.1)');
-    shadowGrad.addColorStop(1,'rgba(0,0,0,0)');
-
-    // Draw shadow slightly offset
-    ctx.translate(-3,3);
-    ctx.fillStyle=shadowGrad;
-    ctx.fill();
-    ctx.restore();
-
-    // Fold line
-    ctx.beginPath();
-    ctx.moveTo(px, PH);
-    ctx.lineTo(PW, py);
-    ctx.strokeStyle='rgba(0,0,0,0.2)';
-    ctx.lineWidth=1;
-    ctx.stroke();
+// ── CANVAS HELPERS ───────────────────────────────
+function drawCV_cover(x,y,w,h){
+  const bg=fctx.createLinearGradient(x,y,x+w,y+h);
+  bg.addColorStop(0,'#0A1628');bg.addColorStop(.45,'#0D1F3C');bg.addColorStop(1,'#080D1A');
+  fctx.fillStyle=bg;fctx.fillRect(x,y,w,h);
+  const gl=fctx.createRadialGradient(x+w*.4,y+h*.35,0,x+w*.4,y+h*.35,w*.6);
+  gl.addColorStop(0,'rgba(0,100,220,.3)');gl.addColorStop(1,'rgba(0,0,0,0)');
+  fctx.fillStyle=gl;fctx.fillRect(x,y,w,h);
+  fctx.strokeStyle='rgba(0,212,255,.05)';fctx.lineWidth=1;
+  for(let gx=x;gx<x+w;gx+=36){fctx.beginPath();fctx.moveTo(gx,y);fctx.lineTo(gx,y+h);fctx.stroke()}
+  for(let gy=y;gy<y+h;gy+=36){fctx.beginPath();fctx.moveTo(x,gy);fctx.lineTo(x+w,gy);fctx.stroke()}
+  const cx=x+w/2,cy=y+h*.32,r=Math.min(w,h)*.1;
+  fctx.save();fctx.beginPath();fctx.arc(cx,cy,r,0,Math.PI*2);fctx.clip();
+  if(iCover.complete&&iCover.naturalWidth>0)fctx.drawImage(iCover,cx-r,cy-r,r*2,r*2);
+  else{const pg=fctx.createLinearGradient(cx-r,cy-r,cx+r,cy+r);pg.addColorStop(0,'#0050B8');pg.addColorStop(1,'#00D4FF');fctx.fillStyle=pg;fctx.fillRect(cx-r,cy-r,r*2,r*2)}
+  fctx.restore();
+  fctx.fillStyle='#fff';fctx.textAlign='center';fctx.font=`bold ${Math.floor(w*.065)}px serif`;
+  fctx.fillText('Mochammad',cx,cy+r+h*.08);fctx.fillText('Maulana Ibrahim',cx,cy+r+h*.145);
+  fctx.strokeStyle='rgba(0,212,255,.5)';fctx.lineWidth=1;
+  fctx.beginPath();fctx.moveTo(cx-20,cy+r+h*.175);fctx.lineTo(cx+20,cy+r+h*.175);fctx.stroke();
 }
 
-// ── FLIP ANIMATION ────────────────────────────────────────
-function renderFlip(prog) {
-    if(prog<=0) { canvas.style.display='none'; return; }
-    if(prog>=1) { canvas.style.display='none'; return; }
-
-    canvas.style.display='block';
-    ctx.clearRect(0,0,PW,PH);
-
-    const foldX = PW*(1-prog);
-
-    // Left of fold: back of page (CV)
-    if(foldX>0) {
-        ctx.save();
-        ctx.beginPath(); ctx.rect(0,0,foldX,PH); ctx.clip();
-        if(imgCV.complete&&imgCV.naturalWidth>0) ctx.drawImage(imgCV,0,0,PW,PH);
-        else { ctx.fillStyle='#fff'; ctx.fillRect(0,0,PW,PH); }
-        const sg=ctx.createLinearGradient(foldX-60,0,foldX,0);
-        sg.addColorStop(0,'rgba(0,0,0,0)');
-        sg.addColorStop(1,`rgba(0,0,0,${0.4*prog})`);
-        ctx.fillStyle=sg; ctx.fillRect(foldX-60,0,60,PH);
-        ctx.restore();
-    }
-
-    // Right of fold: front (cover, compressed)
-    if(foldX<PW) {
-        const scaleX=Math.abs(Math.cos(prog*Math.PI));
-        if(scaleX>0.01) {
-            ctx.save();
-            ctx.beginPath(); ctx.rect(foldX,0,PW-foldX,PH); ctx.clip();
-            ctx.translate(foldX,0); ctx.scale(scaleX,1);
-            drawCoverCanvas(0,0,PW,PH);
-            ctx.scale(1/scaleX,1); ctx.translate(-foldX,0);
-            const fg=ctx.createLinearGradient(foldX,0,foldX+70,0);
-            fg.addColorStop(0,`rgba(0,0,0,${0.5*(1-scaleX)})`);
-            fg.addColorStop(1,'rgba(0,0,0,0)');
-            ctx.fillStyle=fg; ctx.fillRect(foldX,0,70,PH);
-            ctx.restore();
-        }
-    }
-
-    // Fold line
-    ctx.beginPath(); ctx.moveTo(foldX,0); ctx.lineTo(foldX,PH);
-    ctx.strokeStyle=`rgba(0,0,0,${0.3*Math.sin(prog*Math.PI)})`;
-    ctx.lineWidth=1.5; ctx.stroke();
+function drawBC(x,y,w,h){
+  const bg=fctx.createLinearGradient(x,y,x+w,y+h);
+  bg.addColorStop(0,'#080D1A');bg.addColorStop(1,'#0D1A35');
+  fctx.fillStyle=bg;fctx.fillRect(x,y,w,h);
+  const gl=fctx.createRadialGradient(x+w/2,y+h/2,0,x+w/2,y+h/2,w*.6);
+  gl.addColorStop(0,'rgba(0,80,180,.18)');gl.addColorStop(1,'rgba(0,0,0,0)');
+  fctx.fillStyle=gl;fctx.fillRect(x,y,w,h);
+  fctx.textAlign='center';
+  fctx.fillStyle='#00D4FF';fctx.font='bold 10px Inter';fctx.fillText('GET IN TOUCH',x+w/2,y+h*.35);
+  fctx.fillStyle='rgba(255,255,255,.55)';fctx.font=`italic 12px 'Playfair Display',serif`;
+  fctx.fillText('"I turn ignored data into',x+w/2,y+h*.45);
+  fctx.fillText('meaningful insights"',x+w/2,y+h*.52);
+  fctx.fillStyle='rgba(255,255,255,.6)';fctx.font='11px Inter';
+  ['mochammad.maulana.i.01@gmail.com','(+62) 898-9210-565','linkedin.com/in/mmi01','mmaulana2405.github.io']
+    .forEach((c,i)=>fctx.fillText(c,x+w/2,y+h*.63+i*22));
 }
 
-function drawCoverCanvas(x,y,w,h) {
-    const bg=ctx.createLinearGradient(x,y,x+w,y+h);
-    bg.addColorStop(0,'#0A1628'); bg.addColorStop(0.45,'#0D1F3C'); bg.addColorStop(1,'#080D1A');
-    ctx.fillStyle=bg; ctx.fillRect(x,y,w,h);
-    const gl=ctx.createRadialGradient(x+w*0.4,y+h*0.35,0,x+w*0.4,y+h*0.35,w*0.6);
-    gl.addColorStop(0,'rgba(0,100,220,0.3)'); gl.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=gl; ctx.fillRect(x,y,w,h);
-    ctx.strokeStyle='rgba(0,212,255,0.05)'; ctx.lineWidth=1;
-    for(let gx=x;gx<x+w;gx+=36){ctx.beginPath();ctx.moveTo(gx,y);ctx.lineTo(gx,y+h);ctx.stroke();}
-    for(let gy=y;gy<y+h;gy+=36){ctx.beginPath();ctx.moveTo(x,gy);ctx.lineTo(x+w,gy);ctx.stroke();}
-    const cx2=x+w/2,cy2=y+h*0.32,r=Math.min(w,h)*0.1;
-    ctx.save(); ctx.beginPath(); ctx.arc(cx2,cy2,r,0,Math.PI*2); ctx.clip();
-    if(imgCover.complete&&imgCover.naturalWidth>0) ctx.drawImage(imgCover,cx2-r,cy2-r,r*2,r*2);
-    else { const pg=ctx.createLinearGradient(cx2-r,cy2-r,cx2+r,cy2+r); pg.addColorStop(0,'#0050B8'); pg.addColorStop(1,'#00D4FF'); ctx.fillStyle=pg; ctx.fillRect(cx2-r,cy2-r,r*2,r*2); }
-    ctx.restore();
-    ctx.fillStyle='#fff'; ctx.textAlign='center';
-    ctx.font=`bold ${Math.floor(w*0.065)}px serif`;
-    ctx.fillText('Mochammad',cx2,cy2+r+h*0.08);
-    ctx.fillText('Maulana Ibrahim',cx2,cy2+r+h*0.145);
-    ctx.strokeStyle='rgba(0,212,255,0.5)'; ctx.lineWidth=1;
-    ctx.beginPath(); ctx.moveTo(cx2-20,cy2+r+h*0.175); ctx.lineTo(cx2+20,cy2+r+h*0.175); ctx.stroke();
+// ── ANIMATE ──────────────────────────────────────
+function animate(from,to,openState){
+  if(anim)return;anim=true;
+  const diff=to-from,dur=650,t0=performance.now(),op=openState;
+  function step(now){
+    const t=Math.min((now-t0)/dur,1);
+    const e=t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+    drawFlip(from+diff*e,op);
+    if(t<1)requestAnimationFrame(step);
+    else{anim=false;open=openState;drawStatic()}
+  }
+  requestAnimationFrame(step);
 }
 
-function animateFlip(from, to, openState) {
-    if(isAnimating) return;
-    isAnimating=true;
-    const diff=to-from, dur=650, t0=performance.now();
-
-    // Determine what to show during animation
-    // Opening (openState=true): front=cover, back=CV
-    // Closing (openState=false): front=CV, back=cover
-    const animatingOpen = openState;
-
-    function step(now) {
-        const t=Math.min((now-t0)/dur,1);
-        const ease=t<0.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
-        const prog=from+diff*ease;
-        renderFlipDirectional(prog, animatingOpen);
-        if(t<1) requestAnimationFrame(step);
-        else {
-            isAnimating=false; isOpen=openState;
-            renderStatic(); updateUI();
-        }
-    }
-    requestAnimationFrame(step);
-}
-
-function renderFlipDirectional(prog, opening) {
-    if(prog<=0) { canvas.style.display='none'; return; }
-    if(prog>=1) { canvas.style.display='none'; return; }
-
-    canvas.style.display='block';
-    ctx.clearRect(0,0,PW,PH);
-
-    const foldX = PW*(1-prog);
-
-    // Left of fold: back of flipping page
-    if(foldX>0) {
-        ctx.save();
-        ctx.beginPath(); ctx.rect(0,0,foldX,PH); ctx.clip();
-        if(opening) {
-            // Opening: back = CV image
-            if(imgCV.complete&&imgCV.naturalWidth>0) ctx.drawImage(imgCV,0,0,PW,PH);
-            else { ctx.fillStyle='#fff'; ctx.fillRect(0,0,PW,PH); }
-        } else {
-            // Closing: back = cover
-            drawCoverCanvas(0,0,PW,PH);
-        }
-        const sg=ctx.createLinearGradient(foldX-60,0,foldX,0);
-        sg.addColorStop(0,'rgba(0,0,0,0)');
-        sg.addColorStop(1,`rgba(0,0,0,${0.4*prog})`);
-        ctx.fillStyle=sg; ctx.fillRect(foldX-60,0,60,PH);
-        ctx.restore();
-    }
-
-    // Right of fold: front of flipping page (compressed)
-    if(foldX<PW) {
-        const scaleX=Math.abs(Math.cos(prog*Math.PI));
-        if(scaleX>0.01) {
-            ctx.save();
-            ctx.beginPath(); ctx.rect(foldX,0,PW-foldX,PH); ctx.clip();
-            ctx.translate(foldX,0); ctx.scale(scaleX,1);
-            if(opening) {
-                // Opening: front = cover
-                drawCoverCanvas(0,0,PW,PH);
-            } else {
-                // Closing: front = CV
-                if(imgCV.complete&&imgCV.naturalWidth>0) ctx.drawImage(imgCV,0,0,PW,PH);
-                else { ctx.fillStyle='#fff'; ctx.fillRect(0,0,PW,PH); }
-            }
-            ctx.scale(1/scaleX,1); ctx.translate(-foldX,0);
-            const fg=ctx.createLinearGradient(foldX,0,foldX+70,0);
-            fg.addColorStop(0,`rgba(0,0,0,${0.5*(1-scaleX)})`);
-            fg.addColorStop(1,'rgba(0,0,0,0)');
-            ctx.fillStyle=fg; ctx.fillRect(foldX,0,70,PH);
-            ctx.restore();
-        }
-    }
-
-    // Fold line
-    ctx.beginPath(); ctx.moveTo(foldX,0); ctx.lineTo(foldX,PH);
-    ctx.strokeStyle=`rgba(0,0,0,${0.3*Math.sin(prog*Math.PI)})`;
-    ctx.lineWidth=1.5; ctx.stroke();
-}
-
-window.triggerFlip = (toOpen) => {
-    if(isAnimating) return;
-    if(toOpen && !isOpen) {
-        // Open: animate cover flipping left (prog 0→1)
-        animateFlip(0, 1, true);
-    } else if(!toOpen && isOpen) {
-        // Close: animate CV flipping back right (prog 0→1, but openState=false)
-        // We need to show cover on right, CV on left during close animation
-        // Swap content first, then animate
-        isOpen = false;
-        renderStatic(); // now shows cover on right
-        // Animate from fully open (prog=1) back to closed (prog=0)
-        // But renderStatic already shows closed state, so we animate the "close" flip
-        isOpen = true; // temporarily set back so renderFlip draws correctly
-        animateFlip(1, 0, false);
-    }
+window.flip=(toOpen)=>{
+  if(anim)return;
+  if(toOpen&&!open)animate(0,1,true);
+  if(!toOpen&&open)animate(0,1,false);
 };
 
-function updateUI() {
-    document.getElementById('btnPrev').disabled=!isOpen;
-    document.getElementById('btnNext').disabled=isOpen;
-    document.getElementById('pageLabel').textContent=isOpen?'CV':'Cover';
+function updateUI(){
+  document.getElementById('bp').disabled=!open;
+  document.getElementById('bn').disabled=open;
+  document.getElementById('pl').textContent=open?'CV':'Cover';
 }
 </script>
 </body>
