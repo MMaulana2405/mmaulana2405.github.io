@@ -20,7 +20,6 @@
             overflow: hidden;
         }
 
-        /* ── TOP BAR ── */
         .topbar {
             height: 50px; flex-shrink: 0;
             background: rgba(8,13,26,0.98);
@@ -59,11 +58,9 @@
             font-size: 11px; color: rgba(255,255,255,0.25);
             background: none; border: none;
             cursor: pointer; font-family: 'Inter', sans-serif;
-            transition: color 0.2s;
         }
         .btn-signout:hover { color: #00D4FF; }
 
-        /* ── STAGE ── */
         .stage {
             flex: 1;
             display: flex; align-items: center; justify-content: center;
@@ -83,13 +80,10 @@
             pointer-events: none;
         }
 
-        /* ── FLIPBOOK ── */
         #flipbook {
-            position: relative;
             box-shadow: 0 30px 80px rgba(0,0,0,0.7);
         }
 
-        /* ── PAGE STYLES ── */
         .page { overflow: hidden; }
 
         /* Blank */
@@ -171,7 +165,7 @@
         }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.55} }
 
-        /* CV image */
+        /* CV */
         .p-cv {
             background: #fff;
             width: 100%; height: 100%;
@@ -221,7 +215,6 @@
         }
         .bc-icon { color: #00D4FF; user-select: none; }
 
-        /* ── BOTTOM BAR ── */
         .bottombar {
             height: 50px; flex-shrink: 0;
             background: rgba(8,13,26,0.98);
@@ -250,7 +243,6 @@
             min-width: 80px; text-align: center;
         }
 
-        /* ── LOADING ── */
         .loading-screen {
             position: fixed; inset: 0;
             background: #080D1A;
@@ -270,12 +262,10 @@
     </style>
 </head>
 <body>
-<!-- Loading -->
 <div class="loading-screen" id="loadingScreen">
 <div class="spinner"></div>
 <div class="loading-text">Verifying access...</div>
 </div>
-<!-- Top Bar -->
 <div class="topbar" id="topbar" style="display:none;">
 <div class="topbar-left">
 <div class="topbar-avatar">
@@ -291,10 +281,9 @@
 <button class="btn-signout" onclick="doSignOut()">Sign out</button>
 </div>
 </div>
-<!-- Stage -->
 <div class="stage" id="stage" style="display:none;">
 <div id="flipbook">
-<!-- Page 1: Blank (left side of cover spread) -->
+<!-- Page 1: Blank LEFT of cover spread -->
 <div class="page hard">
 <div class="p-blank">
 <div class="blank-inner">
@@ -303,14 +292,14 @@
 </div>
 </div>
 </div>
-<!-- Page 2: Cover (right side of cover spread) -->
+<!-- Page 2: Cover RIGHT of cover spread -->
 <div class="page hard">
 <div class="p-cover">
 <div class="cover-grid"></div>
 <div class="cover-inner">
 <div class="cover-eyebrow">Curriculum Vitae · 2026</div>
 <div class="cover-photo">
-<img alt="MMI" onerror="this.style.display='none';this.parentElement.innerHTML='MMI';" src="../FotoProfil.jpeg?expires=1790264718&amp;signature=c7d6d15066c9c850e67a46f2cc7c0ef9405c6f1ce48971f39eb2ca150b78d33d&amp;kid=prod-250922"/>
+<img alt="MMI" onerror="this.style.display='none';this.parentElement.innerHTML='MMI';" src="../FotoProfil.jpeg?expires=1790265251&amp;signature=e4fe28b5ca0c6fb9340754a9f68d3f9a6410daff0bc82970ebff9ed3d0824d0b&amp;kid=prod-250922"/>
 </div>
 <div class="cover-name">Mochammad<br/>Maulana Ibrahim</div>
 <div class="cover-rule"></div>
@@ -323,13 +312,13 @@
 </div>
 </div>
 </div>
-<!-- Page 3: CV image (left side of second spread) -->
+<!-- Page 3: CV image LEFT of second spread -->
 <div class="page">
 <div class="p-cv">
-<img alt="CV Mochammad Maulana Ibrahim" src="pages/page-1.jpg?expires=1790264718&amp;signature=945b35dd7dd4611051378d6db60cb40f9eb3a88d718878689b230f94e7029ecc&amp;kid=prod-250922"/>
+<img alt="CV Mochammad Maulana Ibrahim" src="pages/page-1.jpg?expires=1790265251&amp;signature=475ee454316c2abb079bc22df4cab5383d5c231d3c8fabed502a8c9b0904eb87&amp;kid=prod-250922"/>
 </div>
 </div>
-<!-- Page 4: Back cover (right side of second spread) -->
+<!-- Page 4: Back cover RIGHT of second spread -->
 <div class="page hard">
 <div class="p-back">
 <div class="bc-content">
@@ -350,16 +339,13 @@
 </div>
 </div>
 </div>
-<!-- Bottom Bar -->
 <div class="bottombar" id="bottombar" style="display:none;">
 <button class="nav-btn" disabled="" id="btnPrev" onclick="doPrev()">← Back</button>
 <span class="page-label" id="pageLabel">Cover</span>
 <button class="nav-btn" id="btnNext" onclick="doNext()">Open →</button>
 </div>
-<!-- jQuery + Turn.js (local) -->
 <script src="jquery.min.js"></script>
 <script src="turn.min.js"></script>
-<!-- Firebase -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut }
@@ -388,7 +374,7 @@
         document.getElementById('stage').style.display     = 'flex';
         document.getElementById('bottombar').style.display = 'flex';
 
-        setTimeout(initFlip, 120);
+        setTimeout(initFlip, 150);
     });
 
     window.doSignOut = async () => {
@@ -397,31 +383,35 @@
     };
 </script>
 <script>
+var TOTAL_PAGES = 4;
+
 function getSize() {
-    const stage = document.getElementById('stage');
-    const sw = stage.clientWidth;
-    const sh = stage.clientHeight;
-    let pH = Math.min(sh * 0.88, 600);
-    let pW = Math.min(pH / 1.414, (sw * 0.88) / 2);
+    var stage = document.getElementById('stage');
+    var sw = stage.clientWidth;
+    var sh = stage.clientHeight;
+    var pH = Math.min(sh * 0.88, 600);
+    var pW = Math.min(pH / 1.414, (sw * 0.88) / 2);
     pH = pW * 1.414;
     return { w: Math.floor(pW), h: Math.floor(pH) };
 }
 
 function initFlip() {
-    const { w, h } = getSize();
+    var s = getSize();
 
     $('#flipbook').turn({
-        width:        w * 2,
-        height:       h,
+        width:        s.w * 2,
+        height:       s.h,
         autoCenter:   true,
         display:      'double',
         acceleration: true,
         gradients:    true,
         elevation:    50,
         showCover:    true,
+        duration:     800,
         when: {
-            turned: function(e, page) { updateNav(page); },
-            turning: function(e, page) { updateNav(page); }
+            turned: function(e, page, view) {
+                updateNav(page);
+            }
         }
     });
 
@@ -433,21 +423,41 @@ function initFlip() {
     });
 
     $(window).resize(function() {
-        const { w, h } = getSize();
-        try { $('#flipbook').turn('size', w * 2, h); } catch(e) {}
+        var s = getSize();
+        try {
+            $('#flipbook').turn('size', s.w * 2, s.h);
+            $('#flipbook').turn('center');
+        } catch(err) {}
     });
 }
 
 function updateNav(page) {
-    document.getElementById('btnPrev').disabled = (page <= 1);
-    document.getElementById('btnNext').disabled = (page >= 4);
-    if (page <= 2)      document.getElementById('pageLabel').textContent = 'Cover';
-    else if (page <= 3) document.getElementById('pageLabel').textContent = 'CV';
-    else                document.getElementById('pageLabel').textContent = 'End';
+    var btnPrev = document.getElementById('btnPrev');
+    var btnNext = document.getElementById('btnNext');
+    var lbl     = document.getElementById('pageLabel');
+
+    // In double display with showCover:
+    // page 1 = cover spread (blank+cover)
+    // page 3 = second spread (cv+backcover)
+    btnPrev.disabled = (page <= 1);
+    btnNext.disabled = (page >= TOTAL_PAGES - 1);
+
+    if (page <= 2)      lbl.textContent = 'Cover';
+    else if (page <= 3) lbl.textContent = 'CV';
+    else                lbl.textContent = 'End';
 }
 
-window.doNext = function() { $('#flipbook').turn('next'); };
-window.doPrev = function() { $('#flipbook').turn('previous'); };
+window.doNext = function() {
+    if (!$('#flipbook').turn('is')) return;
+    var cur = $('#flipbook').turn('page');
+    if (cur < TOTAL_PAGES - 1) $('#flipbook').turn('next');
+};
+
+window.doPrev = function() {
+    if (!$('#flipbook').turn('is')) return;
+    var cur = $('#flipbook').turn('page');
+    if (cur > 1) $('#flipbook').turn('previous');
+};
 </script>
 </body>
 </html>
