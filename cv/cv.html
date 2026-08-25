@@ -8,24 +8,17 @@
 <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
 
-        :root {
-            --accent: #00D4FF;
-            --dark: #080D1A;
-            --white: #FFFFFF;
-            --white-60: rgba(255,255,255,0.6);
-            --white-25: rgba(255,255,255,0.22);
-        }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', sans-serif;
             background: #050810;
-            color: var(--white);
+            color: #fff;
             height: 100vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            user-select: none;
         }
 
         /* ── TOP BAR ── */
@@ -49,15 +42,14 @@
         }
         .topbar-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .topbar-name  { font-size: 13px; font-weight: 600; }
-        .topbar-label { font-size: 10px; color: var(--accent); }
+        .topbar-label { font-size: 10px; color: #00D4FF; }
         .topbar-right { display: flex; align-items: center; gap: 12px; }
         .btn-download {
             display: flex; align-items: center; gap: 6px;
             padding: 6px 14px;
             background: rgba(0,212,255,0.1);
             border: 1px solid rgba(0,212,255,0.25);
-            border-radius: 20px;
-            color: var(--accent);
+            border-radius: 20px; color: #00D4FF;
             font-size: 11px; font-weight: 500;
             font-family: 'Inter', sans-serif;
             cursor: pointer; text-decoration: none;
@@ -65,12 +57,12 @@
         }
         .btn-download:hover { background: rgba(0,212,255,0.18); }
         .btn-signout {
-            font-size: 11px; color: var(--white-25);
+            font-size: 11px; color: rgba(255,255,255,0.25);
             background: none; border: none;
             cursor: pointer; font-family: 'Inter', sans-serif;
             transition: color 0.2s;
         }
-        .btn-signout:hover { color: var(--accent); }
+        .btn-signout:hover { color: #00D4FF; }
 
         /* ── STAGE ── */
         .stage {
@@ -81,6 +73,7 @@
                 radial-gradient(ellipse at 78% 65%, rgba(0,212,255,0.07) 0%, transparent 50%),
                 #050810;
             position: relative; overflow: hidden;
+            perspective: 3000px;
         }
         .stage::before {
             content: '';
@@ -92,35 +85,74 @@
             pointer-events: none;
         }
 
-        /* ── FLIPBOOK CONTAINER ── */
-        #flipbook-container {
+        /* ── BOOK WRAPPER ── */
+        .book-wrap {
             position: relative;
             display: flex;
-            align-items: center;
-            justify-content: center;
+            align-items: stretch;
+            filter: drop-shadow(0 40px 80px rgba(0,0,0,0.7));
         }
 
-        /* StPageFlip canvas wrapper */
-        #flipbook-container .stf__parent {
-            box-shadow: 0 30px 80px rgba(0,0,0,0.6) !important;
-        }
-
-        /* ── PAGE STYLES (rendered inside canvas by StPageFlip) ── */
-        .page {
-            width: 100%; height: 100%;
-            overflow: hidden;
+        /* ── SINGLE PAGE ── */
+        .page-wrap {
             position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+        }
+        .page-wrap.left  { transform-origin: right center; }
+        .page-wrap.right { transform-origin: left center; }
+
+        .page-face {
+            position: absolute; inset: 0;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            overflow: hidden;
+        }
+        .page-face.back {
+            transform: rotateY(180deg);
         }
 
-        /* Cover page */
-        .page-cover {
+        /* Flip states */
+        .page-wrap.left.flipped  { transform: rotateY(180deg); }
+        .page-wrap.right.flipped { transform: rotateY(-180deg); }
+
+        /* Page shadow overlay for realism */
+        .page-wrap.left .page-face.front::after,
+        .page-wrap.right .page-face.front::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(to right, rgba(0,0,0,0.15), transparent 30%);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .page-wrap.right .page-face.front::after {
+            background: linear-gradient(to left, rgba(0,0,0,0.15), transparent 30%);
+        }
+
+        /* Spine */
+        .spine {
+            width: 6px; flex-shrink: 0;
+            background: linear-gradient(180deg,
+                transparent 0%,
+                rgba(0,212,255,0.2) 15%,
+                rgba(0,212,255,0.4) 50%,
+                rgba(0,212,255,0.2) 85%,
+                transparent 100%);
+            z-index: 10;
+        }
+
+        /* ── COVER PAGE ── */
+        .cover-page {
+            width: 100%; height: 100%;
             background: linear-gradient(145deg, #0A1628 0%, #0D1F3C 45%, #080D1A 100%);
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
-            padding: 40px 28px; text-align: center;
-            position: relative;
+            padding: 36px 28px; text-align: center;
+            position: relative; overflow: hidden;
+            cursor: pointer;
         }
-        .page-cover::before {
+        .cover-page::before {
             content: '';
             position: absolute; inset: 0;
             background:
@@ -128,7 +160,7 @@
                 radial-gradient(ellipse at 70% 75%, rgba(0,212,255,0.12) 0%, transparent 45%);
             pointer-events: none;
         }
-        .page-cover-grid {
+        .cover-grid {
             position: absolute; inset: 0;
             background-image:
                 linear-gradient(rgba(0,212,255,0.05) 1px, transparent 1px),
@@ -136,7 +168,7 @@
             background-size: 36px 36px;
             pointer-events: none;
         }
-        .cover-content { position: relative; z-index: 1; }
+        .cover-inner { position: relative; z-index: 1; }
         .cover-eyebrow {
             font-size: 9px; font-weight: 600;
             letter-spacing: 3px; text-transform: uppercase;
@@ -155,7 +187,7 @@
         }
         .cover-name {
             font-family: 'Playfair Display', serif;
-            font-size: 24px; font-weight: 700;
+            font-size: 22px; font-weight: 700;
             color: #fff; line-height: 1.25; margin-bottom: 12px;
         }
         .cover-rule {
@@ -164,11 +196,11 @@
             margin: 0 auto 14px;
         }
         .cover-quote {
-            font-size: 11.5px; color: rgba(255,255,255,0.6);
+            font-size: 11px; color: rgba(255,255,255,0.6);
             line-height: 1.75; font-style: italic;
-            max-width: 220px; margin: 0 auto 22px;
+            max-width: 210px; margin: 0 auto 22px;
         }
-        .cover-hint {
+        .cover-cta {
             font-size: 10px; font-weight: 600;
             letter-spacing: 1.5px; text-transform: uppercase;
             color: #00D4FF;
@@ -176,39 +208,64 @@
             padding: 7px 16px; border-radius: 20px;
             background: rgba(0,212,255,0.07);
             display: inline-block;
+            transition: all 0.2s;
+        }
+        .cover-page:hover .cover-cta {
+            background: rgba(0,212,255,0.15);
+            border-color: rgba(0,212,255,0.5);
         }
 
-        /* CV image page */
-        .page-cv {
-            background: #ffffff;
+        /* ── BLANK PAGE ── */
+        .blank-page {
+            width: 100%; height: 100%;
+            background: #0A1220;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .blank-inner {
+            text-align: center; opacity: 0.18;
+            font-size: 11px; color: rgba(255,255,255,0.6);
+        }
+
+        /* ── CV IMAGE PAGE ── */
+        .cv-page {
+            width: 100%; height: 100%;
+            background: #fff;
             display: flex; align-items: flex-start; justify-content: center;
         }
-        .page-cv img {
+        .cv-page img {
             width: 100%; height: 100%;
             object-fit: contain;
             object-position: top center;
             display: block;
         }
 
-        /* Back cover */
-        .page-backcover {
+        /* ── BACK COVER ── */
+        .backcover-page {
+            width: 100%; height: 100%;
             background: linear-gradient(145deg, #080D1A, #0D1A35);
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             padding: 36px 28px; text-align: center;
-            position: relative;
+            position: relative; overflow: hidden;
         }
-        .page-backcover::before {
+        .backcover-page::before {
             content: '';
             position: absolute; inset: 0;
             background: radial-gradient(ellipse at 50% 50%, rgba(0,80,180,0.18) 0%, transparent 65%);
             pointer-events: none;
         }
-        .bc-content { position: relative; z-index: 1; }
+        /* IMPORTANT: allow text selection on back cover */
+        .backcover-content {
+            position: relative; z-index: 1;
+            user-select: text;
+            -webkit-user-select: text;
+            cursor: text;
+        }
         .bc-title {
             font-size: 10px; letter-spacing: 2.5px;
             text-transform: uppercase; color: #00D4FF;
             margin-bottom: 18px;
+            user-select: none;
         }
         .bc-quote {
             font-family: 'Playfair Display', serif;
@@ -218,21 +275,11 @@
         }
         .bc-contacts { display: flex; flex-direction: column; gap: 10px; }
         .bc-item {
-            font-size: 11px; color: rgba(255,255,255,0.6);
+            font-size: 11px; color: rgba(255,255,255,0.7);
             display: flex; align-items: center;
             justify-content: center; gap: 8px;
         }
-        .bc-item span { color: #00D4FF; }
-
-        /* Blank page */
-        .page-blank {
-            background: #0A1220;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .page-blank-inner {
-            text-align: center; opacity: 0.2;
-            font-size: 11px; color: rgba(255,255,255,0.6);
-        }
+        .bc-item .bc-icon { color: #00D4FF; user-select: none; }
 
         /* ── BOTTOM BAR ── */
         .bottombar {
@@ -248,8 +295,7 @@
             padding: 7px 18px;
             background: rgba(0,212,255,0.08);
             border: 1px solid rgba(0,212,255,0.2);
-            border-radius: 20px;
-            color: #00D4FF;
+            border-radius: 20px; color: #00D4FF;
             font-size: 12px; font-weight: 500;
             font-family: 'Inter', sans-serif;
             cursor: pointer; transition: all 0.2s;
@@ -267,7 +313,7 @@
         /* ── LOADING ── */
         .loading-screen {
             position: fixed; inset: 0;
-            background: var(--dark);
+            background: #080D1A;
             display: flex; flex-direction: column;
             align-items: center; justify-content: center; gap: 14px;
             z-index: 200;
@@ -281,6 +327,17 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
         .loading-text { font-size: 12px; color: rgba(255,255,255,0.6); }
+
+        /* ── DRAG HINT ── */
+        .drag-hint {
+            position: absolute;
+            bottom: 14px; left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px; color: rgba(255,255,255,0.25);
+            letter-spacing: 0.5px;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
     </style>
 </head>
 <body>
@@ -307,65 +364,90 @@
 </div>
 <!-- Stage -->
 <div class="stage" id="stage" style="display:none;">
-<div id="flipbook-container">
-<div id="flipbook">
-<!-- Page 0: Blank left (cover spread) -->
-<div class="page page-blank">
-<div class="page-blank-inner">
-<div style="font-size:20px;margin-bottom:8px;">✦</div>
+<div class="book-wrap" id="bookWrap">
+<!-- Left page -->
+<div class="page-wrap left" id="leftPage">
+<!-- Front: blank -->
+<div class="page-face front">
+<div class="blank-page">
+<div class="blank-inner">
+<div style="font-size:22px;margin-bottom:8px;">✦</div>
 <div>Mochammad Maulana Ibrahim</div>
 </div>
 </div>
-<!-- Page 1: Cover -->
-<div class="page page-cover">
-<div class="page-cover-grid"></div>
-<div class="cover-content">
+</div>
+<!-- Back: CV image -->
+<div class="page-face back">
+<div class="cv-page">
+<img alt="CV" src="pages/page-1.jpg?expires=1790257528&amp;signature=7176e7ac8c51e13347fe5f0891ecd304e9312eb865b84978514b97541ef7df10&amp;kid=prod-250922"/>
+</div>
+</div>
+</div>
+<!-- Spine -->
+<div class="spine"></div>
+<!-- Right page -->
+<div class="page-wrap right" id="rightPage">
+<!-- Front: Cover -->
+<div class="page-face front">
+<div class="cover-page" id="coverClickArea">
+<div class="cover-grid"></div>
+<div class="cover-inner">
 <div class="cover-eyebrow">Curriculum Vitae · 2026</div>
 <div class="cover-photo">
-<img alt="MMI" onerror="this.style.display='none';this.parentElement.innerHTML='MMI';" src="../FotoProfil.jpeg?expires=1790256795&amp;signature=5f7df443e5d6df421dced649508c6e7468c2cd23431aa4db83c40c0ad211ba7b&amp;kid=prod-250922"/>
+<img alt="MMI" onerror="this.style.display='none';this.parentElement.innerHTML='MMI';" src="../FotoProfil.jpeg?expires=1790257528&amp;signature=b91ca1c74e65131708e55d50667a53966ff2e9aabc1f2b92294a3c7c1d350767&amp;kid=prod-250922"/>
 </div>
 <div class="cover-name">Mochammad<br/>Maulana Ibrahim</div>
 <div class="cover-rule"></div>
 <div class="cover-quote">
-                        "The most overlooked data,<br/>
-                        when gathered with patience,<br/>
-                        becomes the clearest insight."
-                    </div>
-<div class="cover-hint">Drag or click to open →</div>
+                            "The most overlooked data,<br/>
+                            when gathered with patience,<br/>
+                            becomes the clearest insight."
+                        </div>
+<div class="cover-cta">Drag or click to open →</div>
 </div>
 </div>
-<!-- Page 2: CV image -->
-<div class="page page-cv">
-<img alt="CV Mochammad Maulana Ibrahim" src="pages/page-1.jpg?expires=1790256795&amp;signature=31e9a9d749d2eddfc38737279fa73ecdb6e0812b126fafda18890e10338ba675&amp;kid=prod-250922"/>
 </div>
-<!-- Page 3: Back cover -->
-<div class="page page-backcover">
-<div class="bc-content">
+<!-- Back: Back cover -->
+<div class="page-face back">
+<div class="backcover-page">
+<div class="backcover-content" id="backCoverContent">
 <div class="bc-title">Get In Touch</div>
 <div class="bc-quote">
-                        "I turn ignored data into<br/>
-                        meaningful insights<br/>
-                        that transform systems."
-                    </div>
+                            "I turn ignored data into<br/>
+                            meaningful insights<br/>
+                            that transform systems."
+                        </div>
 <div class="bc-contacts">
-<div class="bc-item"><span>✉</span> mochammad.maulana.i.01@gmail.com</div>
-<div class="bc-item"><span>📱</span> (+62) 898-9210-565</div>
-<div class="bc-item"><span>🔗</span> linkedin.com/in/mmi01</div>
-<div class="bc-item"><span>🌐</span> mmaulana2405.github.io</div>
+<div class="bc-item">
+<span class="bc-icon">✉</span>
+<span>mochammad.maulana.i.01@gmail.com</span>
+</div>
+<div class="bc-item">
+<span class="bc-icon">📱</span>
+<span>(+62) 898-9210-565</span>
+</div>
+<div class="bc-item">
+<span class="bc-icon">🔗</span>
+<span>linkedin.com/in/mmi01</span>
+</div>
+<div class="bc-item">
+<span class="bc-icon">🌐</span>
+<span>mmaulana2405.github.io</span>
 </div>
 </div>
 </div>
 </div>
 </div>
+</div>
+</div>
+<div class="drag-hint" id="dragHint">← drag to flip · click to turn →</div>
 </div>
 <!-- Bottom Bar -->
 <div class="bottombar" id="bottombar" style="display:none;">
-<button class="nav-btn" disabled="" id="btnPrev" onclick="flipPrev()">← Prev</button>
+<button class="nav-btn" disabled="" id="btnPrev" onclick="goPrev()">← Prev</button>
 <span class="page-label" id="pageLabel">Cover</span>
-<button class="nav-btn" id="btnNext" onclick="flipNext()">Next →</button>
+<button class="nav-btn" id="btnNext" onclick="goNext()">Open →</button>
 </div>
-<!-- StPageFlip Library -->
-<script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
 <!-- Firebase -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -386,7 +468,6 @@
 
     onAuthStateChanged(auth, (user) => {
         if (!user) { window.location.href = "index.html"; return; }
-
         document.getElementById('topName').textContent = user.displayName || user.email;
         const img = document.getElementById('topAvatarImg');
         if (user.photoURL) img.src = user.photoURL;
@@ -396,8 +477,7 @@
         document.getElementById('stage').style.display     = 'flex';
         document.getElementById('bottombar').style.display = 'flex';
 
-        // Init flipbook after UI shown
-        setTimeout(initFlipbook, 100);
+        setTimeout(initBook, 80);
     });
 
     window.doSignOut = async () => {
@@ -406,97 +486,132 @@
     };
 </script>
 <script>
-    let pageFlip = null;
-    const labels = ['Cover', 'CV', 'End'];
+    // ── STATE ──
+    let isOpen   = false;
+    let isFlipping = false;
 
-    function getBookSize() {
+    const leftPage  = document.getElementById('leftPage');
+    const rightPage = document.getElementById('rightPage');
+    const btnPrev   = document.getElementById('btnPrev');
+    const btnNext   = document.getElementById('btnNext');
+    const pageLabel = document.getElementById('pageLabel');
+    const dragHint  = document.getElementById('dragHint');
+    const bookWrap  = document.getElementById('bookWrap');
+
+    // ── SIZE ──
+    function initBook() {
+        resize();
+        window.addEventListener('resize', resize);
+        setupDrag();
+        setupClick();
+    }
+
+    function resize() {
         const stage = document.getElementById('stage');
         const sw = stage.clientWidth;
         const sh = stage.clientHeight;
-        // A4 ratio ~1:1.414, book shows 2 pages side by side
         const maxH = sh * 0.88;
-        const maxW = sw * 0.88;
-        // Single page width = half of book width
-        const pageH = Math.min(maxH, 620);
-        const pageW = Math.min(maxW / 2, pageH / 1.414);
-        return { width: Math.floor(pageW), height: Math.floor(pageH) };
+        const maxW = sw * 0.90;
+        // A4 ratio 1:1.414
+        let pH = Math.min(maxH, 600);
+        let pW = Math.min(pH / 1.414, maxW / 2);
+        pH = pW * 1.414;
+
+        [leftPage, rightPage].forEach(p => {
+            p.style.width  = pW + 'px';
+            p.style.height = pH + 'px';
+        });
+        document.querySelector('.spine').style.height = pH + 'px';
     }
 
-    function initFlipbook() {
-        const { width, height } = getBookSize();
+    // ── FLIP LOGIC ──
+    function flipToOpen() {
+        if (isFlipping || isOpen) return;
+        isFlipping = true;
+        leftPage.classList.add('flipped');
+        rightPage.classList.add('flipped');
+        isOpen = true;
+        updateUI();
+        // Hide drag hint after first flip
+        dragHint.style.opacity = '0';
+        setTimeout(() => { isFlipping = false; }, 1200);
+    }
 
-        pageFlip = new St.PageFlip(
-            document.getElementById('flipbook'),
-            {
-                width:  width,
-                height: height,
-                size: 'fixed',
-                minWidth: 200,
-                maxWidth: 600,
-                minHeight: 300,
-                maxHeight: 900,
-                showCover: true,
-                drawShadow: true,
-                flippingTime: 700,
-                usePortrait: false,
-                startZIndex: 0,
-                autoSize: false,
-                maxShadowOpacity: 0.5,
-                mobileScrollSupport: false,
-                clickEventForward: false,
-                useMouseEvents: true,
-                swipeDistance: 30,
-                showPageCorners: true,
-                disableFlipByClick: false,
+    function flipToClose() {
+        if (isFlipping || !isOpen) return;
+        isFlipping = true;
+        leftPage.classList.remove('flipped');
+        rightPage.classList.remove('flipped');
+        isOpen = false;
+        updateUI();
+        setTimeout(() => { isFlipping = false; }, 1200);
+    }
+
+    function updateUI() {
+        btnPrev.disabled = !isOpen;
+        btnNext.disabled = isOpen;
+        pageLabel.textContent = isOpen ? 'CV' : 'Cover';
+        btnNext.textContent   = isOpen ? 'Next →' : 'Open →';
+        btnPrev.textContent   = '← Back';
+    }
+
+    window.goNext = function() { flipToOpen(); };
+    window.goPrev = function() { flipToClose(); };
+
+    // ── CLICK TO FLIP ──
+    function setupClick() {
+        // Click cover → open
+        document.getElementById('coverClickArea').addEventListener('click', (e) => {
+            if (!isOpen) flipToOpen();
+        });
+
+        // Click left page (blank) when closed → open
+        leftPage.addEventListener('click', (e) => {
+            if (!isOpen) flipToOpen();
+        });
+    }
+
+    // ── DRAG TO FLIP ──
+    function setupDrag() {
+        let startX = null;
+        let dragging = false;
+        const threshold = 60;
+
+        // Prevent drag on back cover text area
+        const backCoverContent = document.getElementById('backCoverContent');
+
+        function onDown(e) {
+            // If clicking on selectable text area, don't drag
+            if (backCoverContent.contains(e.target) && isOpen) return;
+            startX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+            dragging = true;
+        }
+
+        function onUp(e) {
+            if (!dragging || startX === null) return;
+            const endX = e.type === 'touchend'
+                ? (e.changedTouches[0]?.clientX ?? startX)
+                : e.clientX;
+            const diff = endX - startX;
+
+            if (Math.abs(diff) > threshold) {
+                if (diff < 0 && !isOpen) flipToOpen();
+                if (diff > 0 && isOpen)  flipToClose();
             }
-        );
+            dragging = false;
+            startX   = null;
+        }
 
-        pageFlip.loadFromHTML(document.querySelectorAll('#flipbook .page'));
-
-        pageFlip.on('flip', (e) => {
-            updateNav(e.data);
-        });
-
-        pageFlip.on('changeState', () => {
-            updateNav(pageFlip.getCurrentPageIndex());
-        });
-
-        updateNav(0);
+        bookWrap.addEventListener('mousedown',  onDown);
+        bookWrap.addEventListener('touchstart', onDown, { passive: true });
+        window.addEventListener('mouseup',   onUp);
+        window.addEventListener('touchend',  onUp);
     }
 
-    function updateNav(pageIndex) {
-        const btnPrev  = document.getElementById('btnPrev');
-        const btnNext  = document.getElementById('btnNext');
-        const lbl      = document.getElementById('pageLabel');
-        const total    = 4; // 0,1,2,3
-
-        btnPrev.disabled = pageIndex <= 0;
-        btnNext.disabled = pageIndex >= total - 2;
-
-        if (pageIndex <= 1)      lbl.textContent = 'Cover';
-        else if (pageIndex <= 2) lbl.textContent = 'CV';
-        else                     lbl.textContent = 'End';
-    }
-
-    window.flipNext = function() {
-        if (pageFlip) pageFlip.flipNext('bottom');
-    };
-
-    window.flipPrev = function() {
-        if (pageFlip) pageFlip.flipPrev('bottom');
-    };
-
-    // Keyboard
+    // ── KEYBOARD ──
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowRight') flipNext();
-        if (e.key === 'ArrowLeft')  flipPrev();
-    });
-
-    // Resize
-    window.addEventListener('resize', () => {
-        if (!pageFlip) return;
-        const { width, height } = getBookSize();
-        pageFlip.updateState({ width, height });
+        if (e.key === 'ArrowRight') flipToOpen();
+        if (e.key === 'ArrowLeft')  flipToClose();
     });
 </script>
 </body>
