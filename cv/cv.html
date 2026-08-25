@@ -176,15 +176,21 @@ function init(){
 // ── STATIC HTML ──────────────────────────────────
 function drawStatic(){
   const lc=document.getElementById('lc'),rc=document.getElementById('rc');
+  const lh=document.getElementById('lh'),sp=document.getElementById('spine');
   lc.style.cssText=`width:${PW}px;height:${PH}px`;
   rc.style.cssText=`width:${PW}px;height:${PH}px`;
   fc.style.display='none'; fctx.clearRect(0,0,fc.width,PH);
   cc.style.display='none'; cctx.clearRect(0,0,PW,PH);
 
   if(!open){
-    lc.innerHTML=`<div class="pg-blank" style="width:${PW}px;height:${PH}px"><span>✦<br>Mochammad Maulana Ibrahim</span></div>`;
+    // CLOSED: only cover, centered — hide left half & spine
+    lh.style.display='none';
+    sp.style.display='none';
     rc.innerHTML=`<div class="pg-cover" style="width:${PW}px;height:${PH}px"><div class="cg"></div><div class="ci"><div class="ce">Curriculum Vitae · 2026</div><div class="cp"><img src="../FotoProfil.jpeg" alt="MMI" onerror="this.style.display='none';this.parentElement.innerHTML='MMI'"></div><div class="cn">Mochammad<br>Maulana Ibrahim</div><div class="cr"></div><div class="cq">"The most overlooked data,<br>when gathered with patience,<br>becomes the clearest insight."</div><div class="cc2">← Drag corner to open</div></div></div>`;
   } else {
+    // OPEN: show both halves
+    lh.style.display='block';
+    sp.style.display='block';
     lc.innerHTML=`<div class="pg-cv" style="width:${PW}px;height:${PH}px"><img src="pages/page-1.jpg" alt="CV"></div>`;
     rc.innerHTML=`<div class="pg-back" style="width:${PW}px;height:${PH}px"><div class="bc"><div class="bt">Get In Touch</div><div class="bq">"I turn ignored data into<br>meaningful insights<br>that transform systems."</div><div class="bcs"><div class="bi"><span class="bic">✉</span><span>mochammad.maulana.i.01@gmail.com</span></div><div class="bi"><span class="bic">📱</span><span>(+62) 898-9210-565</span></div><div class="bi"><span class="bic">🔗</span><span>linkedin.com/in/mmi01</span></div><div class="bi"><span class="bic">🌐</span><span>mmaulana2405.github.io</span></div></div></div></div>`;
   }
@@ -296,14 +302,17 @@ function drawFlip(prog,opening){
   fctx.clearRect(0,0,BW,PH);
 
   // ── LEFT HALF (static) ──
+  // Show left half during animation — reveal it as page flips
+  const lh=document.getElementById('lh'),sp=document.getElementById('spine');
+  lh.style.display='block'; sp.style.display='block';
   if(opening){
-    // left shows blank
+    // left reveals blank as cover flips away
     fctx.fillStyle='#0A1220';fctx.fillRect(0,0,PW,PH);
     fctx.fillStyle='rgba(255,255,255,.08)';fctx.font='18px serif';fctx.textAlign='center';
     fctx.fillText('✦',PW/2,PH/2-8);
     fctx.font='10px Inter';fctx.fillText('Mochammad Maulana Ibrahim',PW/2,PH/2+12);
   } else {
-    // left shows CV
+    // left shows CV (closing back to cover)
     if(iCV.complete&&iCV.naturalWidth>0)fctx.drawImage(iCV,0,0,PW,PH);
     else{fctx.fillStyle='#fff';fctx.fillRect(0,0,PW,PH)}
   }
