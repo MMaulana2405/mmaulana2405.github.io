@@ -18,7 +18,6 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            user-select: none;
         }
 
         /* ── TOP BAR ── */
@@ -73,7 +72,6 @@
                 radial-gradient(ellipse at 78% 65%, rgba(0,212,255,0.07) 0%, transparent 50%),
                 #050810;
             position: relative; overflow: hidden;
-            perspective: 3000px;
         }
         .stage::before {
             content: '';
@@ -85,74 +83,25 @@
             pointer-events: none;
         }
 
-        /* ── BOOK WRAPPER ── */
-        .book-wrap {
-            position: relative;
-            display: flex;
-            align-items: stretch;
-            filter: drop-shadow(0 40px 80px rgba(0,0,0,0.7));
+        /* ── FLIPBOOK ── */
+        #flipbook {
+            box-shadow: 0 30px 80px rgba(0,0,0,0.7);
         }
 
-        /* ── SINGLE PAGE ── */
-        .page-wrap {
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1.000);
-        }
-        .page-wrap.left  { transform-origin: right center; }
-        .page-wrap.right { transform-origin: left center; }
-
-        .page-face {
-            position: absolute; inset: 0;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
+        /* ── PAGE BASE ── */
+        .page {
             overflow: hidden;
         }
-        .page-face.back {
-            transform: rotateY(180deg);
-        }
 
-        /* Flip states */
-        .page-wrap.left.flipped  { transform: rotateY(180deg); }
-        .page-wrap.right.flipped { transform: rotateY(-180deg); }
-
-        /* Page shadow overlay for realism */
-        .page-wrap.left .page-face.front::after,
-        .page-wrap.right .page-face.front::after {
-            content: '';
-            position: absolute; inset: 0;
-            background: linear-gradient(to right, rgba(0,0,0,0.15), transparent 30%);
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .page-wrap.right .page-face.front::after {
-            background: linear-gradient(to left, rgba(0,0,0,0.15), transparent 30%);
-        }
-
-        /* Spine */
-        .spine {
-            width: 6px; flex-shrink: 0;
-            background: linear-gradient(180deg,
-                transparent 0%,
-                rgba(0,212,255,0.2) 15%,
-                rgba(0,212,255,0.4) 50%,
-                rgba(0,212,255,0.2) 85%,
-                transparent 100%);
-            z-index: 10;
-        }
-
-        /* ── COVER PAGE ── */
-        .cover-page {
-            width: 100%; height: 100%;
+        /* Cover */
+        .page-cover {
             background: linear-gradient(145deg, #0A1628 0%, #0D1F3C 45%, #080D1A 100%);
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             padding: 36px 28px; text-align: center;
-            position: relative; overflow: hidden;
-            cursor: pointer;
+            position: relative; height: 100%;
         }
-        .cover-page::before {
+        .page-cover::before {
             content: '';
             position: absolute; inset: 0;
             background:
@@ -208,58 +157,50 @@
             padding: 7px 16px; border-radius: 20px;
             background: rgba(0,212,255,0.07);
             display: inline-block;
-            transition: all 0.2s;
-        }
-        .cover-page:hover .cover-cta {
-            background: rgba(0,212,255,0.15);
-            border-color: rgba(0,212,255,0.5);
         }
 
-        /* ── BLANK PAGE ── */
-        .blank-page {
-            width: 100%; height: 100%;
+        /* Blank */
+        .page-blank {
             background: #0A1220;
             display: flex; align-items: center; justify-content: center;
+            height: 100%;
         }
         .blank-inner {
             text-align: center; opacity: 0.18;
             font-size: 11px; color: rgba(255,255,255,0.6);
         }
 
-        /* ── CV IMAGE PAGE ── */
-        .cv-page {
-            width: 100%; height: 100%;
+        /* CV image */
+        .page-cv {
             background: #fff;
+            height: 100%;
             display: flex; align-items: flex-start; justify-content: center;
         }
-        .cv-page img {
+        .page-cv img {
             width: 100%; height: 100%;
             object-fit: contain;
             object-position: top center;
             display: block;
         }
 
-        /* ── BACK COVER ── */
-        .backcover-page {
-            width: 100%; height: 100%;
+        /* Back cover */
+        .page-backcover {
             background: linear-gradient(145deg, #080D1A, #0D1A35);
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             padding: 36px 28px; text-align: center;
-            position: relative; overflow: hidden;
+            position: relative; height: 100%;
         }
-        .backcover-page::before {
+        .page-backcover::before {
             content: '';
             position: absolute; inset: 0;
             background: radial-gradient(ellipse at 50% 50%, rgba(0,80,180,0.18) 0%, transparent 65%);
             pointer-events: none;
         }
-        /* IMPORTANT: allow text selection on back cover */
-        .backcover-content {
+        .bc-content {
             position: relative; z-index: 1;
             user-select: text;
             -webkit-user-select: text;
-            cursor: text;
         }
         .bc-title {
             font-size: 10px; letter-spacing: 2.5px;
@@ -279,7 +220,7 @@
             display: flex; align-items: center;
             justify-content: center; gap: 8px;
         }
-        .bc-item .bc-icon { color: #00D4FF; user-select: none; }
+        .bc-icon { color: #00D4FF; user-select: none; }
 
         /* ── BOTTOM BAR ── */
         .bottombar {
@@ -327,17 +268,6 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
         .loading-text { font-size: 12px; color: rgba(255,255,255,0.6); }
-
-        /* ── DRAG HINT ── */
-        .drag-hint {
-            position: absolute;
-            bottom: 14px; left: 50%;
-            transform: translateX(-50%);
-            font-size: 10px; color: rgba(255,255,255,0.25);
-            letter-spacing: 0.5px;
-            pointer-events: none;
-            transition: opacity 0.5s;
-        }
     </style>
 </head>
 <body>
@@ -364,59 +294,52 @@
 </div>
 <!-- Stage -->
 <div class="stage" id="stage" style="display:none;">
-<div class="book-wrap" id="bookWrap">
-<!-- Left page -->
-<div class="page-wrap left" id="leftPage">
-<!-- Front: blank -->
-<div class="page-face front">
-<div class="blank-page">
+<div id="flipbook">
+<!-- Page 0: Blank (left side of cover spread) -->
+<div class="page">
+<div class="page-blank">
 <div class="blank-inner">
 <div style="font-size:22px;margin-bottom:8px;">✦</div>
 <div>Mochammad Maulana Ibrahim</div>
 </div>
 </div>
 </div>
-<!-- Back: CV image -->
-<div class="page-face back">
-<div class="cv-page">
-<img alt="CV" src="pages/page-1.jpg?expires=1790257528&amp;signature=7176e7ac8c51e13347fe5f0891ecd304e9312eb865b84978514b97541ef7df10&amp;kid=prod-250922"/>
-</div>
-</div>
-</div>
-<!-- Spine -->
-<div class="spine"></div>
-<!-- Right page -->
-<div class="page-wrap right" id="rightPage">
-<!-- Front: Cover -->
-<div class="page-face front">
-<div class="cover-page" id="coverClickArea">
+<!-- Page 1: Cover -->
+<div class="page hard">
+<div class="page-cover">
 <div class="cover-grid"></div>
 <div class="cover-inner">
 <div class="cover-eyebrow">Curriculum Vitae · 2026</div>
 <div class="cover-photo">
-<img alt="MMI" onerror="this.style.display='none';this.parentElement.innerHTML='MMI';" src="../FotoProfil.jpeg?expires=1790257528&amp;signature=b91ca1c74e65131708e55d50667a53966ff2e9aabc1f2b92294a3c7c1d350767&amp;kid=prod-250922"/>
+<img alt="MMI" onerror="this.style.display='none';this.parentElement.innerHTML='MMI';" src="../FotoProfil.jpeg?expires=1790258196&amp;signature=d8c8c2392c2af7f622ff065f0dbf0ddcf10742e97cd5fac46b8bd2d218e62f1f&amp;kid=prod-250922"/>
 </div>
 <div class="cover-name">Mochammad<br/>Maulana Ibrahim</div>
 <div class="cover-rule"></div>
 <div class="cover-quote">
-                            "The most overlooked data,<br/>
-                            when gathered with patience,<br/>
-                            becomes the clearest insight."
-                        </div>
-<div class="cover-cta">Drag or click to open →</div>
+                        "The most overlooked data,<br/>
+                        when gathered with patience,<br/>
+                        becomes the clearest insight."
+                    </div>
+<div class="cover-cta">Drag corner or click →</div>
 </div>
 </div>
 </div>
-<!-- Back: Back cover -->
-<div class="page-face back">
-<div class="backcover-page">
-<div class="backcover-content" id="backCoverContent">
+<!-- Page 2: CV image -->
+<div class="page">
+<div class="page-cv">
+<img alt="CV Mochammad Maulana Ibrahim" src="pages/page-1.jpg?expires=1790258196&amp;signature=41edd5db6239d14199ebdd40b7bcc5bbfdf9e38616f95edee3f1e2735c1f3a00&amp;kid=prod-250922"/>
+</div>
+</div>
+<!-- Page 3: Back cover -->
+<div class="page hard">
+<div class="page-backcover">
+<div class="bc-content">
 <div class="bc-title">Get In Touch</div>
 <div class="bc-quote">
-                            "I turn ignored data into<br/>
-                            meaningful insights<br/>
-                            that transform systems."
-                        </div>
+                        "I turn ignored data into<br/>
+                        meaningful insights<br/>
+                        that transform systems."
+                    </div>
 <div class="bc-contacts">
 <div class="bc-item">
 <span class="bc-icon">✉</span>
@@ -440,14 +363,15 @@
 </div>
 </div>
 </div>
-<div class="drag-hint" id="dragHint">← drag to flip · click to turn →</div>
-</div>
 <!-- Bottom Bar -->
 <div class="bottombar" id="bottombar" style="display:none;">
-<button class="nav-btn" disabled="" id="btnPrev" onclick="goPrev()">← Prev</button>
+<button class="nav-btn" disabled="" id="btnPrev" onclick="$('#flipbook').turn('previous')">← Prev</button>
 <span class="page-label" id="pageLabel">Cover</span>
-<button class="nav-btn" id="btnNext" onclick="goNext()">Open →</button>
+<button class="nav-btn" id="btnNext" onclick="$('#flipbook').turn('next')">Open →</button>
 </div>
+<!-- jQuery + Turn.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"></script>
 <!-- Firebase -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -477,7 +401,7 @@
         document.getElementById('stage').style.display     = 'flex';
         document.getElementById('bottombar').style.display = 'flex';
 
-        setTimeout(initBook, 80);
+        setTimeout(initFlipbook, 100);
     });
 
     window.doSignOut = async () => {
@@ -486,133 +410,62 @@
     };
 </script>
 <script>
-    // ── STATE ──
-    let isOpen   = false;
-    let isFlipping = false;
+function getSize() {
+    const stage = document.getElementById('stage');
+    const sw = stage.clientWidth;
+    const sh = stage.clientHeight;
+    let pH = Math.min(sh * 0.88, 600);
+    let pW = Math.min(pH / 1.414, (sw * 0.88) / 2);
+    pH = pW * 1.414;
+    return { w: Math.floor(pW), h: Math.floor(pH) };
+}
 
-    const leftPage  = document.getElementById('leftPage');
-    const rightPage = document.getElementById('rightPage');
-    const btnPrev   = document.getElementById('btnPrev');
-    const btnNext   = document.getElementById('btnNext');
-    const pageLabel = document.getElementById('pageLabel');
-    const dragHint  = document.getElementById('dragHint');
-    const bookWrap  = document.getElementById('bookWrap');
+function initFlipbook() {
+    const { w, h } = getSize();
 
-    // ── SIZE ──
-    function initBook() {
-        resize();
-        window.addEventListener('resize', resize);
-        setupDrag();
-        setupClick();
-    }
-
-    function resize() {
-        const stage = document.getElementById('stage');
-        const sw = stage.clientWidth;
-        const sh = stage.clientHeight;
-        const maxH = sh * 0.88;
-        const maxW = sw * 0.90;
-        // A4 ratio 1:1.414
-        let pH = Math.min(maxH, 600);
-        let pW = Math.min(pH / 1.414, maxW / 2);
-        pH = pW * 1.414;
-
-        [leftPage, rightPage].forEach(p => {
-            p.style.width  = pW + 'px';
-            p.style.height = pH + 'px';
-        });
-        document.querySelector('.spine').style.height = pH + 'px';
-    }
-
-    // ── FLIP LOGIC ──
-    function flipToOpen() {
-        if (isFlipping || isOpen) return;
-        isFlipping = true;
-        leftPage.classList.add('flipped');
-        rightPage.classList.add('flipped');
-        isOpen = true;
-        updateUI();
-        // Hide drag hint after first flip
-        dragHint.style.opacity = '0';
-        setTimeout(() => { isFlipping = false; }, 1200);
-    }
-
-    function flipToClose() {
-        if (isFlipping || !isOpen) return;
-        isFlipping = true;
-        leftPage.classList.remove('flipped');
-        rightPage.classList.remove('flipped');
-        isOpen = false;
-        updateUI();
-        setTimeout(() => { isFlipping = false; }, 1200);
-    }
-
-    function updateUI() {
-        btnPrev.disabled = !isOpen;
-        btnNext.disabled = isOpen;
-        pageLabel.textContent = isOpen ? 'CV' : 'Cover';
-        btnNext.textContent   = isOpen ? 'Next →' : 'Open →';
-        btnPrev.textContent   = '← Back';
-    }
-
-    window.goNext = function() { flipToOpen(); };
-    window.goPrev = function() { flipToClose(); };
-
-    // ── CLICK TO FLIP ──
-    function setupClick() {
-        // Click cover → open
-        document.getElementById('coverClickArea').addEventListener('click', (e) => {
-            if (!isOpen) flipToOpen();
-        });
-
-        // Click left page (blank) when closed → open
-        leftPage.addEventListener('click', (e) => {
-            if (!isOpen) flipToOpen();
-        });
-    }
-
-    // ── DRAG TO FLIP ──
-    function setupDrag() {
-        let startX = null;
-        let dragging = false;
-        const threshold = 60;
-
-        // Prevent drag on back cover text area
-        const backCoverContent = document.getElementById('backCoverContent');
-
-        function onDown(e) {
-            // If clicking on selectable text area, don't drag
-            if (backCoverContent.contains(e.target) && isOpen) return;
-            startX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
-            dragging = true;
-        }
-
-        function onUp(e) {
-            if (!dragging || startX === null) return;
-            const endX = e.type === 'touchend'
-                ? (e.changedTouches[0]?.clientX ?? startX)
-                : e.clientX;
-            const diff = endX - startX;
-
-            if (Math.abs(diff) > threshold) {
-                if (diff < 0 && !isOpen) flipToOpen();
-                if (diff > 0 && isOpen)  flipToClose();
+    $('#flipbook').turn({
+        width:       w * 2,
+        height:      h,
+        autoCenter:  true,
+        display:     'double',
+        acceleration: true,
+        gradients:   true,
+        elevation:   50,
+        when: {
+            turned: function(e, page) {
+                updateNav(page);
             }
-            dragging = false;
-            startX   = null;
         }
-
-        bookWrap.addEventListener('mousedown',  onDown);
-        bookWrap.addEventListener('touchstart', onDown, { passive: true });
-        window.addEventListener('mouseup',   onUp);
-        window.addEventListener('touchend',  onUp);
-    }
-
-    // ── KEYBOARD ──
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowRight') flipToOpen();
-        if (e.key === 'ArrowLeft')  flipToClose();
     });
+
+    updateNav(1);
+
+    // Keyboard
+    $(document).keydown(function(e) {
+        if (e.keyCode === 39) $('#flipbook').turn('next');
+        if (e.keyCode === 37) $('#flipbook').turn('previous');
+    });
+
+    // Resize
+    $(window).resize(function() {
+        const { w, h } = getSize();
+        $('#flipbook').turn('size', w * 2, h);
+    });
+}
+
+function updateNav(page) {
+    const total = 4;
+    const btnPrev  = document.getElementById('btnPrev');
+    const btnNext  = document.getElementById('btnNext');
+    const lbl      = document.getElementById('pageLabel');
+
+    btnPrev.disabled = page <= 1;
+    btnNext.disabled = page >= total;
+
+    if (page <= 1)      lbl.textContent = 'Cover';
+    else if (page <= 2) lbl.textContent = 'CV';
+    else                lbl.textContent = 'End';
+}
 </script>
 </body>
 </html>
