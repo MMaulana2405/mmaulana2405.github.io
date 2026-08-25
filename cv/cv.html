@@ -399,14 +399,7 @@ function setupEvents() {
         e.preventDefault();
     });
 
-    document.addEventListener('mousemove', e=>{
-        if(!isDragging||isAnimating) return;
-        const dx = e.clientX-dragStartX;
-        dragProgress = isOpen
-            ? Math.max(0,Math.min(1, 1+dx/PW))
-            : Math.max(0,Math.min(1,-dx/PW));
-        renderFlip(dragProgress);
-    });
+    
 
     document.addEventListener('mouseup', e=>{
         if(!isDragging) return;
@@ -430,7 +423,7 @@ function setupEvents() {
         dragProgress = isOpen
             ? Math.max(0,Math.min(1,1+dx/PW))
             : Math.max(0,Math.min(1,-dx/PW));
-        renderFlip(dragProgress);
+        renderFlipDirectional(dragProgress, !isOpen);
     },{passive:true});
 
     document.addEventListener('touchend', ()=>{
@@ -620,11 +613,17 @@ function animateFlip(from, to, openState) {
     if(isAnimating) return;
     isAnimating=true;
     const diff=to-from, dur=650, t0=performance.now();
+
+    // Determine what to show during animation
+    // Opening (openState=true): front=cover, back=CV
+    // Closing (openState=false): front=CV, back=cover
+    const animatingOpen = openState;
+
     function step(now) {
         const t=Math.min((now-t0)/dur,1);
         const ease=t<0.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
         const prog=from+diff*ease;
-        renderFlip(prog);
+        renderFlipDirectional(prog, animatingOpen);
         if(t<1) requestAnimationFrame(step);
         else {
             isAnimating=false; isOpen=openState;
@@ -634,26 +633,80 @@ function animateFlip(from, to, openState) {
     requestAnimationFrame(step);
 }
 
-window.triggerFlip = (toOpen) => {
-    if(isAnimating) return;
-    if(toOpen&&!isOpen)  animateFlip(0,1,true);
-    if(!toOpen&&isOpen)  animateFlip(0,1,false);
-    // For close: flip from 1 back to 0
-    if(!toOpen&&isOpen)  { isOpen=false; animateFlip(1,0,false); }
-};
+function renderFlipDirectional(prog, opening) {
+    if(prog<=0) { canvas.style.display='none'; return; }
+    if(prog>=1) { canvas.style.display='none'; return; }
 
-// Fix triggerFlip logic
-window.triggerFlip = (toOpen) => {
-    if(isAnimating) return;
-    if(toOpen  && !isOpen) animateFlip(0, 1, true);
-    if(!toOpen && isOpen)  animateFlip(0, 1, false); // reuse same anim, just set openState=false
-};
+    canvas.style.display='block';
+    ctx.clearRect(0,0,PW,PH);
 
-// Actually fix properly:
+    const foldX = PW*(1-prog);
+
+    // Left of fold: back of flipping page
+    if(foldX>0) {
+        ctx.save();
+        ctx.beginPath(); ctx.rect(0,0,foldX,PH); ctx.clip();
+        if(opening) {
+            // Opening: back = CV image
+            if(imgCV.complete&&imgCV.naturalWidth>0) ctx.drawImage(imgCV,0,0,PW,PH);
+            else { ctx.fillStyle='#fff'; ctx.fillRect(0,0,PW,PH); }
+        } else {
+            // Closing: back = cover
+            drawCoverCanvas(0,0,PW,PH);
+        }
+        const sg=ctx.createLinearGradient(foldX-60,0,foldX,0);
+        sg.addColorStop(0,'rgba(0,0,0,0)');
+        sg.addColorStop(1,`rgba(0,0,0,${0.4*prog})`);
+        ctx.fillStyle=sg; ctx.fillRect(foldX-60,0,60,PH);
+        ctx.restore();
+    }
+
+    // Right of fold: front of flipping page (compressed)
+    if(foldX<PW) {
+        const scaleX=Math.abs(Math.cos(prog*Math.PI));
+        if(scaleX>0.01) {
+            ctx.save();
+            ctx.beginPath(); ctx.rect(foldX,0,PW-foldX,PH); ctx.clip();
+            ctx.translate(foldX,0); ctx.scale(scaleX,1);
+            if(opening) {
+                // Opening: front = cover
+                drawCoverCanvas(0,0,PW,PH);
+            } else {
+                // Closing: front = CV
+                if(imgCV.complete&&imgCV.naturalWidth>0) ctx.drawImage(imgCV,0,0,PW,PH);
+                else { ctx.fillStyle='#fff'; ctx.fillRect(0,0,PW,PH); }
+            }
+            ctx.scale(1/scaleX,1); ctx.translate(-foldX,0);
+            const fg=ctx.createLinearGradient(foldX,0,foldX+70,0);
+            fg.addColorStop(0,`rgba(0,0,0,${0.5*(1-scaleX)})`);
+            fg.addColorStop(1,'rgba(0,0,0,0)');
+            ctx.fillStyle=fg; ctx.fillRect(foldX,0,70,PH);
+            ctx.restore();
+        }
+    }
+
+    // Fold line
+    ctx.beginPath(); ctx.moveTo(foldX,0); ctx.lineTo(foldX,PH);
+    ctx.strokeStyle=`rgba(0,0,0,${0.3*Math.sin(prog*Math.PI)})`;
+    ctx.lineWidth=1.5; ctx.stroke();
+}
+
 window.triggerFlip = (toOpen) => {
     if(isAnimating) return;
-    if(toOpen  && !isOpen) animateFlip(0, 1, true);
-    if(!toOpen && isOpen)  { isOpen=false; renderStatic(); animateFlip(1, 0, false); }
+    if(toOpen && !isOpen) {
+        // Open: animate cover flipping left (prog 0→1)
+        animateFlip(0, 1, true);
+    } else if(!toOpen && isOpen) {
+        // Close: animate CV flipping back right (prog 0→1, but openState=false)
+        // We need to show cover on right, CV on left during close animation
+        // Swap content first, then animate
+        isOpen = false;
+        renderStatic(); // now shows cover on right
+        // Animate from fully open (prog=1) back to closed (prog=0)
+        // But renderStatic already shows closed state, so we animate the "close" flip
+        isOpen = true; // temporarily set back so renderFlip draws correctly
+        animateFlip(1, 0, false);
+    }
 };
 
 function updateUI() {
