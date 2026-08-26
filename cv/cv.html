@@ -135,10 +135,10 @@ function calcSize(){
     pH = Math.floor(pW * 1.414);
     if(pH > sh * 0.88){ pH = Math.floor(sh * 0.88); pW = Math.floor(pH / 1.414); }
   } else {
-    pH = Math.min(sh * 0.88, 580);
-    pW = Math.min(pH / 1.414, (sw * 0.92) / 2);
+    // No height cap — let canvas be as large as possible for sharp rendering
+    pH = Math.floor(sh * 0.88);
+    pW = Math.min(Math.floor(pH / 1.414), Math.floor((sw * 0.92) / 2));
     pH = Math.floor(pW * 1.414);
-    pW = Math.floor(pW);
   }
   return { w: pW, h: pH };
 }
