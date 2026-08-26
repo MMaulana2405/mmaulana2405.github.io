@@ -64,9 +64,8 @@ body{font-family:'Inter',sans-serif;background:#050810;color:#fff;height:100vh;d
 </div>
 </div>
 <div class="bottombar" id="bb" style="display:none">
-<button class="nb" disabled="" id="bp" onclick="doPrev()">← Back</button>
-<span class="pl" id="pl">Cover</span>
-<button class="nb" id="bn" onclick="doNext()">Open →</button>
+<button class="nb" id="bp" onclick="doPrev()" disabled>←</button>
+<button class="nb" id="bn" onclick="doNext()">→</button>
 </div>
 <script src="page-flip.js"></script>
 <script type="module">
@@ -81,7 +80,26 @@ const auth=getAuth(initializeApp({
   appId:"1:57812235771:web:5cd823cee44e095fc1475e"
 }));
 onAuthStateChanged(auth,u=>{
-  if(!u){window.location.href="index.html";return}
+  if(!u){
+    // Not logged in → redirect to login page
+    window.location.href="index.html";
+    return;
+  }
+
+  // Check if this is a fresh login (within last 5 minutes)
+  // This prevents old sessions from bypassing the login page
+  const loginTime = u.metadata.lastSignInTime;
+  const loginMs   = new Date(loginTime).getTime();
+  const nowMs     = Date.now();
+  const fiveMin   = 5 * 60 * 1000;
+
+  if(nowMs - loginMs > fiveMin){
+    // Session is too old — force re-login
+    signOut(auth).then(()=>{ window.location.href="index.html"; });
+    return;
+  }
+
+  // Fresh login — show CV
   document.getElementById('tn').textContent=u.displayName||u.email;
   if(u.photoURL)document.getElementById('avi').src=u.photoURL;
   document.getElementById('ls').style.display='none';
@@ -97,18 +115,6 @@ var pf         = null;
 var keyHandler = null;
 var resizeTimer= null;
 var isMobile   = false;
-
-// Image paths — 4 pages for PageFlip
-// Page 1: Cover (shown alone with showCover:true)
-// Page 2: Blank (back of cover)
-// Page 3: CV image
-// Page 4: Back cover
-var PAGES = [
-  'pages/page-cover.jpg',
-  'pages/page-blank.jpg',
-  'pages/page-1.jpg',
-  'pages/page-back.jpg'
-];
 
 function calcSize(){
   var s  = document.getElementById('st');
@@ -129,67 +135,70 @@ function calcSize(){
   return { w: pW, h: pH };
 }
 
+// Dynamically detect all CV pages (page-1.jpg, page-2.jpg, etc.)
+// Just add more page-N.jpg files to pages/ folder — no code change needed!
+function detectPages(callback){
+  var pages = ['pages/page-cover.jpg', 'pages/page-blank.jpg'];
+  var n = 1;
+
+  function tryNext(){
+    var img = new Image();
+    var src = 'pages/page-' + n + '.jpg';
+    img.onload  = function(){ pages.push(src); n++; tryNext(); };
+    img.onerror = function(){
+      // No more CV pages found — add back cover and finish
+      pages.push('pages/page-back.jpg');
+      callback(pages);
+    };
+    img.src = src + '?t=' + Date.now(); // cache bust
+  }
+  tryNext();
+}
+
 function initFlip(){
   var sz = calcSize();
   var w  = sz.w, h = sz.h;
 
   if(keyHandler) document.removeEventListener('keydown', keyHandler);
 
-  // Clean up old PageFlip
   if(pf){
     var old = document.querySelector('.stf__parent');
     if(old && old.parentNode) old.parentNode.removeChild(old);
     pf = null;
   }
 
-  // Use loadFromImages → canvas renderer → smooth like AstraMagazine
-  pf = new St.PageFlip(document.getElementById('flipbook'), {
-    width:    w,
-    height:   h,
-    size:     'fixed',
+  // Detect pages dynamically, then init PageFlip
+  detectPages(function(pages){
+    pf = new St.PageFlip(document.getElementById('flipbook'), {
+      width:    w,
+      height:   h,
+      size:     'fixed',
+      showCover:           true,
+      drawShadow:          true,
+      maxShadowOpacity:    0.8,
+      flippingTime:        800,
+      usePortrait:         isMobile,
+      startZIndex:         0,
+      autoSize:            false,
+      useMouseEvents:      true,
+      mobileScrollSupport: false,
+      swipeDistance:       5,
+      showPageCorners:     true,
+      disableFlipByClick:  false,
+      clickEventForward:   false,
+    });
 
-    // Cover mode
-    showCover: true,
+    pf.loadFromImages(pages);
 
-    // Realistic shadow
-    drawShadow:       true,
-    maxShadowOpacity: 0.8,
+    pf.on('flip', function(e){ updateNav(e.data, pages.length); });
+    pf.on('init', function(){  updateNav(0,      pages.length); });
 
-    // Natural flip speed
-    flippingTime: 800,
-
-    // Responsive
-    usePortrait: isMobile,
-
-    startZIndex:  0,
-    autoSize:     false,
-
-    // Mouse drag
-    useMouseEvents:      true,
-    mobileScrollSupport: false,
-
-    // Responsive drag
-    swipeDistance: 5,
-
-    // Corner curl
-    showPageCorners: true,
-
-    // Click to flip
-    disableFlipByClick: false,
-    clickEventForward:  false,
+    keyHandler = function(e){
+      if(e.key==='ArrowRight') pf.flipNext();
+      if(e.key==='ArrowLeft')  pf.flipPrev();
+    };
+    document.addEventListener('keydown', keyHandler);
   });
-
-  // loadFromImages uses canvas renderer — much smoother than HTML renderer
-  pf.loadFromImages(PAGES);
-
-  pf.on('flip', function(e){ updateNav(e.data); });
-  pf.on('init', function(){ updateNav(0); });
-
-  keyHandler = function(e){
-    if(e.key==='ArrowRight') pf.flipNext();
-    if(e.key==='ArrowLeft')  pf.flipPrev();
-  };
-  document.addEventListener('keydown', keyHandler);
 
   window.onresize = function(){
     clearTimeout(resizeTimer);
@@ -197,10 +206,10 @@ function initFlip(){
   };
 }
 
-function updateNav(idx){
+function updateNav(idx, total){
+  var last = (total || 4) - 2;
   document.getElementById('bp').disabled = (idx <= 1);
-  document.getElementById('bn').disabled = (idx >= 2);
-  document.getElementById('pl').textContent = (idx <= 1) ? 'Cover' : 'CV';
+  document.getElementById('bn').disabled = (idx >= last);
 }
 
 window.doNext = function(){ if(pf) pf.flipNext(); };
