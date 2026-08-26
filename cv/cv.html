@@ -138,14 +138,32 @@ let fc,fctx,cc,cctx; // flip canvas, curl canvas
 
 function init(){
   const s=document.getElementById('st');
-  let pH=Math.min(s.clientHeight*.88,580);
-  let pW=Math.min(pH/1.414,(s.clientWidth*.88)/2);
-  pH=Math.floor(pW*1.414); pW=Math.floor(pW);
+  const sw=s.clientWidth||window.innerWidth;
+  const sh=s.clientHeight||(window.innerHeight-100);
+
+  // On mobile: single page fills most of screen width
+  // On desktop: A4 ratio, max 580px tall
+  let pW, pH;
+  if(sw < 600){
+    // Mobile: page width = 90% of screen, height = A4 ratio
+    pW = Math.floor(sw * 0.88);
+    pH = Math.floor(pW * 1.414);
+    // If too tall, scale down
+    if(pH > sh * 0.88){ pH = Math.floor(sh * 0.88); pW = Math.floor(pH / 1.414); }
+  } else {
+    // Desktop: standard sizing
+    pH = Math.min(sh * 0.88, 580);
+    pW = Math.min(pH / 1.414, (sw * 0.88) / 2);
+    pH = Math.floor(pW * 1.414); pW = Math.floor(pW);
+  }
   PW=pW; PH=pH;
 
   // size halves
   ['lh','rh'].forEach(id=>{const e=document.getElementById(id);e.style.width=PW+'px';e.style.height=PH+'px'});
   document.getElementById('spine').style.height=PH+'px';
+
+  // responsive: also set book max-width for mobile
+  document.getElementById('book').style.maxWidth='100vw';
 
   // flip canvas = full book width
   const BW=PW*2+SW;
@@ -209,56 +227,81 @@ function events(){
   const rh=document.getElementById('rh');
   const bk=document.getElementById('book');
 
-  // hover curl (only when closed)
+  // ── HOVER CURL: pojok kanan bawah saja (visual only) ──
   rh.addEventListener('mousemove',e=>{
     if(anim||drag||open)return;
     const{x,y}=rpos(e);
-    if(inCorner(x,y)){tcX=PW-x;tcY=PH-y;rh.style.cursor='pointer'}
-    else{tcX=0;tcY=0;rh.style.cursor='default'}
+    if(inCorner(x,y,100)){
+      tcX=PW-x; tcY=PH-y;
+      rh.style.cursor='grab';
+    } else {
+      tcX=0; tcY=0;
+      rh.style.cursor='grab';
+    }
     startCurl();
   });
-  rh.addEventListener('mouseleave',()=>{tcX=0;tcY=0;rh.style.cursor='default';startCurl()});
+  rh.addEventListener('mouseleave',()=>{
+    if(!drag){tcX=0;tcY=0;startCurl()}
+    rh.style.cursor='default';
+  });
 
-  // drag — on entire book
+  // ── MOUSE DRAG: seluruh halaman ──
   bk.addEventListener('mousedown',e=>{
     if(anim)return;
     if(e.target.closest&&e.target.closest('.bc'))return;
-    drag=true;dragX=e.clientX;dragP=0;
+    drag=true; dragX=e.clientX; dragP=0;
+    bk.style.cursor='grabbing';
     e.preventDefault();
   });
   document.addEventListener('mousemove',e=>{
     if(!drag||anim)return;
     const dx=e.clientX-dragX;
-    dragP=open?Math.max(0,Math.min(1,1+dx/PW)):Math.max(0,Math.min(1,-dx/PW));
-    drawFlip(dragP,!open);
+    // opening: drag left (negative dx), closing: drag right (positive dx)
+    if(!open){
+      dragP=Math.max(0,Math.min(1,-dx/PW));
+    } else {
+      dragP=Math.max(0,Math.min(1,dx/PW));
+    }
+    if(dragP>0) drawFlip(dragP,!open);
   });
   document.addEventListener('mouseup',()=>{
-    if(!drag)return;drag=false;
-    const snap=dragP>.35;
-    if(!open)snap?animate(dragP,1,true):animate(dragP,0,false);
-    else     snap?animate(dragP,0,false):animate(dragP,1,true);
+    if(!drag)return;
+    drag=false;
+    bk.style.cursor='';
+    tcX=0;tcY=0;startCurl();
+    const snap=dragP>.3;
+    if(!open) snap?animate(dragP,1,true):animate(dragP,0,false);
+    else      snap?animate(dragP,0,false):animate(dragP,1,true);
   });
 
-  // touch
-  bk.addEventListener('touchstart',e=>{if(anim)return;drag=true;dragX=e.touches[0].clientX;dragP=0},{passive:true});
+  // ── TOUCH DRAG: seluruh halaman ──
+  bk.addEventListener('touchstart',e=>{
+    if(anim)return;
+    drag=true; dragX=e.touches[0].clientX; dragP=0;
+  },{passive:true});
   document.addEventListener('touchmove',e=>{
     if(!drag||anim)return;
     const dx=e.touches[0].clientX-dragX;
-    dragP=open?Math.max(0,Math.min(1,1+dx/PW)):Math.max(0,Math.min(1,-dx/PW));
-    drawFlip(dragP,!open);
+    if(!open){
+      dragP=Math.max(0,Math.min(1,-dx/PW));
+    } else {
+      dragP=Math.max(0,Math.min(1,dx/PW));
+    }
+    if(dragP>0) drawFlip(dragP,!open);
   },{passive:true});
   document.addEventListener('touchend',()=>{
-    if(!drag)return;drag=false;
-    const snap=dragP>.35;
-    if(!open)snap?animate(dragP,1,true):animate(dragP,0,false);
-    else     snap?animate(dragP,0,false):animate(dragP,1,true);
+    if(!drag)return;
+    drag=false;
+    const snap=dragP>.3;
+    if(!open) snap?animate(dragP,1,true):animate(dragP,0,false);
+    else      snap?animate(dragP,0,false):animate(dragP,1,true);
   });
 
-  // click corner
+  // ── CLICK anywhere on page to flip ──
   rh.addEventListener('click',e=>{
-    if(anim||drag)return;
-    const{x,y}=rpos(e);
-    if(inCorner(x,y,100))flip(!open);
+    if(anim||dragP>.05)return;
+    if(e.target.closest&&e.target.closest('.bc'))return;
+    flip(!open);
   });
 }
 
