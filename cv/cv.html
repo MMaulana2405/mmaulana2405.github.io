@@ -26,8 +26,16 @@ body{font-family:'Inter',sans-serif;background:#050810;color:#fff;height:100vh;d
 .stage{flex:1;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 25% 40%,rgba(0,60,160,.2) 0%,transparent 55%),radial-gradient(ellipse at 78% 65%,rgba(0,212,255,.07) 0%,transparent 50%),#050810;position:relative}
 .stage::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,212,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.025) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
 
-/* Flipbook wrapper: position relative, no overflow hidden */
+/* Flipbook wrapper */
 #flipbook-wrap{position:relative;z-index:1}
+
+/* Override PageFlip injected CSS for smoother animation */
+/* Higher perspective = more natural 3D depth */
+.stf__block{perspective:4000px !important}
+/* Smoother transform transitions on page items */
+.stf__item{will-change:transform;-webkit-font-smoothing:antialiased}
+/* Remove any transition that might conflict */
+.stf__outerShadow,.stf__innerShadow,.stf__hardShadow,.stf__hardInnerShadow{pointer-events:none}
 
 .page{overflow:hidden;background:#0A1220}
 
@@ -213,7 +221,7 @@ function initFlip(){
     maxShadowOpacity: 0.8,
 
     // Natural paper flip speed
-    flippingTime: 1000,
+    flippingTime: 800,
 
     // Responsive: portrait on mobile, landscape on desktop
     usePortrait: isMobile,
