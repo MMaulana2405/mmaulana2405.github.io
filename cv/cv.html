@@ -10,8 +10,7 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Inter',sans-serif;background:#050810;color:#fff;height:100vh;display:flex;flex-direction:column;overflow:hidden}
 
-/* topbar */
-.tb{height:50px;flex-shrink:0;background:rgba(8,13,26,.98);border-bottom:1px solid rgba(0,212,255,.12);display:flex;align-items:center;justify-content:space-between;padding:0 20px;backdrop-filter:blur(12px);z-index:100}
+.topbar{height:50px;flex-shrink:0;background:rgba(8,13,26,.98);border-bottom:1px solid rgba(0,212,255,.12);display:flex;align-items:center;justify-content:space-between;padding:0 20px;backdrop-filter:blur(12px);z-index:100}
 .tbl{display:flex;align-items:center;gap:10px}
 .av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#0050B8,#00D4FF);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
 .av img{width:100%;height:100%;object-fit:cover}
@@ -23,26 +22,17 @@ body{font-family:'Inter',sans-serif;background:#050810;color:#fff;height:100vh;d
 .bso{font-size:11px;color:rgba(255,255,255,.25);background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif}
 .bso:hover{color:#00D4FF}
 
-/* stage */
 .stage{flex:1;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 25% 40%,rgba(0,60,160,.2) 0%,transparent 55%),radial-gradient(ellipse at 78% 65%,rgba(0,212,255,.07) 0%,transparent 50%),#050810;position:relative;overflow:hidden}
 .stage::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,212,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.025) 1px,transparent 1px);background-size:48px 48px;pointer-events:none}
 
-/* book */
-#book{position:relative;display:flex;box-shadow:0 30px 80px rgba(0,0,0,.8)}
-.half{position:relative;overflow:hidden;flex-shrink:0}
-#spine{width:6px;flex-shrink:0;background:linear-gradient(180deg,transparent,rgba(0,212,255,.3) 20%,rgba(0,212,255,.5) 50%,rgba(0,212,255,.3) 80%,transparent);z-index:5}
+/* PageFlip container */
+#flipbook-container{position:relative;display:flex;align-items:center;justify-content:center}
 
-/* full-book canvas for flip */
-#fc{position:absolute;top:0;left:0;pointer-events:none;z-index:30;display:none}
-/* curl canvas on right half */
-#cc{position:absolute;top:0;left:0;pointer-events:none;z-index:20;display:none}
+/* Page styles — used by PageFlip */
+.page{overflow:hidden;background:#0A1220}
 
-/* page content */
-.pg-blank{width:100%;height:100%;background:#0A1220;display:flex;align-items:center;justify-content:center}
-.pg-blank span{opacity:.12;font-size:11px;color:rgba(255,255,255,.6);text-align:center}
-
-.pg-cover{width:100%;height:100%;background:linear-gradient(145deg,#0A1628,#0D1F3C 45%,#080D1A);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 28px;text-align:center;position:relative}
-.pg-cover::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 40% 35%,rgba(0,100,220,.32) 0%,transparent 55%),radial-gradient(ellipse at 70% 75%,rgba(0,212,255,.12) 0%,transparent 45%);pointer-events:none}
+.p-cover{width:100%;height:100%;background:linear-gradient(145deg,#0A1628,#0D1F3C 45%,#080D1A);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 28px;text-align:center;position:relative}
+.p-cover::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 40% 35%,rgba(0,100,220,.32) 0%,transparent 55%),radial-gradient(ellipse at 70% 75%,rgba(0,212,255,.12) 0%,transparent 45%);pointer-events:none}
 .cg{position:absolute;inset:0;background-image:linear-gradient(rgba(0,212,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.05) 1px,transparent 1px);background-size:36px 36px;pointer-events:none}
 .ci{position:relative;z-index:1}
 .ce{font-size:9px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#00D4FF;margin-bottom:20px;opacity:.85}
@@ -54,11 +44,14 @@ body{font-family:'Inter',sans-serif;background:#050810;color:#fff;height:100vh;d
 .cc2{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#00D4FF;border:1px solid rgba(0,212,255,.35);padding:7px 16px;border-radius:20px;background:rgba(0,212,255,.07);display:inline-block;animation:pulse 2s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
 
-.pg-cv{width:100%;height:100%;background:#fff}
-.pg-cv img{width:100%;height:100%;object-fit:contain;object-position:top center;display:block}
+.p-blank{width:100%;height:100%;background:#0A1220;display:flex;align-items:center;justify-content:center}
+.bi2{text-align:center;opacity:.12;font-size:11px;color:rgba(255,255,255,.6)}
 
-.pg-back{width:100%;height:100%;background:linear-gradient(145deg,#080D1A,#0D1A35);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 28px;text-align:center;position:relative}
-.pg-back::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(0,80,180,.18) 0%,transparent 65%);pointer-events:none}
+.p-cv{width:100%;height:100%;background:#fff}
+.p-cv img{width:100%;height:100%;object-fit:contain;object-position:top center;display:block}
+
+.p-back{width:100%;height:100%;background:linear-gradient(145deg,#080D1A,#0D1A35);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 28px;text-align:center;position:relative}
+.p-back::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(0,80,180,.18) 0%,transparent 65%);pointer-events:none}
 .bc{position:relative;z-index:1;user-select:text;-webkit-user-select:text;cursor:text}
 .bt{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#00D4FF;margin-bottom:18px;user-select:none}
 .bq{font-family:'Playfair Display',serif;font-size:13px;font-style:italic;color:rgba(255,255,255,.65);line-height:1.85;margin-bottom:28px}
@@ -66,14 +59,12 @@ body{font-family:'Inter',sans-serif;background:#050810;color:#fff;height:100vh;d
 .bi{font-size:11px;color:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;gap:8px}
 .bic{color:#00D4FF;user-select:none}
 
-/* bottombar */
-.bb{height:50px;flex-shrink:0;background:rgba(8,13,26,.98);border-top:1px solid rgba(0,212,255,.1);display:flex;align-items:center;justify-content:center;gap:16px;backdrop-filter:blur(12px)}
+.bottombar{height:50px;flex-shrink:0;background:rgba(8,13,26,.98);border-top:1px solid rgba(0,212,255,.1);display:flex;align-items:center;justify-content:center;gap:16px;backdrop-filter:blur(12px)}
 .nb{display:flex;align-items:center;gap:6px;padding:7px 18px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:20px;color:#00D4FF;font-size:12px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s}
 .nb:hover:not(:disabled){background:rgba(0,212,255,.16);transform:translateY(-1px)}
 .nb:disabled{opacity:.25;cursor:not-allowed;transform:none}
 .pl{font-size:11px;color:rgba(255,255,255,.25);min-width:80px;text-align:center}
 
-/* loading */
 .ls{position:fixed;inset:0;background:#080D1A;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:200}
 .sp{width:32px;height:32px;border:2px solid rgba(0,212,255,.15);border-top-color:#00D4FF;border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -82,7 +73,7 @@ body{font-family:'Inter',sans-serif;background:#050810;color:#fff;height:100vh;d
 </head>
 <body>
 <div class="ls" id="ls"><div class="sp"></div><div class="lt">Verifying access...</div></div>
-<div class="tb" id="tb" style="display:none">
+<div class="topbar" id="tb" style="display:none">
 <div class="tbl">
 <div class="av"><img alt="" id="avi" onerror="this.style.display='none'" src=""/></div>
 <div><div class="tn" id="tn">—</div><div class="tl">Viewing CV · Access Recorded</div></div>
@@ -93,21 +84,59 @@ body{font-family:'Inter',sans-serif;background:#050810;color:#fff;height:100vh;d
 </div>
 </div>
 <div class="stage" id="st" style="display:none">
-<div id="book">
-<div class="half" id="lh"><div id="lc"></div></div>
-<div id="spine"></div>
-<div class="half" id="rh">
-<div id="rc"></div>
-<canvas id="cc"></canvas><!-- curl canvas, right half only -->
-</div>
-<canvas id="fc"></canvas><!-- flip canvas, full book -->
+<div id="flipbook-container">
+<div id="flipbook">
+<!-- Page 1: Blank (left of cover spread) -->
+<div class="page">
+<div class="p-blank">
+<div class="bi2">✦<br/>Mochammad Maulana Ibrahim</div>
 </div>
 </div>
-<div class="bb" id="bb" style="display:none">
-<button class="nb" disabled="" id="bp" onclick="flip(false)">← Back</button>
+<!-- Page 2: Cover (right of cover spread) -->
+<div class="page">
+<div class="p-cover">
+<div class="cg"></div>
+<div class="ci">
+<div class="ce">Curriculum Vitae · 2026</div>
+<div class="cp"><img alt="MMI" onerror="this.style.display='none';this.parentElement.innerHTML='MMI'" src="../FotoProfil.jpeg?expires=1790335767&amp;signature=b72e68fae2b17e4af7c3e468c9f85997175649fdb669f8ec2342a3fdb7b8f406&amp;kid=prod-250922"/></div>
+<div class="cn">Mochammad<br/>Maulana Ibrahim</div>
+<div class="cr"></div>
+<div class="cq">"The most overlooked data,<br/>when gathered with patience,<br/>becomes the clearest insight."</div>
+<div class="cc2">← Drag to open</div>
+</div>
+</div>
+</div>
+<!-- Page 3: CV image -->
+<div class="page">
+<div class="p-cv">
+<img alt="CV" src="pages/page-1.jpg?expires=1790335767&amp;signature=100b5f83c2a38a5c7221fe6b2ddc088243b305132b9ff3ed6146e2541dece916&amp;kid=prod-250922"/>
+</div>
+</div>
+<!-- Page 4: Back cover -->
+<div class="page">
+<div class="p-back">
+<div class="bc">
+<div class="bt">Get In Touch</div>
+<div class="bq">"I turn ignored data into<br/>meaningful insights<br/>that transform systems."</div>
+<div class="bcs">
+<div class="bi"><span class="bic">✉</span><span>mochammad.maulana.i.01@gmail.com</span></div>
+<div class="bi"><span class="bic">📱</span><span>(+62) 898-9210-565</span></div>
+<div class="bi"><span class="bic">🔗</span><span>linkedin.com/in/mmi01</span></div>
+<div class="bi"><span class="bic">🌐</span><span>mmaulana2405.github.io</span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bottombar" id="bb" style="display:none">
+<button class="nb" disabled="" id="bp" onclick="doPrev()">← Back</button>
 <span class="pl" id="pl">Cover</span>
-<button class="nb" id="bn" onclick="flip(true)">Open →</button>
+<button class="nb" id="bn" onclick="doNext()">Open →</button>
 </div>
+<!-- PageFlip local -->
+<script src="page-flip.js"></script>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -120,393 +149,95 @@ onAuthStateChanged(auth,u=>{
   document.getElementById('tb').style.display='flex';
   document.getElementById('st').style.display='flex';
   document.getElementById('bb').style.display='flex';
-  requestAnimationFrame(()=>requestAnimationFrame(()=>init()));
+  requestAnimationFrame(()=>requestAnimationFrame(()=>initFlip()));
 });
 window.doSO=async()=>{await signOut(auth);window.location.href="index.html"};
 </script>
 <script>
-// ─────────────────────────────────────────────────
-//  MAGAZINE FLIP — clean & correct
-// ─────────────────────────────────────────────────
-let PW,PH,SW=6; // page width, height, spine width
-let open=false,anim=false,drag=false;
-let dragX=0,dragP=0;
-let curlX=0,curlY=0,tcX=0,tcY=0,craf=null;
+let pf=null;
 
-const iCover=new Image(),iCV=new Image();
-let fc,fctx,cc,cctx; // flip canvas, curl canvas
-
-function init(){
+function calcSize(){
   const s=document.getElementById('st');
   const sw=s.clientWidth||window.innerWidth;
   const sh=s.clientHeight||(window.innerHeight-100);
-
-  // On mobile: single page fills most of screen width
-  // On desktop: A4 ratio, max 580px tall
-  let pW, pH;
-  if(sw < 600){
-    // Mobile: page width = 90% of screen, height = A4 ratio
-    pW = Math.floor(sw * 0.88);
-    pH = Math.floor(pW * 1.414);
-    // If too tall, scale down
-    if(pH > sh * 0.88){ pH = Math.floor(sh * 0.88); pW = Math.floor(pH / 1.414); }
+  let pH,pW;
+  if(sw<600){
+    pW=Math.floor(sw*.9);
+    pH=Math.floor(pW*1.414);
+    if(pH>sh*.9){pH=Math.floor(sh*.9);pW=Math.floor(pH/1.414)}
   } else {
-    // Desktop: standard sizing
-    pH = Math.min(sh * 0.88, 580);
-    pW = Math.min(pH / 1.414, (sw * 0.88) / 2);
-    pH = Math.floor(pW * 1.414); pW = Math.floor(pW);
+    pH=Math.min(sh*.88,580);
+    pW=Math.min(pH/1.414,(sw*.88)/2);
+    pH=Math.floor(pW*1.414);pW=Math.floor(pW);
   }
-  PW=pW; PH=pH;
+  return{w:pW,h:pH};
+}
 
-  // size halves
-  ['lh','rh'].forEach(id=>{const e=document.getElementById(id);e.style.width=PW+'px';e.style.height=PH+'px'});
-  document.getElementById('spine').style.height=PH+'px';
+function initFlip(){
+  const{w,h}=calcSize();
 
-  // responsive: also set book max-width for mobile
-  document.getElementById('book').style.maxWidth='100vw';
+  // Set explicit size on all pages BEFORE init
+  document.querySelectorAll('#flipbook .page').forEach(p=>{
+    p.style.width=w+'px';
+    p.style.height=h+'px';
+  });
+  document.querySelectorAll('#flipbook .page > div').forEach(p=>{
+    p.style.width=w+'px';
+    p.style.height=h+'px';
+  });
 
-  // flip canvas = full book width
-  const BW=PW*2+SW;
-  fc=document.getElementById('fc');
-  fc.width=BW; fc.height=PH;
-  fc.style.cssText=`position:absolute;top:0;left:0;width:${BW}px;height:${PH}px;z-index:30;pointer-events:none;display:none`;
-  fctx=fc.getContext('2d');
+  if(pf){
+    try{pf.destroy();}catch(e){}
+    pf=null;
+  }
 
-  // curl canvas = right half only
-  cc=document.getElementById('cc');
-  cc.width=PW; cc.height=PH;
-  cc.style.cssText=`position:absolute;top:0;left:0;width:${PW}px;height:${PH}px;z-index:20;pointer-events:none;display:none`;
-  cctx=cc.getContext('2d');
+  pf=new St.PageFlip(document.getElementById('flipbook'),{
+    width:w,
+    height:h,
+    size:'fixed',
+    showCover:true,
+    drawShadow:true,
+    flippingTime:900,
+    usePortrait:sw<600,
+    startZIndex:0,
+    autoSize:false,
+    maxShadowOpacity:0.5,
+    mobileScrollSupport:false,
+    clickEventForward:false,
+    useMouseEvents:true,
+    swipeDistance:10,
+    showPageCorners:true,
+    disableFlipByClick:false,
+  });
 
-  iCV.src='pages/page-1.jpg';
-  iCover.src='../FotoProfil.jpeg';
+  pf.loadFromHTML(document.querySelectorAll('#flipbook .page'));
 
-  drawStatic();
-  events();
+  pf.on('flip',e=>updateNav(e.data));
+  pf.on('changeState',()=>updateNav(pf.getCurrentPageIndex()));
+
+  updateNav(0);
 
   document.addEventListener('keydown',e=>{
-    if(e.key==='ArrowRight'&&!open)flip(true);
-    if(e.key==='ArrowLeft'&&open)flip(false);
-  });
-  window.addEventListener('resize',init);
-}
-
-// ── STATIC HTML ──────────────────────────────────
-function drawStatic(){
-  const lc=document.getElementById('lc'),rc=document.getElementById('rc');
-  const lh=document.getElementById('lh'),sp=document.getElementById('spine');
-  lc.style.cssText=`width:${PW}px;height:${PH}px`;
-  rc.style.cssText=`width:${PW}px;height:${PH}px`;
-  fc.style.display='none'; fctx.clearRect(0,0,fc.width,PH);
-  cc.style.display='none'; cctx.clearRect(0,0,PW,PH);
-
-  if(!open){
-    // CLOSED: only cover, centered — hide left half & spine
-    lh.style.display='none';
-    sp.style.display='none';
-    rc.innerHTML=`<div class="pg-cover" style="width:${PW}px;height:${PH}px"><div class="cg"></div><div class="ci"><div class="ce">Curriculum Vitae · 2026</div><div class="cp"><img src="../FotoProfil.jpeg" alt="MMI" onerror="this.style.display='none';this.parentElement.innerHTML='MMI'"></div><div class="cn">Mochammad<br>Maulana Ibrahim</div><div class="cr"></div><div class="cq">"The most overlooked data,<br>when gathered with patience,<br>becomes the clearest insight."</div><div class="cc2">← Drag corner to open</div></div></div>`;
-  } else {
-    // OPEN: show both halves
-    lh.style.display='block';
-    sp.style.display='block';
-    lc.innerHTML=`<div class="pg-cv" style="width:${PW}px;height:${PH}px"><img src="pages/page-1.jpg" alt="CV"></div>`;
-    rc.innerHTML=`<div class="pg-back" style="width:${PW}px;height:${PH}px"><div class="bc"><div class="bt">Get In Touch</div><div class="bq">"I turn ignored data into<br>meaningful insights<br>that transform systems."</div><div class="bcs"><div class="bi"><span class="bic">✉</span><span>mochammad.maulana.i.01@gmail.com</span></div><div class="bi"><span class="bic">📱</span><span>(+62) 898-9210-565</span></div><div class="bi"><span class="bic">🔗</span><span>linkedin.com/in/mmi01</span></div><div class="bi"><span class="bic">🌐</span><span>mmaulana2405.github.io</span></div></div></div></div>`;
-  }
-  updateUI();
-}
-
-// ── EVENTS ───────────────────────────────────────
-function rpos(e){
-  const r=document.getElementById('rh').getBoundingClientRect();
-  return{x:(e.touches?e.touches[0].clientX:e.clientX)-r.left,
-         y:(e.touches?e.touches[0].clientY:e.clientY)-r.top};
-}
-function inCorner(x,y,s=100){return x>PW-s&&y>PH-s}
-
-function events(){
-  const rh=document.getElementById('rh');
-  const bk=document.getElementById('book');
-
-  // ── HOVER CURL: pojok kanan bawah saja (visual only) ──
-  rh.addEventListener('mousemove',e=>{
-    if(anim||drag||open)return;
-    const{x,y}=rpos(e);
-    if(inCorner(x,y,100)){
-      tcX=PW-x; tcY=PH-y;
-      rh.style.cursor='grab';
-    } else {
-      tcX=0; tcY=0;
-      rh.style.cursor='grab';
-    }
-    startCurl();
-  });
-  rh.addEventListener('mouseleave',()=>{
-    if(!drag){tcX=0;tcY=0;startCurl()}
-    rh.style.cursor='default';
+    if(e.key==='ArrowRight')pf.flipNext();
+    if(e.key==='ArrowLeft')pf.flipPrev();
   });
 
-  // ── MOUSE DRAG: seluruh halaman ──
-  bk.addEventListener('mousedown',e=>{
-    if(anim)return;
-    if(e.target.closest&&e.target.closest('.bc'))return;
-    drag=true; dragX=e.clientX; dragP=0;
-    bk.style.cursor='grabbing';
-    e.preventDefault();
-  });
-  document.addEventListener('mousemove',e=>{
-    if(!drag||anim)return;
-    const dx=e.clientX-dragX;
-    // opening: drag left (negative dx), closing: drag right (positive dx)
-    if(!open){
-      dragP=Math.max(0,Math.min(1,-dx/PW));
-    } else {
-      dragP=Math.max(0,Math.min(1,dx/PW));
-    }
-    if(dragP>0) drawFlip(dragP,!open);
-  });
-  document.addEventListener('mouseup',()=>{
-    if(!drag)return;
-    drag=false;
-    bk.style.cursor='';
-    tcX=0;tcY=0;startCurl();
-    const snap=dragP>.3;
-    if(dragP===0){
-      // No drag happened — restore visibility
-      ['lh','sp','lc','rc'].forEach(id=>{
-        const el=document.getElementById(id);
-        if(el){el.style.visibility='';el.style.display='';}
-      });
-      drawStatic();
-      return;
-    }
-    if(!open) snap?animate(dragP,1,true):animate(dragP,0,false);
-    else      snap?animate(dragP,0,false):animate(dragP,1,true);
-  });
-
-  // ── TOUCH DRAG: seluruh halaman ──
-  bk.addEventListener('touchstart',e=>{
-    if(anim)return;
-    drag=true; dragX=e.touches[0].clientX; dragP=0;
-  },{passive:true});
-  document.addEventListener('touchmove',e=>{
-    if(!drag||anim)return;
-    const dx=e.touches[0].clientX-dragX;
-    if(!open){
-      dragP=Math.max(0,Math.min(1,-dx/PW));
-    } else {
-      dragP=Math.max(0,Math.min(1,dx/PW));
-    }
-    if(dragP>0) drawFlip(dragP,!open);
-  },{passive:true});
-  document.addEventListener('touchend',()=>{
-    if(!drag)return;
-    drag=false;
-    if(dragP===0){
-      ['lh','sp','lc','rc'].forEach(id=>{
-        const el=document.getElementById(id);
-        if(el){el.style.visibility='';el.style.display='';}
-      });
-      drawStatic();
-      return;
-    }
-    const snap=dragP>.3;
-    if(!open) snap?animate(dragP,1,true):animate(dragP,0,false);
-    else      snap?animate(dragP,0,false):animate(dragP,1,true);
-  });
-
-  // ── CLICK anywhere on page to flip ──
-  rh.addEventListener('click',e=>{
-    if(anim||dragP>.05)return;
-    if(e.target.closest&&e.target.closest('.bc'))return;
-    flip(!open);
+  window.addEventListener('resize',()=>{
+    const{w:nw,h:nh}=calcSize();
+    document.querySelectorAll('#flipbook .page').forEach(p=>{p.style.width=nw+'px';p.style.height=nh+'px'});
+    document.querySelectorAll('#flipbook .page > div').forEach(p=>{p.style.width=nw+'px';p.style.height=nh+'px'});
+    try{pf.update({width:nw,height:nh});}catch(e){}
   });
 }
 
-// ── CURL HOVER ───────────────────────────────────
-function startCurl(){if(!craf)craf=requestAnimationFrame(doCurl)}
-function doCurl(){
-  curlX+=(tcX-curlX)*.18; curlY+=(tcY-curlY)*.18;
-  const mv=Math.abs(curlX-tcX)>.5||Math.abs(curlY-tcY)>.5;
-  if(curlX>1||curlY>1)drawCurl(curlX,curlY);
-  else{cc.style.display='none';cctx.clearRect(0,0,PW,PH)}
-  craf=mv?requestAnimationFrame(doCurl):null;
-}
-function drawCurl(cx,cy){
-  cc.style.display='block';
-  cctx.clearRect(0,0,PW,PH);
-  const px=PW-cx,py=PH-cy;
-  // triangle showing back (CV)
-  cctx.save();
-  cctx.beginPath();cctx.moveTo(PW,PH);cctx.lineTo(px,PH);cctx.lineTo(PW,py);cctx.closePath();cctx.clip();
-  if(iCV.complete&&iCV.naturalWidth>0)cctx.drawImage(iCV,0,0,PW,PH);
-  else{cctx.fillStyle='#fff';cctx.fillRect(0,0,PW,PH)}
-  const g=cctx.createLinearGradient(px,py,PW,PH);
-  g.addColorStop(0,'rgba(0,0,0,.35)');g.addColorStop(1,'rgba(0,0,0,0)');
-  cctx.fillStyle=g;cctx.fillRect(0,0,PW,PH);
-  cctx.restore();
-  // fold line
-  cctx.beginPath();cctx.moveTo(px,PH);cctx.lineTo(PW,py);
-  cctx.strokeStyle='rgba(0,0,0,.2)';cctx.lineWidth=1;cctx.stroke();
+function updateNav(idx){
+  document.getElementById('bp').disabled=(idx<=0);
+  document.getElementById('bn').disabled=(idx>=2);
+  document.getElementById('pl').textContent=idx<=1?'Cover':idx<=2?'CV':'End';
 }
 
-// ── FLIP DRAW ────────────────────────────────────
-// prog: 0=start, 1=end
-// opening=true: cover→CV; opening=false: CV→cover
-function drawFlip(prog,opening){
-  if(prog<=0){fc.style.display='none';return}
-  if(prog>=1){fc.style.display='none';return}
-
-  const BW=PW*2+SW;
-  fc.style.display='block';
-  cc.style.display='none';
-  fctx.clearRect(0,0,BW,PH);
-
-  // ── HIDE all HTML during animation — canvas draws everything ──
-  const lh=document.getElementById('lh'),sp=document.getElementById('spine');
-  const lc=document.getElementById('lc'),rc=document.getElementById('rc');
-  lh.style.visibility='hidden';
-  sp.style.visibility='hidden';
-  rc.style.visibility='hidden';
-
-  // ── LEFT HALF on canvas ──
-  if(opening){
-    // Opening: left side shows blank (cover hasn't arrived yet)
-    fctx.fillStyle='#0A1220';
-    fctx.fillRect(0,0,PW,PH);
-    // Only show CV on left AFTER fold passes midpoint
-    if(prog>0.5 && iCV.complete && iCV.naturalWidth>0){
-      const alpha=Math.min(1,(prog-0.5)*2);
-      fctx.globalAlpha=alpha;
-      fctx.drawImage(iCV,0,0,PW,PH);
-      fctx.globalAlpha=1;
-    }
-  } else {
-    // Closing: left shows CV fading out
-    if(iCV.complete&&iCV.naturalWidth>0){
-      const alpha=Math.min(1,prog*2);
-      fctx.globalAlpha=1-alpha+alpha; // always show CV on left when closing
-      fctx.drawImage(iCV,0,0,PW,PH);
-      fctx.globalAlpha=1;
-    } else {
-      fctx.fillStyle='#fff';fctx.fillRect(0,0,PW,PH);
-    }
-  }
-
-  // ── SPINE ──
-  const sg=fctx.createLinearGradient(PW,0,PW+SW,0);
-  sg.addColorStop(0,'rgba(0,212,255,.1)');sg.addColorStop(.5,'rgba(0,212,255,.5)');sg.addColorStop(1,'rgba(0,212,255,.1)');
-  fctx.fillStyle=sg;fctx.fillRect(PW,0,SW,PH);
-
-  // ── RIGHT HALF (static, behind flipping page) ──
-  const RX=PW+SW;
-  if(opening){
-    // right shows back cover (destination)
-    drawBC(RX,0,PW,PH);
-  } else {
-    // right shows cover (destination)
-    drawCV_cover(RX,0,PW,PH);
-  }
-
-  // ── FLIPPING PAGE ──
-  // starts at right half, fold moves left as prog increases
-  const foldX=RX+PW*(1-prog);
-
-  // left of fold = back of flipping page
-  if(foldX>RX){
-    fctx.save();
-    fctx.beginPath();fctx.rect(RX,0,foldX-RX,PH);fctx.clip();
-    if(opening){
-      if(iCV.complete&&iCV.naturalWidth>0)fctx.drawImage(iCV,RX,0,PW,PH);
-      else{fctx.fillStyle='#fff';fctx.fillRect(RX,0,PW,PH)}
-    } else {
-      drawCV_cover(RX,0,PW,PH);
-    }
-    // shadow near fold
-    const sw=Math.min(60,foldX-RX);
-    const shg=fctx.createLinearGradient(foldX-sw,0,foldX,0);
-    shg.addColorStop(0,'rgba(0,0,0,0)');shg.addColorStop(1,`rgba(0,0,0,${.4*prog})`);
-    fctx.fillStyle=shg;fctx.fillRect(foldX-sw,0,sw,PH);
-    fctx.restore();
-  }
-
-  // right of fold = front of flipping page (compressed)
-  if(foldX<RX+PW){
-    const sx=Math.abs(Math.cos(prog*Math.PI));
-    if(sx>.01){
-      fctx.save();
-      fctx.beginPath();fctx.rect(foldX,0,RX+PW-foldX,PH);fctx.clip();
-      fctx.translate(foldX,0);fctx.scale(sx,1);
-      if(opening)drawCV_cover(0,0,PW,PH);
-      else{
-        if(iCV.complete&&iCV.naturalWidth>0)fctx.drawImage(iCV,0,0,PW,PH);
-        else{fctx.fillStyle='#fff';fctx.fillRect(0,0,PW,PH)}
-      }
-      fctx.scale(1/sx,1);fctx.translate(-foldX,0);
-      const fg=fctx.createLinearGradient(foldX,0,foldX+70,0);
-      fg.addColorStop(0,`rgba(0,0,0,${.5*(1-sx)})`);fg.addColorStop(1,'rgba(0,0,0,0)');
-      fctx.fillStyle=fg;fctx.fillRect(foldX,0,70,PH);
-      fctx.restore();
-    }
-  }
-
-  // fold line
-  fctx.beginPath();fctx.moveTo(foldX,0);fctx.lineTo(foldX,PH);
-  fctx.strokeStyle=`rgba(0,0,0,${.3*Math.sin(prog*Math.PI)})`;fctx.lineWidth=1.5;fctx.stroke();
-}
-
-// ── CANVAS HELPERS ───────────────────────────────
-function drawCV_cover(x,y,w,h){
-  const bg=fctx.createLinearGradient(x,y,x+w,y+h);
-  bg.addColorStop(0,'#0A1628');bg.addColorStop(.45,'#0D1F3C');bg.addColorStop(1,'#080D1A');
-  fctx.fillStyle=bg;fctx.fillRect(x,y,w,h);
-  const gl=fctx.createRadialGradient(x+w*.4,y+h*.35,0,x+w*.4,y+h*.35,w*.6);
-  gl.addColorStop(0,'rgba(0,100,220,.3)');gl.addColorStop(1,'rgba(0,0,0,0)');
-  fctx.fillStyle=gl;fctx.fillRect(x,y,w,h);
-  fctx.strokeStyle='rgba(0,212,255,.05)';fctx.lineWidth=1;
-  for(let gx=x;gx<x+w;gx+=36){fctx.beginPath();fctx.moveTo(gx,y);fctx.lineTo(gx,y+h);fctx.stroke()}
-  for(let gy=y;gy<y+h;gy+=36){fctx.beginPath();fctx.moveTo(x,gy);fctx.lineTo(x+w,gy);fctx.stroke()}
-  const cx=x+w/2,cy=y+h*.32,r=Math.min(w,h)*.1;
-  fctx.save();fctx.beginPath();fctx.arc(cx,cy,r,0,Math.PI*2);fctx.clip();
-  if(iCover.complete&&iCover.naturalWidth>0)fctx.drawImage(iCover,cx-r,cy-r,r*2,r*2);
-  else{const pg=fctx.createLinearGradient(cx-r,cy-r,cx+r,cy+r);pg.addColorStop(0,'#0050B8');pg.addColorStop(1,'#00D4FF');fctx.fillStyle=pg;fctx.fillRect(cx-r,cy-r,r*2,r*2)}
-  fctx.restore();
-  fctx.fillStyle='#fff';fctx.textAlign='center';fctx.font=`bold ${Math.floor(w*.065)}px serif`;
-  fctx.fillText('Mochammad',cx,cy+r+h*.08);fctx.fillText('Maulana Ibrahim',cx,cy+r+h*.145);
-  fctx.strokeStyle='rgba(0,212,255,.5)';fctx.lineWidth=1;
-  fctx.beginPath();fctx.moveTo(cx-20,cy+r+h*.175);fctx.lineTo(cx+20,cy+r+h*.175);fctx.stroke();
-}
-
-function drawBC(x,y,w,h){
-  const bg=fctx.createLinearGradient(x,y,x+w,y+h);
-  bg.addColorStop(0,'#080D1A');bg.addColorStop(1,'#0D1A35');
-  fctx.fillStyle=bg;fctx.fillRect(x,y,w,h);
-  const gl=fctx.createRadialGradient(x+w/2,y+h/2,0,x+w/2,y+h/2,w*.6);
-  gl.addColorStop(0,'rgba(0,80,180,.18)');gl.addColorStop(1,'rgba(0,0,0,0)');
-  fctx.fillStyle=gl;fctx.fillRect(x,y,w,h);
-  fctx.textAlign='center';
-  fctx.fillStyle='#00D4FF';fctx.font='bold 10px Inter';fctx.fillText('GET IN TOUCH',x+w/2,y+h*.35);
-  fctx.fillStyle='rgba(255,255,255,.55)';fctx.font=`italic 12px 'Playfair Display',serif`;
-  fctx.fillText('"I turn ignored data into',x+w/2,y+h*.45);
-  fctx.fillText('meaningful insights"',x+w/2,y+h*.52);
-  fctx.fillStyle='rgba(255,255,255,.6)';fctx.font='11px Inter';
-  ['mochammad.maulana.i.01@gmail.com','(+62) 898-9210-565','linkedin.com/in/mmi01','mmaulana2405.github.io']
-    .forEach((c,i)=>fctx.fillText(c,x+w/2,y+h*.63+i*22));
-}
-
-// ── ANIMATE ──────────────────────────────────────
-
-
-window.flip=(toOpen)=>{
-  if(anim)return;
-  if(toOpen&&!open)animate(0,1,true);
-  if(!toOpen&&open)animate(0,1,false);
-};
-
-function updateUI(){
-  document.getElementById('bp').disabled=!open;
-  document.getElementById('bn').disabled=open;
-  document.getElementById('pl').textContent=open?'CV':'Cover';
-}
+window.doNext=()=>{if(pf)pf.flipNext()};
+window.doPrev=()=>{if(pf)pf.flipPrev()};
 </script>
 </body>
 </html>
