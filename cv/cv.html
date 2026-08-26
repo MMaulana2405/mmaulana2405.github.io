@@ -146,19 +146,38 @@ function calcSize(){
 // Dynamically detect all CV pages (page-1.jpg, page-2.jpg, etc.)
 // Just add more page-N.jpg files to pages/ folder — no code change needed!
 function detectPages(callback){
-  var pages = ['pages/page-cover.jpg', 'pages/page-blank.jpg'];
+  // Correct page order for proper fold preview (no CV showing as back):
+  // 1: cover   (alone — showCover:true)
+  // 2: blank   (back of cover)
+  // 3: CV pages (page-1.jpg, page-2.jpg, etc.)
+  // N: blank   (between last CV page and back-cover — fold back-cover shows blank)
+  // N+1: back-cover
+  // N+2: blank (after back-cover — fold shows blank not back-cover)
+  //
+  // Spread 1: [cover] alone
+  // Spread 2: [blank | CV]        → fold CV shows blank ✅
+  // Spread 3: [blank | back-cover] → fold back-cover shows blank ✅
+  var cvPages = [];
   var n = 1;
 
   function tryNext(){
     var img = new Image();
     var src = 'pages/page-' + n + '.jpg';
-    img.onload  = function(){ pages.push(src); n++; tryNext(); };
+    img.onload  = function(){ cvPages.push(src); n++; tryNext(); };
     img.onerror = function(){
-      // No more CV pages found — add back cover and finish
+      // Build final page array
+      var pages = ['pages/page-cover.jpg', 'pages/page-blank.jpg'];
+      // Add CV pages
+      for(var i=0; i<cvPages.length; i++) pages.push(cvPages[i]);
+      // Add blank before back-cover (so fold of back-cover shows blank)
+      pages.push('pages/page-blank.jpg');
+      // Add back-cover
       pages.push('pages/page-back.jpg');
+      // Add blank after back-cover
+      pages.push('pages/page-blank.jpg');
       callback(pages);
     };
-    img.src = src + '?t=' + Date.now(); // cache bust
+    img.src = src + '?t=' + Date.now();
   }
   tryNext();
 }
@@ -215,11 +234,12 @@ function initFlip(){
 }
 
 function updateNav(idx, total){
-  // PageFlip with showCover:true fires index:
-  // 0 = cover (single), 2 = CV spread, etc.
-  // Prev disabled only at cover (idx 0)
-  // Next disabled at last spread
-  var last = (total || 4) - 2;
+  // showCover:true with 6 pages:
+  // idx 0 = cover (alone)
+  // idx 2 = spread 2 (blank+CV)
+  // idx 4 = spread 3 (blank+back-cover)
+  // idx 5 = last blank (alone)
+  var last = (total || 6) - 1;
   document.getElementById('bp').disabled = (idx <= 0);
   document.getElementById('bn').disabled = (idx >= last);
 }
