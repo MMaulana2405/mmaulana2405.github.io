@@ -25,10 +25,6 @@ body{font-family:'Inter',sans-serif;background:#050810;color:#fff;height:100vh;d
 .stage{flex:1;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 25% 40%,rgba(0,60,160,.2) 0%,transparent 55%),radial-gradient(ellipse at 78% 65%,rgba(0,212,255,.07) 0%,transparent 50%),#050810;position:relative;overflow:hidden}
 .stage::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,212,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.025) 1px,transparent 1px);background-size:48px 48px;pointer-events:none}
 
-/* PageFlip container */
-#flipbook-container{position:relative;display:flex;align-items:center;justify-content:center}
-
-/* Page styles — used by PageFlip */
 .page{overflow:hidden;background:#0A1220}
 
 .p-cover{width:100%;height:100%;background:linear-gradient(145deg,#0A1628,#0D1F3C 45%,#080D1A);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 28px;text-align:center;position:relative}
@@ -84,21 +80,18 @@ body{font-family:'Inter',sans-serif;background:#050810;color:#fff;height:100vh;d
 </div>
 </div>
 <div class="stage" id="st" style="display:none">
-<div id="flipbook-container">
 <div id="flipbook">
-<!-- Page 1: Blank (left of cover spread) -->
-<div class="page">
-<div class="p-blank">
-<div class="bi2">✦<br/>Mochammad Maulana Ibrahim</div>
+<!-- Page 1: Blank — left side of cover spread (showCover=true needs even pages) -->
+<div class="page" id="pg1">
+<div class="p-blank"><div class="bi2">✦<br/>Mochammad Maulana Ibrahim</div></div>
 </div>
-</div>
-<!-- Page 2: Cover (right of cover spread) -->
-<div class="page">
+<!-- Page 2: Cover — right side of cover spread -->
+<div class="page" id="pg2">
 <div class="p-cover">
 <div class="cg"></div>
 <div class="ci">
 <div class="ce">Curriculum Vitae · 2026</div>
-<div class="cp"><img alt="MMI" onerror="this.style.display='none';this.parentElement.innerHTML='MMI'" src="../FotoProfil.jpeg?expires=1790335767&amp;signature=b72e68fae2b17e4af7c3e468c9f85997175649fdb669f8ec2342a3fdb7b8f406&amp;kid=prod-250922"/></div>
+<div class="cp"><img alt="MMI" onerror="this.style.display='none';this.parentElement.innerHTML='MMI'" src="../FotoProfil.jpeg"/></div>
 <div class="cn">Mochammad<br/>Maulana Ibrahim</div>
 <div class="cr"></div>
 <div class="cq">"The most overlooked data,<br/>when gathered with patience,<br/>becomes the clearest insight."</div>
@@ -106,14 +99,12 @@ body{font-family:'Inter',sans-serif;background:#050810;color:#fff;height:100vh;d
 </div>
 </div>
 </div>
-<!-- Page 3: CV image -->
-<div class="page">
-<div class="p-cv">
-<img alt="CV" src="pages/page-1.jpg?expires=1790335767&amp;signature=100b5f83c2a38a5c7221fe6b2ddc088243b305132b9ff3ed6146e2541dece916&amp;kid=prod-250922"/>
+<!-- Page 3: CV image — left side of second spread -->
+<div class="page" id="pg3">
+<div class="p-cv"><img alt="CV Mochammad Maulana Ibrahim" src="pages/page-1.jpg"/></div>
 </div>
-</div>
-<!-- Page 4: Back cover -->
-<div class="page">
+<!-- Page 4: Back cover — right side of second spread -->
+<div class="page" id="pg4">
 <div class="p-back">
 <div class="bc">
 <div class="bt">Get In Touch</div>
@@ -129,18 +120,23 @@ body{font-family:'Inter',sans-serif;background:#050810;color:#fff;height:100vh;d
 </div>
 </div>
 </div>
-</div>
 <div class="bottombar" id="bb" style="display:none">
 <button class="nb" disabled="" id="bp" onclick="doPrev()">← Back</button>
 <span class="pl" id="pl">Cover</span>
 <button class="nb" id="bn" onclick="doNext()">Open →</button>
 </div>
-<!-- PageFlip local -->
 <script src="page-flip.js"></script>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-const auth=getAuth(initializeApp({apiKey:"AIzaSyBv4VrPdi1E7CByp79T6Ios4MGYpYRm9Uc",authDomain:"personal-website-mmi.firebaseapp.com",projectId:"personal-website-mmi",storageBucket:"personal-website-mmi.firebasestorage.app",messagingSenderId:"57812235771",appId:"1:57812235771:web:5cd823cee44e095fc1475e"}));
+const auth=getAuth(initializeApp({
+  apiKey:"AIzaSyBv4VrPdi1E7CByp79T6Ios4MGYpYRm9Uc",
+  authDomain:"personal-website-mmi.firebaseapp.com",
+  projectId:"personal-website-mmi",
+  storageBucket:"personal-website-mmi.firebasestorage.app",
+  messagingSenderId:"57812235771",
+  appId:"1:57812235771:web:5cd823cee44e095fc1475e"
+}));
 onAuthStateChanged(auth,u=>{
   if(!u){window.location.href="index.html";return}
   document.getElementById('tn').textContent=u.displayName||u.email;
@@ -149,95 +145,123 @@ onAuthStateChanged(auth,u=>{
   document.getElementById('tb').style.display='flex';
   document.getElementById('st').style.display='flex';
   document.getElementById('bb').style.display='flex';
+  // Wait for layout to settle before init
   requestAnimationFrame(()=>requestAnimationFrame(()=>initFlip()));
 });
 window.doSO=async()=>{await signOut(auth);window.location.href="index.html"};
 </script>
 <script>
-let pf=null;
+var pf = null;
+var keyHandler = null;
+var resizeHandler = null;
 
 function calcSize(){
-  const s=document.getElementById('st');
-  const sw=s.clientWidth||window.innerWidth;
-  const sh=s.clientHeight||(window.innerHeight-100);
-  let pH,pW;
-  if(sw<600){
-    pW=Math.floor(sw*.9);
-    pH=Math.floor(pW*1.414);
-    if(pH>sh*.9){pH=Math.floor(sh*.9);pW=Math.floor(pH/1.414)}
-  } else {
-    pH=Math.min(sh*.88,580);
-    pW=Math.min(pH/1.414,(sw*.88)/2);
-    pH=Math.floor(pW*1.414);pW=Math.floor(pW);
-  }
-  return{w:pW,h:pH};
+  var s = document.getElementById('st');
+  var sw = s.clientWidth  || window.innerWidth;
+  var sh = s.clientHeight || (window.innerHeight - 100);
+  // Each page = half of available width, A4 ratio 1:1.414
+  var pH = Math.min(sh * 0.88, 580);
+  var pW = Math.min(pH / 1.414, (sw * 0.92) / 2);
+  pH = Math.floor(pW * 1.414);
+  pW = Math.floor(pW);
+  return { w: pW, h: pH };
+}
+
+function sizePages(w, h){
+  // Set explicit pixel size on every page AND its direct child div
+  // This is REQUIRED for PageFlip to render correctly
+  document.querySelectorAll('#flipbook .page').forEach(function(p){
+    p.style.width  = w + 'px';
+    p.style.height = h + 'px';
+  });
+  document.querySelectorAll('#flipbook .page > div').forEach(function(p){
+    p.style.width  = w + 'px';
+    p.style.height = h + 'px';
+  });
 }
 
 function initFlip(){
-  const{w,h}=calcSize();
+  var size = calcSize();
+  var w = size.w, h = size.h;
 
-  // Set explicit size on all pages BEFORE init
-  document.querySelectorAll('#flipbook .page').forEach(p=>{
-    p.style.width=w+'px';
-    p.style.height=h+'px';
-  });
-  document.querySelectorAll('#flipbook .page > div').forEach(p=>{
-    p.style.width=w+'px';
-    p.style.height=h+'px';
-  });
+  // 1. Size all pages first
+  sizePages(w, h);
 
+  // 2. Remove old event listeners to avoid duplicates on resize
+  if(keyHandler)   document.removeEventListener('keydown', keyHandler);
+  if(resizeHandler) window.removeEventListener('resize', resizeHandler);
+
+  // 3. If PageFlip already exists, we need to re-create it
+  //    PageFlip v2 does NOT have destroy() — we remove the old canvas manually
   if(pf){
-    try{pf.destroy();}catch(e){}
-    pf=null;
+    // Remove PageFlip-generated elements inside #flipbook
+    var stf = document.querySelector('.stf__parent');
+    if(stf && stf.parentNode) stf.parentNode.removeChild(stf);
+    pf = null;
   }
 
-  pf=new St.PageFlip(document.getElementById('flipbook'),{
-    width:w,
-    height:h,
-    size:'fixed',
-    showCover:true,
-    drawShadow:true,
-    flippingTime:900,
-    usePortrait:sw<600,
-    startZIndex:0,
-    autoSize:false,
-    maxShadowOpacity:0.5,
-    mobileScrollSupport:false,
-    clickEventForward:false,
-    useMouseEvents:true,
-    swipeDistance:10,
-    showPageCorners:true,
-    disableFlipByClick:false,
+  // 4. Init PageFlip
+  pf = new St.PageFlip(document.getElementById('flipbook'), {
+    width:               w,
+    height:              h,
+    size:                'fixed',
+    showCover:           true,   // page 1+2 = cover spread, only right page shown
+    drawShadow:          true,
+    flippingTime:        800,
+    usePortrait:         false,  // always double-page, never single-page vertical
+    startZIndex:         0,
+    autoSize:            false,
+    maxShadowOpacity:    0.5,
+    mobileScrollSupport: false,
+    clickEventForward:   false,
+    useMouseEvents:      true,   // enable mouse drag on PC
+    swipeDistance:       10,     // low threshold = responsive swipe
+    showPageCorners:     true,   // corner curl on hover
+    disableFlipByClick:  false,
   });
 
+  // 5. Load pages from existing HTML elements
   pf.loadFromHTML(document.querySelectorAll('#flipbook .page'));
 
-  pf.on('flip',e=>updateNav(e.data));
-  pf.on('changeState',()=>updateNav(pf.getCurrentPageIndex()));
+  // 6. Navigation events
+  // PageFlip fires 'flip' with e.data = new page index (0-based)
+  pf.on('flip', function(e){ updateNav(e.data); });
 
+  // 7. Initial nav state — page index 0 = cover spread
   updateNav(0);
 
-  document.addEventListener('keydown',e=>{
-    if(e.key==='ArrowRight')pf.flipNext();
-    if(e.key==='ArrowLeft')pf.flipPrev();
-  });
+  // 8. Keyboard navigation
+  keyHandler = function(e){
+    if(e.key === 'ArrowRight') pf.flipNext();
+    if(e.key === 'ArrowLeft')  pf.flipPrev();
+  };
+  document.addEventListener('keydown', keyHandler);
 
-  window.addEventListener('resize',()=>{
-    const{w:nw,h:nh}=calcSize();
-    document.querySelectorAll('#flipbook .page').forEach(p=>{p.style.width=nw+'px';p.style.height=nh+'px'});
-    document.querySelectorAll('#flipbook .page > div').forEach(p=>{p.style.width=nw+'px';p.style.height=nh+'px'});
-    try{pf.update({width:nw,height:nh});}catch(e){}
-  });
+  // 9. Resize: re-init entirely (safest approach for PageFlip)
+  resizeHandler = function(){
+    clearTimeout(resizeHandler._t);
+    resizeHandler._t = setTimeout(function(){ initFlip(); }, 200);
+  };
+  window.addEventListener('resize', resizeHandler);
 }
 
+// PageFlip page index (0-based):
+// 0 = cover spread (blank+cover, only cover shown due to showCover:true)
+// 1 = cover spread right page
+// 2 = second spread (CV + back cover)
+// 3 = second spread right page
 function updateNav(idx){
-  document.getElementById('bp').disabled=(idx<=0);
-  document.getElementById('bn').disabled=(idx>=2);
-  document.getElementById('pl').textContent=idx<=1?'Cover':idx<=2?'CV':'End';
+  // Disable Back when on cover (idx 0 or 1)
+  document.getElementById('bp').disabled = (idx <= 1);
+  // Disable Next when on last spread (idx 2 or 3)
+  document.getElementById('bn').disabled = (idx >= 2);
+  // Label
+  if(idx <= 1) document.getElementById('pl').textContent = 'Cover';
+  else         document.getElementById('pl').textContent = 'CV';
 }
 
-window.doNext=()=>{if(pf)pf.flipNext()};
-window.doPrev=()=>{if(pf)pf.flipPrev()};
+window.doNext = function(){ if(pf) pf.flipNext(); };
+window.doPrev = function(){ if(pf) pf.flipPrev(); };
 </script>
 </body>
 </html>
