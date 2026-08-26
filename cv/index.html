@@ -188,12 +188,16 @@
             .card { padding: 32px 24px; }
         }
     </style>
+  <!-- Preload Firebase modules for faster sign-in -->
+  <link rel='modulepreload' href='https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js'>
+  <link rel='modulepreload' href='https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js'>
+  <link rel='modulepreload' href='https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js'>
 </head>
 <body>
 <div class="particles" id="pts"></div>
 <div class="card">
 <div class="avatar">
-<img alt="MMI" onerror="this.style.display='none'; this.parentElement.innerHTML='MMI';" src="../FotoProfil.jpeg?expires=1790345810&amp;signature=559ab7191f1e6fd70dc314e0b0be4b5a7fce53faa0d0c30d400cac39726df431&amp;kid=prod-250922"/>
+<img alt="MMI" onerror="this.style.display='none'; this.parentElement.innerHTML='MMI';" src="../FotoProfil.jpeg?expires=1790346606&amp;signature=b54b6aabd8f00ce1c3fedb245a0f9d64d63c21751549baacb2372084502a3a1d&amp;kid=prod-250922"/>
 </div>
 <div class="header">
 <span class="accent">Curriculum Vitae</span>
@@ -241,19 +245,9 @@
     const db       = getFirestore(app);
     const provider = new GoogleAuthProvider();
 
-    // Do NOT auto-redirect on existing session.
-    // User MUST explicitly click "Continue with Google" every time.
-    // This ensures every visit is recorded in Firestore.
-    // We only check auth state to show loading state briefly.
-    onAuthStateChanged(auth, (user) => {
-        // If user has active session, sign them out first
-        // so they must explicitly confirm each visit
-        if (user) {
-            import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js")
-                .then(({ signOut }) => signOut(auth))
-                .catch(() => {});
-        }
-    });
+    // Do NOT auto-redirect — user must explicitly click login every time
+    // cv.html handles session validation (5 min check)
+    // No need to sign out here — just let the page load fast
 
     window.signInWithGoogle = async function() {
         const btn = document.getElementById('btnGoogle');
