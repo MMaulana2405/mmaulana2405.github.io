@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CV — Mochammad Maulana Ibrahim</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#050810;color:#fff;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+.topbar{height:50px;flex-shrink:0;background:rgba(8,13,26,.98);border-bottom:1px solid rgba(0,212,255,.12);display:flex;align-items:center;justify-content:space-between;padding:0 20px;backdrop-filter:blur(12px);z-index:100}
+.tbl{display:flex;align-items:center;gap:10px}
+.av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#0050B8,#00D4FF);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.av img{width:100%;height:100%;object-fit:cover}
+.tn{font-size:13px;font-weight:600}
+.tl{font-size:10px;color:#00D4FF}
+.tbr{display:flex;align-items:center;gap:12px}
+.bdl{display:flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.25);border-radius:20px;color:#00D4FF;font-size:11px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;text-decoration:none;transition:all .2s}
+.bdl:hover{background:rgba(0,212,255,.18)}
+.bso{font-size:11px;color:rgba(255,255,255,.25);background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif}
+.bso:hover{color:#00D4FF}
+
+/* Stage: no overflow:hidden for PageFlip mouse events */
+.stage{flex:1;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 25% 40%,rgba(0,60,160,.2) 0%,transparent 55%),radial-gradient(ellipse at 78% 65%,rgba(0,212,255,.07) 0%,transparent 50%),#050810;position:relative}
+.stage::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,212,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.025) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
+
+#flipbook-wrap{position:relative;z-index:1}
+
+/* Override PageFlip CSS for smoother rendering */
+.stf__block{perspective:4000px !important}
+.stf__item{will-change:transform}
+.stf__parent canvas{image-rendering:auto}
+
+.bottombar{height:50px;flex-shrink:0;background:rgba(8,13,26,.98);border-top:1px solid rgba(0,212,255,.1);display:flex;align-items:center;justify-content:center;gap:16px;backdrop-filter:blur(12px)}
+.nb{display:flex;align-items:center;gap:6px;padding:7px 18px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:20px;color:#00D4FF;font-size:12px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s}
+.nb:hover:not(:disabled){background:rgba(0,212,255,.16);transform:translateY(-1px)}
+.nb:disabled{opacity:.25;cursor:not-allowed;transform:none}
+.pl{font-size:11px;color:rgba(255,255,255,.25);min-width:80px;text-align:center}
+
+.ls{position:fixed;inset:0;background:#080D1A;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:200}
+.sp{width:32px;height:32px;border:2px solid rgba(0,212,255,.15);border-top-color:#00D4FF;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.lt{font-size:12px;color:rgba(255,255,255,.6)}
+</style>
+</head>
+<body>
+<div class="ls" id="ls"><div class="sp"></div><div class="lt">Verifying access...</div></div>
+<div class="topbar" id="tb" style="display:none">
+<div class="tbl">
+<div class="av"><img alt="" id="avi" onerror="this.style.display='none'" src=""/></div>
+<div><div class="tn" id="tn">—</div><div class="tl">Viewing CV · Access Recorded</div></div>
+</div>
+<div class="tbr">
+<a class="bdl" download="" href="../CV - Mochammad Maulana Ibrahim - 2026.pdf">⬇ Download PDF</a>
+<button class="bso" onclick="doSO()">Sign out</button>
+</div>
+</div>
+<div class="stage" id="st" style="display:none">
+<div id="flipbook-wrap">
+<!-- PageFlip canvas mode: div is the container, images loaded via JS -->
+<div id="flipbook"></div>
+</div>
+</div>
+<div class="bottombar" id="bb" style="display:none">
+<button class="nb" disabled="" id="bp" onclick="doPrev()">← Back</button>
+<span class="pl" id="pl">Cover</span>
+<button class="nb" id="bn" onclick="doNext()">Open →</button>
+</div>
+<script src="page-flip.js"></script>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+const auth=getAuth(initializeApp({
+  apiKey:"AIzaSyBv4VrPdi1E7CByp79T6Ios4MGYpYRm9Uc",
+  authDomain:"personal-website-mmi.firebaseapp.com",
+  projectId:"personal-website-mmi",
+  storageBucket:"personal-website-mmi.firebasestorage.app",
+  messagingSenderId:"57812235771",
+  appId:"1:57812235771:web:5cd823cee44e095fc1475e"
+}));
+onAuthStateChanged(auth,u=>{
+  if(!u){window.location.href="index.html";return}
+  document.getElementById('tn').textContent=u.displayName||u.email;
+  if(u.photoURL)document.getElementById('avi').src=u.photoURL;
+  document.getElementById('ls').style.display='none';
+  document.getElementById('tb').style.display='flex';
+  document.getElementById('st').style.display='flex';
+  document.getElementById('bb').style.display='flex';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>initFlip()));
+});
+window.doSO=async()=>{await signOut(auth);window.location.href="index.html"};
+</script>
+<script>
+var pf         = null;
+var keyHandler = null;
+var resizeTimer= null;
+var isMobile   = false;
+
+// Image paths — 4 pages for PageFlip
+// Page 1: Cover (shown alone with showCover:true)
+// Page 2: Blank (back of cover)
+// Page 3: CV image
+// Page 4: Back cover
+var PAGES = [
+  'pages/page-cover.jpg',
+  'pages/page-blank.jpg',
+  'pages/page-1.jpg',
+  'pages/page-back.jpg'
+];
+
+function calcSize(){
+  var s  = document.getElementById('st');
+  var sw = s.clientWidth  || window.innerWidth;
+  var sh = s.clientHeight || (window.innerHeight - 100);
+  isMobile = (sw < 768);
+  var pW, pH;
+  if(isMobile){
+    pW = Math.floor(sw * 0.88);
+    pH = Math.floor(pW * 1.414);
+    if(pH > sh * 0.88){ pH = Math.floor(sh * 0.88); pW = Math.floor(pH / 1.414); }
+  } else {
+    pH = Math.min(sh * 0.88, 580);
+    pW = Math.min(pH / 1.414, (sw * 0.92) / 2);
+    pH = Math.floor(pW * 1.414);
+    pW = Math.floor(pW);
+  }
+  return { w: pW, h: pH };
+}
+
+function initFlip(){
+  var sz = calcSize();
+  var w  = sz.w, h = sz.h;
+
+  if(keyHandler) document.removeEventListener('keydown', keyHandler);
+
+  // Clean up old PageFlip
+  if(pf){
+    var old = document.querySelector('.stf__parent');
+    if(old && old.parentNode) old.parentNode.removeChild(old);
+    pf = null;
+  }
+
+  // Use loadFromImages → canvas renderer → smooth like AstraMagazine
+  pf = new St.PageFlip(document.getElementById('flipbook'), {
+    width:    w,
+    height:   h,
+    size:     'fixed',
+
+    // Cover mode
+    showCover: true,
+
+    // Realistic shadow
+    drawShadow:       true,
+    maxShadowOpacity: 0.8,
+
+    // Natural flip speed
+    flippingTime: 800,
+
+    // Responsive
+    usePortrait: isMobile,
+
+    startZIndex:  0,
+    autoSize:     false,
+
+    // Mouse drag
+    useMouseEvents:      true,
+    mobileScrollSupport: false,
+
+    // Responsive drag
+    swipeDistance: 5,
+
+    // Corner curl
+    showPageCorners: true,
+
+    // Click to flip
+    disableFlipByClick: false,
+    clickEventForward:  false,
+  });
+
+  // loadFromImages uses canvas renderer — much smoother than HTML renderer
+  pf.loadFromImages(PAGES);
+
+  pf.on('flip', function(e){ updateNav(e.data); });
+  pf.on('init', function(){ updateNav(0); });
+
+  keyHandler = function(e){
+    if(e.key==='ArrowRight') pf.flipNext();
+    if(e.key==='ArrowLeft')  pf.flipPrev();
+  };
+  document.addEventListener('keydown', keyHandler);
+
+  window.onresize = function(){
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(initFlip, 300);
+  };
+}
+
+function updateNav(idx){
+  document.getElementById('bp').disabled = (idx <= 1);
+  document.getElementById('bn').disabled = (idx >= 2);
+  document.getElementById('pl').textContent = (idx <= 1) ? 'Cover' : 'CV';
+}
+
+window.doNext = function(){ if(pf) pf.flipNext(); };
+window.doPrev = function(){ if(pf) pf.flipPrev(); };
+</script>
+</body>
+</html>
