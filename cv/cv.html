@@ -81,7 +81,7 @@ body{font-family:'Inter',sans-serif;background:#050810;color:#fff;height:100vh;d
 </div>
 <div class="stage" id="st" style="display:none">
 <div id="flipbook">
-<!-- Page 1: Cover — right side of cover spread -->
+<!-- Page 1: Cover (showCover=true → tampil sendiri di awal) -->
 <div class="page" id="pg1">
 <div class="p-cover">
 <div class="cg"></div>
@@ -95,15 +95,15 @@ body{font-family:'Inter',sans-serif;background:#050810;color:#fff;height:100vh;d
 </div>
 </div>
 </div>
-<!-- Page 2: Blank — left side of cover spread (showCover=true needs even pages) -->
+<!-- Page 2: Blank (back of cover) -->
 <div class="page" id="pg2">
 <div class="p-blank"><div class="bi2">✦<br/>Mochammad Maulana Ibrahim</div></div>
 </div>
-<!-- Page 3: CV image — left side of second spread -->
+<!-- Page 3: CV image -->
 <div class="page" id="pg3">
 <div class="p-cv"><img alt="CV Mochammad Maulana Ibrahim" src="pages/page-1.jpg"/></div>
 </div>
-<!-- Page 4: Back cover — right side of second spread -->
+<!-- Page 4: Back cover -->
 <div class="page" id="pg4">
 <div class="p-back">
 <div class="bc">
@@ -145,7 +145,6 @@ onAuthStateChanged(auth,u=>{
   document.getElementById('tb').style.display='flex';
   document.getElementById('st').style.display='flex';
   document.getElementById('bb').style.display='flex';
-  // Wait for layout to settle before init
   requestAnimationFrame(()=>requestAnimationFrame(()=>initFlip()));
 });
 window.doSO=async()=>{await signOut(auth);window.location.href="index.html"};
@@ -156,10 +155,9 @@ var keyHandler = null;
 var resizeHandler = null;
 
 function calcSize(){
-  var s = document.getElementById('st');
+  var s  = document.getElementById('st');
   var sw = s.clientWidth  || window.innerWidth;
   var sh = s.clientHeight || (window.innerHeight - 100);
-  // Each page = half of available width, A4 ratio 1:1.414
   var pH = Math.min(sh * 0.88, 580);
   var pW = Math.min(pH / 1.414, (sw * 0.92) / 2);
   pH = Math.floor(pW * 1.414);
@@ -168,8 +166,6 @@ function calcSize(){
 }
 
 function sizePages(w, h){
-  // Set explicit pixel size on every page AND its direct child div
-  // This is REQUIRED for PageFlip to render correctly
   document.querySelectorAll('#flipbook .page').forEach(function(p){
     p.style.width  = w + 'px';
     p.style.height = h + 'px';
@@ -184,80 +180,74 @@ function initFlip(){
   var size = calcSize();
   var w = size.w, h = size.h;
 
-  // 1. Size all pages first
   sizePages(w, h);
 
-  // 2. Remove old event listeners to avoid duplicates on resize
-  if(keyHandler)   document.removeEventListener('keydown', keyHandler);
+  if(keyHandler)    document.removeEventListener('keydown', keyHandler);
   if(resizeHandler) window.removeEventListener('resize', resizeHandler);
 
-  // 3. If PageFlip already exists, we need to re-create it
-  //    PageFlip v2 does NOT have destroy() — we remove the old canvas manually
   if(pf){
-    // Remove PageFlip-generated elements inside #flipbook
     var stf = document.querySelector('.stf__parent');
     if(stf && stf.parentNode) stf.parentNode.removeChild(stf);
     pf = null;
   }
 
-  // 4. Init PageFlip
   pf = new St.PageFlip(document.getElementById('flipbook'), {
     width:               w,
     height:              h,
     size:                'fixed',
-    showCover:           true,   // page 1+2 = cover spread, only right page shown
+    showCover:           true,
     drawShadow:          true,
-    flippingTime:        800,
-    usePortrait:         false,  // always double-page, never single-page vertical
+
+    // ── SMOOTH FLIP SETTINGS ──
+    // Lower = faster snap, Higher = more natural drag feel
+    flippingTime:        1200,   // ms — longer = more paper-like inertia
+
+    usePortrait:         false,
     startZIndex:         0,
     autoSize:            false,
-    maxShadowOpacity:    0.5,
+
+    // Higher shadow = more depth/realism
+    maxShadowOpacity:    0.8,
+
     mobileScrollSupport: false,
     clickEventForward:   false,
-    useMouseEvents:      true,   // enable mouse drag on PC
-    swipeDistance:       10,     // low threshold = responsive swipe
-    showPageCorners:     true,   // corner curl on hover
+
+    // Mouse drag on PC
+    useMouseEvents:      true,
+
+    // Lower swipeDistance = more responsive to small movements
+    swipeDistance:       5,
+
+    // Corner curl on hover
+    showPageCorners:     true,
+
+    // Allow click anywhere to flip
     disableFlipByClick:  false,
   });
 
-  // 5. Load pages from existing HTML elements
   pf.loadFromHTML(document.querySelectorAll('#flipbook .page'));
 
-  // 6. Navigation events
-  // PageFlip fires 'flip' with e.data = new page index (0-based)
   pf.on('flip', function(e){ updateNav(e.data); });
 
-  // 7. Initial nav state — page index 0 = cover spread
   updateNav(0);
 
-  // 8. Keyboard navigation
   keyHandler = function(e){
     if(e.key === 'ArrowRight') pf.flipNext();
     if(e.key === 'ArrowLeft')  pf.flipPrev();
   };
   document.addEventListener('keydown', keyHandler);
 
-  // 9. Resize: re-init entirely (safest approach for PageFlip)
   resizeHandler = function(){
     clearTimeout(resizeHandler._t);
-    resizeHandler._t = setTimeout(function(){ initFlip(); }, 200);
+    resizeHandler._t = setTimeout(function(){ initFlip(); }, 250);
   };
   window.addEventListener('resize', resizeHandler);
 }
 
-// PageFlip page index (0-based):
-// 0 = cover spread (blank+cover, only cover shown due to showCover:true)
-// 1 = cover spread right page
-// 2 = second spread (CV + back cover)
-// 3 = second spread right page
 function updateNav(idx){
-  // Disable Back when on cover (idx 0 or 1)
   document.getElementById('bp').disabled = (idx <= 1);
-  // Disable Next when on last spread (idx 2 or 3)
   document.getElementById('bn').disabled = (idx >= 2);
-  // Label
-  if(idx <= 1) document.getElementById('pl').textContent = 'Cover';
-  else         document.getElementById('pl').textContent = 'CV';
+  document.getElementById('pl').textContent = (idx <= 1) ? 'Cover' : 'CV';
 }
 
 window.doNext = function(){ if(pf) pf.flipNext(); };
