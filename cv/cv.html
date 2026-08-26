@@ -215,8 +215,12 @@ function initFlip(){
 }
 
 function updateNav(idx, total){
+  // PageFlip with showCover:true fires index:
+  // 0 = cover (single), 2 = CV spread, etc.
+  // Prev disabled only at cover (idx 0)
+  // Next disabled at last spread
   var last = (total || 4) - 2;
-  document.getElementById('bp').disabled = (idx <= 1);
+  document.getElementById('bp').disabled = (idx <= 0);
   document.getElementById('bn').disabled = (idx >= last);
 }
 
