@@ -270,6 +270,15 @@ function events(){
     bk.style.cursor='';
     tcX=0;tcY=0;startCurl();
     const snap=dragP>.3;
+    if(dragP===0){
+      // No drag happened — restore visibility
+      ['lh','sp','lc','rc'].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el){el.style.visibility='';el.style.display='';}
+      });
+      drawStatic();
+      return;
+    }
     if(!open) snap?animate(dragP,1,true):animate(dragP,0,false);
     else      snap?animate(dragP,0,false):animate(dragP,1,true);
   });
@@ -292,6 +301,14 @@ function events(){
   document.addEventListener('touchend',()=>{
     if(!drag)return;
     drag=false;
+    if(dragP===0){
+      ['lh','sp','lc','rc'].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el){el.style.visibility='';el.style.display='';}
+      });
+      drawStatic();
+      return;
+    }
     const snap=dragP>.3;
     if(!open) snap?animate(dragP,1,true):animate(dragP,0,false);
     else      snap?animate(dragP,0,false):animate(dragP,1,true);
@@ -344,20 +361,35 @@ function drawFlip(prog,opening){
   cc.style.display='none';
   fctx.clearRect(0,0,BW,PH);
 
-  // ── LEFT HALF (static) ──
-  // Show left half during animation — reveal it as page flips
+  // ── HIDE all HTML during animation — canvas draws everything ──
   const lh=document.getElementById('lh'),sp=document.getElementById('spine');
-  lh.style.display='block'; sp.style.display='block';
+  const lc=document.getElementById('lc'),rc=document.getElementById('rc');
+  lh.style.visibility='hidden';
+  sp.style.visibility='hidden';
+  rc.style.visibility='hidden';
+
+  // ── LEFT HALF on canvas ──
   if(opening){
-    // left reveals blank as cover flips away
-    fctx.fillStyle='#0A1220';fctx.fillRect(0,0,PW,PH);
-    fctx.fillStyle='rgba(255,255,255,.08)';fctx.font='18px serif';fctx.textAlign='center';
-    fctx.fillText('✦',PW/2,PH/2-8);
-    fctx.font='10px Inter';fctx.fillText('Mochammad Maulana Ibrahim',PW/2,PH/2+12);
+    // Opening: left side shows blank (cover hasn't arrived yet)
+    fctx.fillStyle='#0A1220';
+    fctx.fillRect(0,0,PW,PH);
+    // Only show CV on left AFTER fold passes midpoint
+    if(prog>0.5 && iCV.complete && iCV.naturalWidth>0){
+      const alpha=Math.min(1,(prog-0.5)*2);
+      fctx.globalAlpha=alpha;
+      fctx.drawImage(iCV,0,0,PW,PH);
+      fctx.globalAlpha=1;
+    }
   } else {
-    // left shows CV (closing back to cover)
-    if(iCV.complete&&iCV.naturalWidth>0)fctx.drawImage(iCV,0,0,PW,PH);
-    else{fctx.fillStyle='#fff';fctx.fillRect(0,0,PW,PH)}
+    // Closing: left shows CV fading out
+    if(iCV.complete&&iCV.naturalWidth>0){
+      const alpha=Math.min(1,prog*2);
+      fctx.globalAlpha=1-alpha+alpha; // always show CV on left when closing
+      fctx.drawImage(iCV,0,0,PW,PH);
+      fctx.globalAlpha=1;
+    } else {
+      fctx.fillStyle='#fff';fctx.fillRect(0,0,PW,PH);
+    }
   }
 
   // ── SPINE ──
@@ -462,18 +494,7 @@ function drawBC(x,y,w,h){
 }
 
 // ── ANIMATE ──────────────────────────────────────
-function animate(from,to,openState){
-  if(anim)return;anim=true;
-  const diff=to-from,dur=650,t0=performance.now(),op=openState;
-  function step(now){
-    const t=Math.min((now-t0)/dur,1);
-    const e=t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
-    drawFlip(from+diff*e,op);
-    if(t<1)requestAnimationFrame(step);
-    else{anim=false;open=openState;drawStatic()}
-  }
-  requestAnimationFrame(step);
-}
+
 
 window.flip=(toOpen)=>{
   if(anim)return;
