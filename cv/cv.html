@@ -7,7 +7,6 @@
 <title>CV — Mochammad Maulana Ibrahim</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
@@ -20,7 +19,6 @@ body {
   overflow: hidden;
 }
 
-/* Top bar */
 .topbar {
   height: 50px;
   flex-shrink: 0;
@@ -64,15 +62,14 @@ body {
 }
 .bso:hover { color: #00D4FF; }
 
-/* PDF viewer — fills remaining space */
+/* PDF iframe fills all remaining space */
 #pdf-frame {
   flex: 1;
   width: 100%;
   border: none;
-  display: block;
 }
 
-/* Loading screen */
+/* Loading */
 .ls {
   position: fixed; inset: 0;
   background: #080D1A;
@@ -92,12 +89,10 @@ body {
 </style>
 </head>
 <body>
-<!-- Loading -->
 <div class="ls" id="ls">
 <div class="sp"></div>
 <div class="lt">Verifying access...</div>
 </div>
-<!-- Top bar -->
 <div class="topbar" id="tb" style="display:none">
 <div class="tbl">
 <div class="av"><img alt="" id="avi" onerror="this.style.display='none'" src=""/></div>
@@ -111,10 +106,9 @@ body {
 <button class="bso" onclick="doSO()">Sign out</button>
 </div>
 </div>
-<!-- PDF viewer -->
-<iframe id="pdf-frame" src="../CV - Mochammad Maulana Ibrahim - 2026.pdf" style="display:none" title="CV Mochammad Maulana Ibrahim">
+<!-- PDF viewer — fills entire remaining space after topbar -->
+<iframe id="pdf-frame" src="" style="display:none" title="CV Mochammad Maulana Ibrahim">
 </iframe>
-<!-- Firebase Auth -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -131,20 +125,23 @@ const auth = getAuth(initializeApp({
 onAuthStateChanged(auth, u => {
   if (!u) { window.location.href = "index.html"; return; }
 
-  // Enforce fresh login (max 5 minutes)
   const loginMs = new Date(u.metadata.lastSignInTime).getTime();
   if (Date.now() - loginMs > 5 * 60 * 1000) {
     signOut(auth).then(() => { window.location.href = "index.html"; });
     return;
   }
 
-  // Show UI
   document.getElementById('tn').textContent = u.displayName || u.email;
   if (u.photoURL) document.getElementById('avi').src = u.photoURL;
 
-  document.getElementById('ls').style.display        = 'none';
-  document.getElementById('tb').style.display        = 'flex';
-  document.getElementById('pdf-frame').style.display = 'block';
+  // Show topbar
+  document.getElementById('ls').style.display = 'none';
+  document.getElementById('tb').style.display = 'flex';
+
+  // Load and show PDF
+  const frame = document.getElementById('pdf-frame');
+  frame.src = '../CV - Mochammad Maulana Ibrahim - 2026.pdf';
+  frame.style.display = 'block';
 });
 
 window.doSO = async () => {
