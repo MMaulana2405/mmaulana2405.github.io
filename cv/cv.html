@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0" name="viewport"/>
 <title>CV — Mochammad Maulana Ibrahim</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -22,19 +22,22 @@ body{font-family:'Inter',sans-serif;background:#050810;color:#fff;height:100vh;d
 .bso{font-size:11px;color:rgba(255,255,255,.25);background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif}
 .bso:hover{color:#00D4FF}
 
-.stage{flex:1;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 25% 40%,rgba(0,60,160,.2) 0%,transparent 55%),radial-gradient(ellipse at 78% 65%,rgba(0,212,255,.07) 0%,transparent 50%),#050810;position:relative}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 25% 40%,rgba(0,60,160,.2) 0%,transparent 55%),radial-gradient(ellipse at 78% 65%,rgba(0,212,255,.07) 0%,transparent 50%),#050810;position:relative;overflow:hidden}
 .stage::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,212,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.025) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
 
-#flipbook-wrap{position:relative;z-index:1}
+/* Zoom wrapper */
+#zoom-wrap{position:relative;z-index:1;transform-origin:center center;transition:transform .2s ease}
+#flipbook-wrap{position:relative}
 
-/* Override PageFlip injected CSS */
+/* Override PageFlip */
 .stf__block{perspective:4000px !important}
 .stf__item{will-change:transform}
 
-.bottombar{height:50px;flex-shrink:0;background:rgba(8,13,26,.98);border-top:1px solid rgba(0,212,255,.1);display:flex;align-items:center;justify-content:center;gap:16px;backdrop-filter:blur(12px)}
-.nb{display:flex;align-items:center;gap:6px;padding:7px 18px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:20px;color:#00D4FF;font-size:12px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s}
+.bottombar{height:50px;flex-shrink:0;background:rgba(8,13,26,.98);border-top:1px solid rgba(0,212,255,.1);display:flex;align-items:center;justify-content:center;gap:10px;backdrop-filter:blur(12px)}
+.nb{display:flex;align-items:center;justify-content:center;padding:7px 16px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:20px;color:#00D4FF;font-size:14px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;min-width:44px}
 .nb:hover:not(:disabled){background:rgba(0,212,255,.16);transform:translateY(-1px)}
 .nb:disabled{opacity:.25;cursor:not-allowed;transform:none}
+.zoom-btn{font-size:16px;padding:7px 14px}
 
 .ls{position:fixed;inset:0;background:#080D1A;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:200}
 .sp{width:32px;height:32px;border:2px solid rgba(0,212,255,.15);border-top-color:#00D4FF;border-radius:50%;animation:spin .8s linear infinite}
@@ -55,12 +58,17 @@ body{font-family:'Inter',sans-serif;background:#050810;color:#fff;height:100vh;d
 </div>
 </div>
 <div class="stage" id="st" style="display:none">
+<div id="zoom-wrap">
 <div id="flipbook-wrap">
 <div id="flipbook"></div>
 </div>
 </div>
+</div>
 <div class="bottombar" id="bb" style="display:none">
 <button class="nb" disabled="" id="bp" onclick="doPrev()">←</button>
+<button class="nb zoom-btn" onclick="zoomOut()" title="Zoom out">−</button>
+<button class="nb zoom-btn" onclick="zoomReset()" style="font-size:11px;padding:7px 10px" title="Reset zoom">100%</button>
+<button class="nb zoom-btn" onclick="zoomIn()" title="Zoom in">+</button>
 <button class="nb" id="bn" onclick="doNext()">→</button>
 </div>
 <script src="page-flip.js"></script>
@@ -96,43 +104,63 @@ window.doSO=async()=>{await signOut(auth);window.location.href="index.html"};
 var pf         = null;
 var keyHandler = null;
 var resizeTimer= null;
+var zoomLevel  = 1.0;
+var ZOOM_STEP  = 0.15;
+var ZOOM_MIN   = 0.5;
+var ZOOM_MAX   = 2.0;
 
+// ── ZOOM ──────────────────────────────────────────
+function applyZoom(){
+  document.getElementById('zoom-wrap').style.transform = 'scale(' + zoomLevel + ')';
+  // Update zoom label
+  var btn = document.querySelector('.zoom-btn:nth-child(3)');
+  if(btn) btn.textContent = Math.round(zoomLevel*100) + '%';
+}
+window.zoomIn    = function(){ zoomLevel = Math.min(ZOOM_MAX, zoomLevel+ZOOM_STEP); applyZoom(); };
+window.zoomOut   = function(){ zoomLevel = Math.max(ZOOM_MIN, zoomLevel-ZOOM_STEP); applyZoom(); };
+window.zoomReset = function(){ zoomLevel = 1.0; applyZoom(); };
+
+// Pinch-to-zoom on mobile
+var lastDist = 0;
+document.addEventListener('touchstart', function(e){
+  if(e.touches.length===2){
+    lastDist = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
+  }
+},{passive:true});
+document.addEventListener('touchmove', function(e){
+  if(e.touches.length===2){
+    var dist = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
+    var delta = dist - lastDist;
+    if(Math.abs(delta) > 5){
+      zoomLevel = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoomLevel + delta*0.005));
+      applyZoom();
+      lastDist = dist;
+    }
+  }
+},{passive:true});
+
+// Mouse wheel zoom
+document.getElementById('st') && document.getElementById('st').addEventListener('wheel', function(e){
+  if(e.ctrlKey || e.metaKey){
+    e.preventDefault();
+    zoomLevel = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoomLevel - e.deltaY*0.001));
+    applyZoom();
+  }
+},{passive:false});
+
+// ── SIZE ──────────────────────────────────────────
 function calcSize(){
   var s  = document.getElementById('st');
   var sw = s.clientWidth  || window.innerWidth;
   var sh = s.clientHeight || (window.innerHeight - 100);
-  // Single page: use full available space, A4 ratio
+  // Single page, A4 ratio, fit in stage
   var pH = Math.floor(sh * 0.88);
   var pW = Math.floor(pH / 1.414);
-  // Make sure it fits width
   if(pW > sw * 0.88){ pW = Math.floor(sw * 0.88); pH = Math.floor(pW * 1.414); }
   return { w: pW, h: pH };
 }
 
-// Preload all images first, then init PageFlip
-// This ensures images are ready before PageFlip tries to render them
-function loadImages(urls, callback){
-  var loaded = 0;
-  var images = [];
-  var total  = urls.length;
-
-  urls.forEach(function(url, i){
-    var img = new Image();
-    img.onload = function(){
-      images[i] = url;
-      loaded++;
-      if(loaded === total) callback(images);
-    };
-    img.onerror = function(){
-      // Skip failed images
-      images[i] = null;
-      loaded++;
-      if(loaded === total) callback(images.filter(function(u){ return u !== null; }));
-    };
-    img.src = url;
-  });
-}
-
+// ── INIT ──────────────────────────────────────────
 function initFlip(){
   var sz = calcSize();
   var w  = sz.w, h = sz.h;
@@ -146,81 +174,59 @@ function initFlip(){
     pf = null;
   }
 
-  // Build page list: cover + CV pages (page-1, page-2, ...) + back
-  // Try to detect how many CV pages exist by preloading
-  var cvCandidates = [];
-  for(var i = 1; i <= 20; i++){
-    cvCandidates.push('pages/page-' + i + '.jpg');
-  }
+  // ── HARDCODED pages — most reliable approach ──
+  // Dynamic detection via HEAD/img.onerror is unreliable on GitHub Pages
+  // To add more CV pages: add page-2.jpg, page-3.jpg etc AND update this array
+  var PAGES = [
+    'pages/page-cover.jpg',
+    'pages/page-1.jpg',
+    'pages/page-back.jpg'
+  ];
 
-  // Preload cover and back first (guaranteed to exist)
-  var guaranteed = ['pages/page-cover.jpg', 'pages/page-back.jpg'];
-  loadImages(guaranteed, function(loaded){
-    if(loaded.length < 2){
-      console.error('Cover or back page failed to load!');
-      return;
-    }
+  // Preload all images BEFORE initializing PageFlip
+  var loaded = 0;
+  var total  = PAGES.length;
 
-    // Now detect CV pages
-    detectCVPages(1, [], function(cvPages){
-      // Build final page array: cover, cv pages, back
-      var allPages = ['pages/page-cover.jpg'].concat(cvPages).concat(['pages/page-back.jpg']);
-
-      // Init PageFlip with confirmed pages
-      pf = new St.PageFlip(document.getElementById('flipbook'), {
-        width:               w,
-        height:              h,
-        size:                'fixed',
-        showCover:           false,
-        drawShadow:          true,
-        maxShadowOpacity:    0.8,
-        flippingTime:        800,
-        usePortrait:         true,
-        startZIndex:         0,
-        autoSize:            false,
-        useMouseEvents:      true,
-        mobileScrollSupport: false,
-        swipeDistance:       5,
-        showPageCorners:     true,
-        disableFlipByClick:  false,
-        clickEventForward:   false,
-      });
-
-      pf.loadFromImages(allPages);
-
-      pf.on('flip', function(e){ updateNav(e.data, allPages.length); });
-      pf.on('init', function(){  updateNav(0, allPages.length); });
-
-      keyHandler = function(e){
-        if(e.key==='ArrowRight') pf.flipNext();
-        if(e.key==='ArrowLeft')  pf.flipPrev();
-      };
-      document.addEventListener('keydown', keyHandler);
-    });
+  PAGES.forEach(function(src){
+    var img = new Image();
+    img.onload = img.onerror = function(){
+      loaded++;
+      if(loaded === total) startPageFlip(PAGES, w, h);
+    };
+    img.src = src;
   });
-
-  window.onresize = function(){
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(initFlip, 300);
-  };
 }
 
-// Detect CV pages one by one using HEAD requests (faster than loading full image)
-function detectCVPages(n, found, callback){
-  var xhr = new XMLHttpRequest();
-  xhr.open('HEAD', 'pages/page-' + n + '.jpg', true);
-  xhr.onload = function(){
-    if(xhr.status === 200){
-      found.push('pages/page-' + n + '.jpg');
-      detectCVPages(n + 1, found, callback);
-    } else {
-      callback(found);
-    }
+function startPageFlip(pages, w, h){
+  pf = new St.PageFlip(document.getElementById('flipbook'), {
+    width:               w,
+    height:              h,
+    size:                'fixed',
+    showCover:           false,
+    drawShadow:          true,
+    maxShadowOpacity:    0.8,
+    flippingTime:        800,
+    usePortrait:         true,
+    startZIndex:         0,
+    autoSize:            false,
+    useMouseEvents:      true,
+    mobileScrollSupport: false,
+    swipeDistance:       5,
+    showPageCorners:     true,
+    disableFlipByClick:  false,
+    clickEventForward:   false,
+  });
+
+  pf.loadFromImages(pages);
+
+  pf.on('flip', function(e){ updateNav(e.data, pages.length); });
+  pf.on('init', function(){  updateNav(0, pages.length); });
+
+  keyHandler = function(e){
+    if(e.key==='ArrowRight') pf.flipNext();
+    if(e.key==='ArrowLeft')  pf.flipPrev();
   };
-  xhr.onerror = function(){ callback(found); };
-  xhr.ontimeout = function(){ callback(found); };
-  xhr.timeout = 3000;
-  xhr.send();
+  document.addEventListener('keydown', keyHandler);
 }
 
 function updateNav(idx, total){
@@ -230,6 +236,11 @@ function updateNav(idx, total){
 
 window.doNext = function(){ if(pf) pf.flipNext(); };
 window.doPrev = function(){ if(pf) pf.flipPrev(); };
+
+window.onresize = function(){
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(initFlip, 300);
+};
 </script>
 </body>
 </html>
