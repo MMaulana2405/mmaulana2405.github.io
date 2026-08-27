@@ -130,16 +130,12 @@ function calcSize(){
   var sh = s.clientHeight || (window.innerHeight - 100);
   isMobile = (sw < 768);
   var pW, pH;
-  if(isMobile){
-    pW = Math.floor(sw * 0.88);
-    pH = Math.floor(pW * 1.414);
-    if(pH > sh * 0.88){ pH = Math.floor(sh * 0.88); pW = Math.floor(pH / 1.414); }
-  } else {
-    // No height cap — let canvas be as large as possible for sharp rendering
-    pH = Math.floor(sh * 0.88);
-    pW = Math.min(Math.floor(pH / 1.414), Math.floor((sw * 0.92) / 2));
-    pH = Math.floor(pW * 1.414);
-  }
+  // Single page mode: use full available space
+  pH = Math.floor(sh * 0.88);
+  pW = Math.min(Math.floor(pH / 1.414), Math.floor(sw * 0.88));
+  pH = Math.floor(pW * 1.414);
+  // Ensure fits in screen
+  if(pH > sh * 0.88){ pH = Math.floor(sh * 0.88); pW = Math.floor(pH / 1.414); }
   return { w: pW, h: pH };
 }
 
@@ -204,7 +200,7 @@ function initFlip(){
       drawShadow:          true,
       maxShadowOpacity:    0.8,
       flippingTime:        800,
-      usePortrait:         isMobile,
+      usePortrait:         true,  // always single page
       startZIndex:         0,
       autoSize:            false,
       useMouseEvents:      true,
