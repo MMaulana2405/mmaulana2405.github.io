@@ -3,310 +3,269 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>CV — Mochammad Maulana Ibrahim</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Inter',sans-serif;background:#050810;color:#fff;height:100vh;display:flex;flex-direction:column;overflow:hidden;touch-action:none}
 
-.topbar{height:50px;flex-shrink:0;background:rgba(8,13,26,.98);border-bottom:1px solid rgba(0,212,255,.12);display:flex;align-items:center;justify-content:space-between;padding:0 20px;backdrop-filter:blur(12px);z-index:100}
-.tbl{display:flex;align-items:center;gap:10px}
-.av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#0050B8,#00D4FF);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
-.av img{width:100%;height:100%;object-fit:cover}
-.tn{font-size:13px;font-weight:600}
-.tl{font-size:10px;color:#00D4FF}
-.tbr{display:flex;align-items:center;gap:12px}
-.bdl{display:flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.25);border-radius:20px;color:#00D4FF;font-size:11px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;text-decoration:none;transition:all .2s}
-.bdl:hover{background:rgba(0,212,255,.18)}
-.bso{font-size:11px;color:rgba(255,255,255,.25);background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif}
-.bso:hover{color:#00D4FF}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* Stage: overflow hidden for pan containment */
-.stage{flex:1;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 25% 40%,rgba(0,60,160,.2) 0%,transparent 55%),radial-gradient(ellipse at 78% 65%,rgba(0,212,255,.07) 0%,transparent 50%),#050810;position:relative;overflow:hidden;cursor:grab}
-.stage.panning{cursor:grabbing}
-.stage::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,212,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.025) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
-
-/* Transform wrapper: handles both zoom and pan */
-#transform-wrap{
-  position:relative;z-index:1;
-  transform-origin:center center;
-  transition:transform .15s ease;
-  will-change:transform;
+body {
+  font-family: 'Inter', sans-serif;
+  background: #050810;
+  color: #fff;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-/* Override PageFlip */
-.stf__block{perspective:4000px !important}
-.stf__item{will-change:transform}
+/* ── TOP BAR ── */
+.topbar {
+  height: 50px;
+  flex-shrink: 0;
+  background: rgba(8,13,26,0.98);
+  border-bottom: 1px solid rgba(0,212,255,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  backdrop-filter: blur(12px);
+  z-index: 10;
+}
+.tbl { display: flex; align-items: center; gap: 10px; }
+.av {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: linear-gradient(135deg, #0050B8, #00D4FF);
+  overflow: hidden; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700;
+}
+.av img { width: 100%; height: 100%; object-fit: cover; }
+.tn { font-size: 13px; font-weight: 600; }
+.tl { font-size: 10px; color: #00D4FF; }
+.tbr { display: flex; align-items: center; gap: 12px; }
+.bdl {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px;
+  background: rgba(0,212,255,0.1);
+  border: 1px solid rgba(0,212,255,0.25);
+  border-radius: 20px; color: #00D4FF;
+  font-size: 11px; font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer; text-decoration: none;
+  transition: all 0.2s;
+}
+.bdl:hover { background: rgba(0,212,255,0.18); }
+.bso {
+  font-size: 11px; color: rgba(255,255,255,0.25);
+  background: none; border: none; cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+.bso:hover { color: #00D4FF; }
 
-/* Bottom bar */
-.bottombar{height:50px;flex-shrink:0;background:rgba(8,13,26,.98);border-top:1px solid rgba(0,212,255,.1);display:flex;align-items:center;justify-content:center;gap:8px;backdrop-filter:blur(12px);padding:0 12px}
-.nb{display:flex;align-items:center;justify-content:center;padding:7px 14px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:20px;color:#00D4FF;font-size:13px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;min-width:40px;white-space:nowrap}
-.nb:hover:not(:disabled){background:rgba(0,212,255,.16);transform:translateY(-1px)}
-.nb:disabled{opacity:.25;cursor:not-allowed;transform:none}
-.nb-sm{font-size:16px;padding:7px 12px;min-width:36px}
-.nb-label{font-size:10px;padding:7px 10px;min-width:48px;text-align:center}
-.sep{width:1px;height:24px;background:rgba(0,212,255,.15);flex-shrink:0}
+/* ── VIEWER ── */
+.viewer {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 16px 32px;
+  gap: 24px;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(0,60,160,0.15) 0%, transparent 50%),
+    #050810;
+}
 
-.ls{position:fixed;inset:0;background:#080D1A;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:200}
-.sp{width:32px;height:32px;border:2px solid rgba(0,212,255,.15);border-top-color:#00D4FF;border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.lt{font-size:12px;color:rgba(255,255,255,.6)}
+/* Each page card */
+.cv-page {
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,212,255,0.08);
+  transition: max-width 0.2s ease;
+}
+.cv-page img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ── BOTTOM BAR ── */
+.bottombar {
+  height: 50px;
+  flex-shrink: 0;
+  background: rgba(8,13,26,0.98);
+  border-top: 1px solid rgba(0,212,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  backdrop-filter: blur(12px);
+}
+.btn {
+  display: flex; align-items: center; justify-content: center;
+  padding: 7px 16px;
+  background: rgba(0,212,255,0.08);
+  border: 1px solid rgba(0,212,255,0.2);
+  border-radius: 20px;
+  color: #00D4FF;
+  font-size: 14px; font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 40px;
+}
+.btn:hover { background: rgba(0,212,255,0.16); transform: translateY(-1px); }
+.btn-label { font-size: 11px; min-width: 52px; text-align: center; }
+.sep { width: 1px; height: 24px; background: rgba(0,212,255,0.15); }
+
+/* ── LOADING ── */
+.ls {
+  position: fixed; inset: 0;
+  background: #080D1A;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 14px; z-index: 200;
+}
+.sp {
+  width: 32px; height: 32px;
+  border: 2px solid rgba(0,212,255,0.15);
+  border-top-color: #00D4FF;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.lt { font-size: 12px; color: rgba(255,255,255,0.6); }
+
+/* Responsive */
+@media (max-width: 480px) {
+  .topbar { padding: 0 12px; }
+  .viewer { padding: 16px 10px 24px; gap: 16px; }
+  .btn { padding: 7px 12px; min-width: 36px; }
+}
 </style>
 </head>
 <body>
-<div class="ls" id="ls"><div class="sp"></div><div class="lt">Verifying access...</div></div>
+<!-- Loading -->
+<div class="ls" id="ls">
+<div class="sp"></div>
+<div class="lt">Verifying access...</div>
+</div>
+<!-- Top bar -->
 <div class="topbar" id="tb" style="display:none">
 <div class="tbl">
 <div class="av"><img alt="" id="avi" onerror="this.style.display='none'" src=""/></div>
-<div><div class="tn" id="tn">—</div><div class="tl">Viewing CV · Access Recorded</div></div>
+<div>
+<div class="tn" id="tn">—</div>
+<div class="tl">Viewing CV · Access Recorded</div>
+</div>
 </div>
 <div class="tbr">
 <a class="bdl" download="" href="../CV - Mochammad Maulana Ibrahim - 2026.pdf">⬇ PDF</a>
 <button class="bso" onclick="doSO()">Sign out</button>
 </div>
 </div>
-<div class="stage" id="st" style="display:none">
-<div id="transform-wrap">
-<div id="flipbook"></div>
+<!-- Viewer -->
+<div class="viewer" id="viewer" style="display:none">
+<div class="cv-page"><img alt="Cover" src="pages/page-cover.jpg"/></div>
+<div class="cv-page"><img alt="CV" src="pages/page-1.jpg"/></div>
+<div class="cv-page"><img alt="Contact" src="pages/page-back.jpg"/></div>
 </div>
-</div>
+<!-- Bottom bar -->
 <div class="bottombar" id="bb" style="display:none">
-<!-- Page nav -->
-<button class="nb" disabled="" id="bp" onclick="doPrev()">←</button>
-<button class="nb" id="bn" onclick="doNext()">→</button>
+<button class="btn" onclick="zoomOut()">−</button>
+<button class="btn btn-label" id="zlbl" onclick="resetView()">100%</button>
+<button class="btn" onclick="zoomIn()">+</button>
 <div class="sep"></div>
-<!-- Zoom -->
-<button class="nb nb-sm" onclick="zoomOut()" title="Zoom out">−</button>
-<button class="nb nb-label" id="zoomLabel" onclick="resetView()" title="Reset view">100%</button>
-<button class="nb nb-sm" onclick="zoomIn()" title="Zoom in">+</button>
-<div class="sep"></div>
-<!-- Center/Reset -->
-<button class="nb nb-label" onclick="resetView()" title="Center &amp; reset zoom">⊙</button>
+<button class="btn btn-label" onclick="resetView()">⊙ Reset</button>
 </div>
-<script src="page-flip.js"></script>
+<!-- Firebase Auth only — no other JS libraries -->
 <script type="module">
-import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-const auth=getAuth(initializeApp({
-  apiKey:"AIzaSyBv4VrPdi1E7CByp79T6Ios4MGYpYRm9Uc",
-  authDomain:"personal-website-mmi.firebaseapp.com",
-  projectId:"personal-website-mmi",
-  storageBucket:"personal-website-mmi.firebasestorage.app",
-  messagingSenderId:"57812235771",
-  appId:"1:57812235771:web:5cd823cee44e095fc1475e"
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const auth = getAuth(initializeApp({
+  apiKey:            "AIzaSyBv4VrPdi1E7CByp79T6Ios4MGYpYRm9Uc",
+  authDomain:        "personal-website-mmi.firebaseapp.com",
+  projectId:         "personal-website-mmi",
+  storageBucket:     "personal-website-mmi.firebasestorage.app",
+  messagingSenderId: "57812235771",
+  appId:             "1:57812235771:web:5cd823cee44e095fc1475e"
 }));
-onAuthStateChanged(auth,u=>{
-  if(!u){window.location.href="index.html";return}
-  const loginMs=new Date(u.metadata.lastSignInTime).getTime();
-  if(Date.now()-loginMs>5*60*1000){
-    signOut(auth).then(()=>{window.location.href="index.html";});
+
+onAuthStateChanged(auth, u => {
+  if (!u) { window.location.href = "index.html"; return; }
+
+  // Enforce fresh login (max 5 minutes)
+  const loginMs = new Date(u.metadata.lastSignInTime).getTime();
+  if (Date.now() - loginMs > 5 * 60 * 1000) {
+    signOut(auth).then(() => { window.location.href = "index.html"; });
     return;
   }
-  document.getElementById('tn').textContent=u.displayName||u.email;
-  if(u.photoURL)document.getElementById('avi').src=u.photoURL;
-  document.getElementById('ls').style.display='none';
-  document.getElementById('tb').style.display='flex';
-  document.getElementById('st').style.display='flex';
-  document.getElementById('bb').style.display='flex';
-  requestAnimationFrame(()=>requestAnimationFrame(()=>initFlip()));
+
+  document.getElementById('tn').textContent = u.displayName || u.email;
+  if (u.photoURL) document.getElementById('avi').src = u.photoURL;
+
+  document.getElementById('ls').style.display     = 'none';
+  document.getElementById('tb').style.display     = 'flex';
+  document.getElementById('viewer').style.display = 'flex';
+  document.getElementById('bb').style.display     = 'flex';
 });
-window.doSO=async()=>{await signOut(auth);window.location.href="index.html"};
+
+window.doSO = async () => { await signOut(auth); window.location.href = "index.html"; };
 </script>
+<!-- Zoom only — pure vanilla JS, no libraries -->
 <script>
-var pf         = null;
-var keyHandler = null;
-var resizeTimer= null;
+var zoom = 1.0;
+var MAX_W = 680; // base max-width in px
 
-// ── TRANSFORM STATE ───────────────────────────────
-var zoom   = 1.0;
-var panX   = 0;
-var panY   = 0;
-var ZOOM_STEP = 0.2;
-var ZOOM_MIN  = 0.3;
-var ZOOM_MAX  = 3.0;
-
-function applyTransform(animate){
-  var el = document.getElementById('transform-wrap');
-  el.style.transition = animate ? 'transform .2s ease' : 'none';
-  el.style.transform  = 'translate('+panX+'px,'+panY+'px) scale('+zoom+')';
-  var lbl = document.getElementById('zoomLabel');
-  if(lbl) lbl.textContent = Math.round(zoom*100)+'%';
-}
-
-window.zoomIn    = function(){ zoom = Math.min(ZOOM_MAX, zoom+ZOOM_STEP); applyTransform(true); };
-window.zoomOut   = function(){ zoom = Math.max(ZOOM_MIN, zoom-ZOOM_STEP); applyTransform(true); };
-window.resetView = function(){ zoom=1.0; panX=0; panY=0; applyTransform(true); };
-
-// ── PAN (mouse drag on stage background) ─────────
-var isPanning  = false;
-var panStartX  = 0;
-var panStartY  = 0;
-var panStartPX = 0;
-var panStartPY = 0;
-
-var stage = document.getElementById('st');
-
-// Only pan when clicking on stage background (not on flipbook)
-function isOnStage(e){
-  var t = e.target;
-  // Allow pan if clicking on stage, transform-wrap, or stf elements (not flipbook content)
-  return t === stage || t.id === 'transform-wrap' ||
-         t.classList.contains('stf__parent') || t.classList.contains('stf__wrapper') ||
-         t.classList.contains('stf__block');
-}
-
-stage.addEventListener('mousedown', function(e){
-  if(zoom <= 1.0) return; // only pan when zoomed in
-  if(!isOnStage(e)) return;
-  isPanning = true;
-  panStartX = e.clientX; panStartY = e.clientY;
-  panStartPX = panX; panStartPY = panY;
-  stage.classList.add('panning');
-  e.preventDefault();
-});
-
-document.addEventListener('mousemove', function(e){
-  if(!isPanning) return;
-  panX = panStartPX + (e.clientX - panStartX);
-  panY = panStartPY + (e.clientY - panStartY);
-  applyTransform(false);
-});
-
-document.addEventListener('mouseup', function(){
-  if(isPanning){ isPanning=false; stage.classList.remove('panning'); }
-});
-
-// ── TOUCH: pinch zoom + pan ───────────────────────
-var touches    = {};
-var lastPinchD = 0;
-var touchPanSX = 0, touchPanSY = 0;
-var touchPanPX = 0, touchPanPY = 0;
-var isTouchPan = false;
-
-stage.addEventListener('touchstart', function(e){
-  Array.from(e.changedTouches).forEach(t=>{ touches[t.identifier]={x:t.clientX,y:t.clientY}; });
-  var ids = Object.keys(touches);
-  if(ids.length===2){
-    var t1=touches[ids[0]], t2=touches[ids[1]];
-    lastPinchD = Math.hypot(t2.x-t1.x, t2.y-t1.y);
-  } else if(ids.length===1 && zoom>1.0){
-    isTouchPan=true;
-    touchPanSX=touches[ids[0]].x; touchPanSY=touches[ids[0]].y;
-    touchPanPX=panX; touchPanPY=panY;
-  }
-},{passive:true});
-
-stage.addEventListener('touchmove', function(e){
-  Array.from(e.changedTouches).forEach(t=>{ if(touches[t.identifier]) touches[t.identifier]={x:t.clientX,y:t.clientY}; });
-  var ids = Object.keys(touches);
-  if(ids.length===2){
-    var t1=touches[ids[0]], t2=touches[ids[1]];
-    var d = Math.hypot(t2.x-t1.x, t2.y-t1.y);
-    var delta = d - lastPinchD;
-    if(Math.abs(delta)>2){
-      zoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoom + delta*0.008));
-      applyTransform(false);
-      lastPinchD = d;
-    }
-  } else if(ids.length===1 && isTouchPan){
-    panX = touchPanPX + (touches[ids[0]].x - touchPanSX);
-    panY = touchPanPY + (touches[ids[0]].y - touchPanSY);
-    applyTransform(false);
-  }
-},{passive:true});
-
-stage.addEventListener('touchend', function(e){
-  Array.from(e.changedTouches).forEach(t=>{ delete touches[t.identifier]; });
-  if(Object.keys(touches).length===0) isTouchPan=false;
-},{passive:true});
-
-// ── MOUSE WHEEL ZOOM ──────────────────────────────
-stage.addEventListener('wheel', function(e){
-  if(e.ctrlKey||e.metaKey||e.deltaMode===0){
-    e.preventDefault();
-    var delta = e.deltaY > 0 ? -0.1 : 0.1;
-    zoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoom+delta));
-    applyTransform(false);
-  }
-},{passive:false});
-
-// ── PAGEFLIP SIZE ─────────────────────────────────
-function calcSize(){
-  var s  = document.getElementById('st');
-  var sw = s.clientWidth  || window.innerWidth;
-  var sh = s.clientHeight || (window.innerHeight-100);
-  var pH = Math.floor(sh*0.88);
-  var pW = Math.floor(pH/1.414);
-  if(pW > sw*0.88){ pW=Math.floor(sw*0.88); pH=Math.floor(pW*1.414); }
-  return {w:pW, h:pH};
-}
-
-// ── INIT PAGEFLIP ─────────────────────────────────
-function initFlip(){
-  var sz = calcSize();
-  var w=sz.w, h=sz.h;
-
-  if(keyHandler) document.removeEventListener('keydown', keyHandler);
-
-  if(pf){
-    var old = document.querySelector('.stf__parent');
-    if(old&&old.parentNode) old.parentNode.removeChild(old);
-    pf=null;
-  }
-
-  // Hardcoded pages — most reliable for GitHub Pages
-  var PAGES = [
-    'pages/page-cover.jpg',
-    'pages/page-1.jpg',
-    'pages/page-back.jpg'
-  ];
-
-  // Preload all images before init
-  var loaded=0, total=PAGES.length;
-  PAGES.forEach(function(src){
-    var img=new Image();
-    img.onload=img.onerror=function(){
-      if(++loaded===total) startPageFlip(PAGES,w,h);
-    };
-    img.src=src;
+function setZoom(z) {
+  zoom = Math.max(0.3, Math.min(3.0, z));
+  var w = Math.round(MAX_W * zoom);
+  document.querySelectorAll('.cv-page').forEach(function(p) {
+    p.style.maxWidth = w + 'px';
   });
+  document.getElementById('zlbl').textContent = Math.round(zoom * 100) + '%';
 }
 
-function startPageFlip(pages,w,h){
-  pf = new St.PageFlip(document.getElementById('flipbook'),{
-    width:w, height:h, size:'fixed',
-    showCover:false, drawShadow:true, maxShadowOpacity:0.8,
-    flippingTime:800, usePortrait:true,
-    startZIndex:0, autoSize:false,
-    useMouseEvents:true, mobileScrollSupport:false,
-    swipeDistance:5, showPageCorners:true,
-    disableFlipByClick:false, clickEventForward:false,
-  });
-
-  pf.loadFromImages(pages);
-  pf.on('flip', function(e){ updateNav(e.data, pages.length); });
-  pf.on('init', function(){  updateNav(0, pages.length); });
-
-  keyHandler=function(e){
-    if(e.key==='ArrowRight') pf.flipNext();
-    if(e.key==='ArrowLeft')  pf.flipPrev();
-  };
-  document.addEventListener('keydown', keyHandler);
-}
-
-function updateNav(idx,total){
-  document.getElementById('bp').disabled=(idx<=0);
-  document.getElementById('bn').disabled=(idx>=total-1);
-}
-
-window.doNext=function(){ if(pf) pf.flipNext(); };
-window.doPrev=function(){ if(pf) pf.flipPrev(); };
-
-window.onresize=function(){
-  clearTimeout(resizeTimer);
-  resizeTimer=setTimeout(function(){ resetView(); initFlip(); },300);
+window.zoomIn    = function() { setZoom(zoom + 0.15); };
+window.zoomOut   = function() { setZoom(zoom - 0.15); };
+window.resetView = function() {
+  setZoom(1.0);
+  document.getElementById('viewer').scrollTop = 0;
 };
+
+// Ctrl + scroll wheel zoom
+window.addEventListener('wheel', function(e) {
+  if (e.ctrlKey || e.metaKey) {
+    e.preventDefault();
+    setZoom(zoom + (e.deltaY > 0 ? -0.1 : 0.1));
+  }
+}, { passive: false });
+
+// Pinch zoom on mobile
+var lastPinch = 0;
+window.addEventListener('touchstart', function(e) {
+  if (e.touches.length === 2)
+    lastPinch = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+}, { passive: true });
+
+window.addEventListener('touchmove', function(e) {
+  if (e.touches.length === 2) {
+    var d = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+    setZoom(zoom + (d - lastPinch) * 0.005);
+    lastPinch = d;
+  }
+}, { passive: true });
 </script>
 </body>
 </html>
