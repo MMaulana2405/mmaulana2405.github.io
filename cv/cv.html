@@ -43,18 +43,6 @@ body {
 .tn { font-size: 13px; font-weight: 600; }
 .tl { font-size: 10px; color: #00D4FF; }
 .tbr { display: flex; align-items: center; gap: 12px; }
-.bdl {
-  display: flex; align-items: center; gap: 6px;
-  padding: 6px 14px;
-  background: rgba(0,212,255,0.1);
-  border: 1px solid rgba(0,212,255,0.25);
-  border-radius: 20px; color: #00D4FF;
-  font-size: 11px; font-weight: 500;
-  font-family: 'Inter', sans-serif;
-  cursor: pointer; text-decoration: none;
-  transition: all 0.2s;
-}
-.bdl:hover { background: rgba(0,212,255,0.18); }
 .bso {
   font-size: 11px; color: rgba(255,255,255,0.25);
   background: none; border: none; cursor: pointer;
@@ -62,11 +50,12 @@ body {
 }
 .bso:hover { color: #00D4FF; }
 
-/* PDF iframe fills all remaining space */
+/* PDF iframe fills remaining space */
 #pdf-frame {
   flex: 1;
   width: 100%;
   border: none;
+  display: none;
 }
 
 /* Loading */
@@ -102,16 +91,21 @@ body {
 </div>
 </div>
 <div class="tbr">
-<a class="bdl" download="" href="../CV - Mochammad Maulana Ibrahim - 2026.pdf">⬇ Download PDF</a>
 <button class="bso" onclick="doSO()">Sign out</button>
 </div>
 </div>
-<!-- PDF viewer — fills entire remaining space after topbar -->
-<iframe id="pdf-frame" src="" style="display:none" title="CV Mochammad Maulana Ibrahim">
+<!-- Google Docs PDF Viewer — works on both mobile and desktop -->
+<iframe allowfullscreen="" id="pdf-frame" title="CV Mochammad Maulana Ibrahim">
 </iframe>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+// PDF hosted on GitHub Pages — public URL
+const PDF_URL = 'https://mmaulana2405.github.io/CV%20-%20Mochammad%20Maulana%20Ibrahim%20-%202026.pdf';
+
+// Google Docs viewer embeds any public PDF — works on mobile & desktop
+const VIEWER_URL = 'https://docs.google.com/viewer?embedded=true&url=' + encodeURIComponent(PDF_URL);
 
 const auth = getAuth(initializeApp({
   apiKey:            "AIzaSyBv4VrPdi1E7CByp79T6Ios4MGYpYRm9Uc",
@@ -133,14 +127,12 @@ onAuthStateChanged(auth, u => {
 
   document.getElementById('tn').textContent = u.displayName || u.email;
   if (u.photoURL) document.getElementById('avi').src = u.photoURL;
-
-  // Show topbar
   document.getElementById('ls').style.display = 'none';
   document.getElementById('tb').style.display = 'flex';
 
-  // Load and show PDF
+  // Load PDF via Google Docs viewer
   const frame = document.getElementById('pdf-frame');
-  frame.src = '../CV - Mochammad Maulana Ibrahim - 2026.pdf';
+  frame.src = VIEWER_URL;
   frame.style.display = 'block';
 });
 
