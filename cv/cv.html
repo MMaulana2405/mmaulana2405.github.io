@@ -50,7 +50,7 @@ body {
 }
 .bso:hover { color: #00D4FF; }
 
-/* PDF iframe fills remaining space */
+/* PDF.js viewer iframe */
 #pdf-frame {
   flex: 1;
   width: 100%;
@@ -58,7 +58,6 @@ body {
   display: none;
 }
 
-/* Loading */
 .ls {
   position: fixed; inset: 0;
   background: #080D1A;
@@ -94,18 +93,17 @@ body {
 <button class="bso" onclick="doSO()">Sign out</button>
 </div>
 </div>
-<!-- Google Docs PDF Viewer — works on both mobile and desktop -->
-<iframe allowfullscreen="" id="pdf-frame" title="CV Mochammad Maulana Ibrahim">
-</iframe>
+<!-- PDF.js hosted by Mozilla CDN — reliable, works on all devices -->
+<iframe id="pdf-frame" title="CV Mochammad Maulana Ibrahim"></iframe>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-// PDF hosted on GitHub Pages — public URL
+// Public PDF URL on GitHub Pages
 const PDF_URL = 'https://mmaulana2405.github.io/CV%20-%20Mochammad%20Maulana%20Ibrahim%20-%202026.pdf';
 
-// Google Docs viewer embeds any public PDF — works on mobile & desktop
-const VIEWER_URL = 'https://docs.google.com/viewer?embedded=true&url=' + encodeURIComponent(PDF_URL);
+// PDF.js viewer from Mozilla CDN — most reliable cross-platform PDF viewer
+const PDFJS_URL = 'https://mozilla.github.io/pdf.js/web/viewer.html?file=' + encodeURIComponent(PDF_URL);
 
 const auth = getAuth(initializeApp({
   apiKey:            "AIzaSyBv4VrPdi1E7CByp79T6Ios4MGYpYRm9Uc",
@@ -130,9 +128,8 @@ onAuthStateChanged(auth, u => {
   document.getElementById('ls').style.display = 'none';
   document.getElementById('tb').style.display = 'flex';
 
-  // Load PDF via Google Docs viewer
   const frame = document.getElementById('pdf-frame');
-  frame.src = VIEWER_URL;
+  frame.src = PDFJS_URL;
   frame.style.display = 'block';
 });
 
