@@ -22,30 +22,19 @@ body{font-family:'Inter',sans-serif;background:#050810;color:#fff;height:100vh;d
 .bso{font-size:11px;color:rgba(255,255,255,.25);background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif}
 .bso:hover{color:#00D4FF}
 
-/* Stage: no overflow:hidden for PageFlip mouse events */
 .stage{flex:1;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 25% 40%,rgba(0,60,160,.2) 0%,transparent 55%),radial-gradient(ellipse at 78% 65%,rgba(0,212,255,.07) 0%,transparent 50%),#050810;position:relative}
 .stage::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,212,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.025) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
 
 #flipbook-wrap{position:relative;z-index:1}
 
-/* Override PageFlip CSS for smoother rendering */
+/* Override PageFlip injected CSS */
 .stf__block{perspective:4000px !important}
 .stf__item{will-change:transform}
-
-/* CRITICAL: Override PageFlip canvas white background */
-.stf__parent canvas{
-  image-rendering:auto;
-  background:#080D1A !important;
-}
-/* Also override the wrapper background */
-.stf__wrapper{background:#080D1A !important}
-.stf__block{background:#080D1A !important}
 
 .bottombar{height:50px;flex-shrink:0;background:rgba(8,13,26,.98);border-top:1px solid rgba(0,212,255,.1);display:flex;align-items:center;justify-content:center;gap:16px;backdrop-filter:blur(12px)}
 .nb{display:flex;align-items:center;gap:6px;padding:7px 18px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:20px;color:#00D4FF;font-size:12px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s}
 .nb:hover:not(:disabled){background:rgba(0,212,255,.16);transform:translateY(-1px)}
 .nb:disabled{opacity:.25;cursor:not-allowed;transform:none}
-.pl{font-size:11px;color:rgba(255,255,255,.25);min-width:80px;text-align:center}
 
 .ls{position:fixed;inset:0;background:#080D1A;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:200}
 .sp{width:32px;height:32px;border:2px solid rgba(0,212,255,.15);border-top-color:#00D4FF;border-radius:50%;animation:spin .8s linear infinite}
@@ -67,7 +56,6 @@ body{font-family:'Inter',sans-serif;background:#050810;color:#fff;height:100vh;d
 </div>
 <div class="stage" id="st" style="display:none">
 <div id="flipbook-wrap">
-<!-- PageFlip canvas mode: div is the container, images loaded via JS -->
 <div id="flipbook"></div>
 </div>
 </div>
@@ -88,26 +76,12 @@ const auth=getAuth(initializeApp({
   appId:"1:57812235771:web:5cd823cee44e095fc1475e"
 }));
 onAuthStateChanged(auth,u=>{
-  if(!u){
-    // Not logged in → redirect to login page
-    window.location.href="index.html";
+  if(!u){window.location.href="index.html";return}
+  const loginMs=new Date(u.metadata.lastSignInTime).getTime();
+  if(Date.now()-loginMs>5*60*1000){
+    signOut(auth).then(()=>{window.location.href="index.html";});
     return;
   }
-
-  // Check if this is a fresh login (within last 5 minutes)
-  // This prevents old sessions from bypassing the login page
-  const loginTime = u.metadata.lastSignInTime;
-  const loginMs   = new Date(loginTime).getTime();
-  const nowMs     = Date.now();
-  const fiveMin   = 5 * 60 * 1000;
-
-  if(nowMs - loginMs > fiveMin){
-    // Session is too old — force re-login
-    signOut(auth).then(()=>{ window.location.href="index.html"; });
-    return;
-  }
-
-  // Fresh login — show CV
   document.getElementById('tn').textContent=u.displayName||u.email;
   if(u.photoURL)document.getElementById('avi').src=u.photoURL;
   document.getElementById('ls').style.display='none';
@@ -122,44 +96,41 @@ window.doSO=async()=>{await signOut(auth);window.location.href="index.html"};
 var pf         = null;
 var keyHandler = null;
 var resizeTimer= null;
-var isMobile   = false;
 
 function calcSize(){
   var s  = document.getElementById('st');
   var sw = s.clientWidth  || window.innerWidth;
   var sh = s.clientHeight || (window.innerHeight - 100);
-  isMobile = (sw < 768);
-  var pW, pH;
-  // Single page mode: use full available space
-  pH = Math.floor(sh * 0.88);
-  pW = Math.min(Math.floor(pH / 1.414), Math.floor(sw * 0.88));
-  pH = Math.floor(pW * 1.414);
-  // Ensure fits in screen
-  if(pH > sh * 0.88){ pH = Math.floor(sh * 0.88); pW = Math.floor(pH / 1.414); }
+  // Single page: use full available space, A4 ratio
+  var pH = Math.floor(sh * 0.88);
+  var pW = Math.floor(pH / 1.414);
+  // Make sure it fits width
+  if(pW > sw * 0.88){ pW = Math.floor(sw * 0.88); pH = Math.floor(pW * 1.414); }
   return { w: pW, h: pH };
 }
 
-// Dynamically detect all CV pages (page-1.jpg, page-2.jpg, etc.)
-// Just add more page-N.jpg files to pages/ folder — no code change needed!
-function detectPages(callback){
-  // Simple 3-type structure: cover, CV pages, back
-  // portrait mode (single page): each page shown alone, flip one at a time
-  var cvPages = [];
-  var n = 1;
+// Preload all images first, then init PageFlip
+// This ensures images are ready before PageFlip tries to render them
+function loadImages(urls, callback){
+  var loaded = 0;
+  var images = [];
+  var total  = urls.length;
 
-  function tryNext(){
+  urls.forEach(function(url, i){
     var img = new Image();
-    var src = 'pages/page-' + n + '.jpg';
-    img.onload  = function(){ cvPages.push(src); n++; tryNext(); };
-    img.onerror = function(){
-      var pages = ['pages/page-cover.jpg'];
-      for(var i=0; i<cvPages.length; i++) pages.push(cvPages[i]);
-      pages.push('pages/page-back.jpg');
-      callback(pages);
+    img.onload = function(){
+      images[i] = url;
+      loaded++;
+      if(loaded === total) callback(images);
     };
-    img.src = src + '?t=' + Date.now();
-  }
-  tryNext();
+    img.onerror = function(){
+      // Skip failed images
+      images[i] = null;
+      loaded++;
+      if(loaded === total) callback(images.filter(function(u){ return u !== null; }));
+    };
+    img.src = url;
+  });
 }
 
 function initFlip(){
@@ -168,43 +139,64 @@ function initFlip(){
 
   if(keyHandler) document.removeEventListener('keydown', keyHandler);
 
+  // Remove old PageFlip DOM
   if(pf){
     var old = document.querySelector('.stf__parent');
     if(old && old.parentNode) old.parentNode.removeChild(old);
     pf = null;
   }
 
-  // Detect pages dynamically, then init PageFlip
-  detectPages(function(pages){
-    pf = new St.PageFlip(document.getElementById('flipbook'), {
-      width:    w,
-      height:   h,
-      size:     'fixed',
-      showCover:           false,
-      drawShadow:          true,
-      maxShadowOpacity:    0.8,
-      flippingTime:        800,
-      usePortrait:         true,  // always single page
-      startZIndex:         0,
-      autoSize:            false,
-      useMouseEvents:      true,
-      mobileScrollSupport: false,
-      swipeDistance:       5,
-      showPageCorners:     true,
-      disableFlipByClick:  false,
-      clickEventForward:   false,
+  // Build page list: cover + CV pages (page-1, page-2, ...) + back
+  // Try to detect how many CV pages exist by preloading
+  var cvCandidates = [];
+  for(var i = 1; i <= 20; i++){
+    cvCandidates.push('pages/page-' + i + '.jpg');
+  }
+
+  // Preload cover and back first (guaranteed to exist)
+  var guaranteed = ['pages/page-cover.jpg', 'pages/page-back.jpg'];
+  loadImages(guaranteed, function(loaded){
+    if(loaded.length < 2){
+      console.error('Cover or back page failed to load!');
+      return;
+    }
+
+    // Now detect CV pages
+    detectCVPages(1, [], function(cvPages){
+      // Build final page array: cover, cv pages, back
+      var allPages = ['pages/page-cover.jpg'].concat(cvPages).concat(['pages/page-back.jpg']);
+
+      // Init PageFlip with confirmed pages
+      pf = new St.PageFlip(document.getElementById('flipbook'), {
+        width:               w,
+        height:              h,
+        size:                'fixed',
+        showCover:           false,
+        drawShadow:          true,
+        maxShadowOpacity:    0.8,
+        flippingTime:        800,
+        usePortrait:         true,
+        startZIndex:         0,
+        autoSize:            false,
+        useMouseEvents:      true,
+        mobileScrollSupport: false,
+        swipeDistance:       5,
+        showPageCorners:     true,
+        disableFlipByClick:  false,
+        clickEventForward:   false,
+      });
+
+      pf.loadFromImages(allPages);
+
+      pf.on('flip', function(e){ updateNav(e.data, allPages.length); });
+      pf.on('init', function(){  updateNav(0, allPages.length); });
+
+      keyHandler = function(e){
+        if(e.key==='ArrowRight') pf.flipNext();
+        if(e.key==='ArrowLeft')  pf.flipPrev();
+      };
+      document.addEventListener('keydown', keyHandler);
     });
-
-    pf.loadFromImages(pages);
-
-    pf.on('flip', function(e){ updateNav(e.data, pages.length); });
-    pf.on('init', function(){  updateNav(0,      pages.length); });
-
-    keyHandler = function(e){
-      if(e.key==='ArrowRight') pf.flipNext();
-      if(e.key==='ArrowLeft')  pf.flipPrev();
-    };
-    document.addEventListener('keydown', keyHandler);
   });
 
   window.onresize = function(){
@@ -213,10 +205,27 @@ function initFlip(){
   };
 }
 
+// Detect CV pages one by one using HEAD requests (faster than loading full image)
+function detectCVPages(n, found, callback){
+  var xhr = new XMLHttpRequest();
+  xhr.open('HEAD', 'pages/page-' + n + '.jpg', true);
+  xhr.onload = function(){
+    if(xhr.status === 200){
+      found.push('pages/page-' + n + '.jpg');
+      detectCVPages(n + 1, found, callback);
+    } else {
+      callback(found);
+    }
+  };
+  xhr.onerror = function(){ callback(found); };
+  xhr.ontimeout = function(){ callback(found); };
+  xhr.timeout = 3000;
+  xhr.send();
+}
+
 function updateNav(idx, total){
-  var last = (total || 3) - 1;
   document.getElementById('bp').disabled = (idx <= 0);
-  document.getElementById('bn').disabled = (idx >= last);
+  document.getElementById('bn').disabled = (idx >= total - 1);
 }
 
 window.doNext = function(){ if(pf) pf.flipNext(); };
