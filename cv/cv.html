@@ -20,7 +20,7 @@ body {
   overflow: hidden;
 }
 
-/* ── TOP BAR ── */
+/* Top bar */
 .topbar {
   height: 50px;
   flex-shrink: 0;
@@ -64,65 +64,15 @@ body {
 }
 .bso:hover { color: #00D4FF; }
 
-/* ── VIEWER ── */
-.viewer {
+/* PDF viewer — fills remaining space */
+#pdf-frame {
   flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 28px 16px 32px;
-  gap: 24px;
-  background:
-    radial-gradient(ellipse at 20% 10%, rgba(0,60,160,0.15) 0%, transparent 50%),
-    #050810;
-}
-
-/* Each page card */
-.cv-page {
   width: 100%;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,212,255,0.08);
-  transition: max-width 0.2s ease;
-}
-.cv-page img {
-  width: 100%;
-  height: auto;
+  border: none;
   display: block;
 }
 
-/* ── BOTTOM BAR ── */
-.bottombar {
-  height: 50px;
-  flex-shrink: 0;
-  background: rgba(8,13,26,0.98);
-  border-top: 1px solid rgba(0,212,255,0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  backdrop-filter: blur(12px);
-}
-.btn {
-  display: flex; align-items: center; justify-content: center;
-  padding: 7px 16px;
-  background: rgba(0,212,255,0.08);
-  border: 1px solid rgba(0,212,255,0.2);
-  border-radius: 20px;
-  color: #00D4FF;
-  font-size: 14px; font-weight: 500;
-  font-family: 'Inter', sans-serif;
-  cursor: pointer;
-  transition: all 0.2s;
-  min-width: 40px;
-}
-.btn:hover { background: rgba(0,212,255,0.16); transform: translateY(-1px); }
-.btn-label { font-size: 11px; min-width: 52px; text-align: center; }
-.sep { width: 1px; height: 24px; background: rgba(0,212,255,0.15); }
-
-/* ── LOADING ── */
+/* Loading screen */
 .ls {
   position: fixed; inset: 0;
   background: #080D1A;
@@ -139,13 +89,6 @@ body {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 .lt { font-size: 12px; color: rgba(255,255,255,0.6); }
-
-/* Responsive */
-@media (max-width: 480px) {
-  .topbar { padding: 0 12px; }
-  .viewer { padding: 16px 10px 24px; gap: 16px; }
-  .btn { padding: 7px 12px; min-width: 36px; }
-}
 </style>
 </head>
 <body>
@@ -164,25 +107,14 @@ body {
 </div>
 </div>
 <div class="tbr">
-<a class="bdl" download="" href="../CV - Mochammad Maulana Ibrahim - 2026.pdf">⬇ PDF</a>
+<a class="bdl" download="" href="../CV - Mochammad Maulana Ibrahim - 2026.pdf">⬇ Download PDF</a>
 <button class="bso" onclick="doSO()">Sign out</button>
 </div>
 </div>
-<!-- Viewer -->
-<div class="viewer" id="viewer" style="display:none">
-<div class="cv-page"><img alt="Cover" src="pages/page-cover.jpg"/></div>
-<div class="cv-page"><img alt="CV" src="pages/page-1.jpg"/></div>
-<div class="cv-page"><img alt="Contact" src="pages/page-back.jpg"/></div>
-</div>
-<!-- Bottom bar -->
-<div class="bottombar" id="bb" style="display:none">
-<button class="btn" onclick="zoomOut()">−</button>
-<button class="btn btn-label" id="zlbl" onclick="resetView()">100%</button>
-<button class="btn" onclick="zoomIn()">+</button>
-<div class="sep"></div>
-<button class="btn btn-label" onclick="resetView()">⊙ Reset</button>
-</div>
-<!-- Firebase Auth only — no other JS libraries -->
+<!-- PDF viewer -->
+<iframe id="pdf-frame" src="../CV - Mochammad Maulana Ibrahim - 2026.pdf" style="display:none" title="CV Mochammad Maulana Ibrahim">
+</iframe>
+<!-- Firebase Auth -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -206,66 +138,19 @@ onAuthStateChanged(auth, u => {
     return;
   }
 
+  // Show UI
   document.getElementById('tn').textContent = u.displayName || u.email;
   if (u.photoURL) document.getElementById('avi').src = u.photoURL;
 
-  document.getElementById('ls').style.display     = 'none';
-  document.getElementById('tb').style.display     = 'flex';
-  document.getElementById('viewer').style.display = 'flex';
-  document.getElementById('bb').style.display     = 'flex';
+  document.getElementById('ls').style.display        = 'none';
+  document.getElementById('tb').style.display        = 'flex';
+  document.getElementById('pdf-frame').style.display = 'block';
 });
 
-window.doSO = async () => { await signOut(auth); window.location.href = "index.html"; };
-</script>
-<!-- Zoom only — pure vanilla JS, no libraries -->
-<script>
-var zoom = 1.0;
-var MAX_W = 680; // base max-width in px
-
-function setZoom(z) {
-  zoom = Math.max(0.3, Math.min(3.0, z));
-  var w = Math.round(MAX_W * zoom);
-  document.querySelectorAll('.cv-page').forEach(function(p) {
-    p.style.maxWidth = w + 'px';
-  });
-  document.getElementById('zlbl').textContent = Math.round(zoom * 100) + '%';
-}
-
-window.zoomIn    = function() { setZoom(zoom + 0.15); };
-window.zoomOut   = function() { setZoom(zoom - 0.15); };
-window.resetView = function() {
-  setZoom(1.0);
-  document.getElementById('viewer').scrollTop = 0;
+window.doSO = async () => {
+  await signOut(auth);
+  window.location.href = "index.html";
 };
-
-// Ctrl + scroll wheel zoom
-window.addEventListener('wheel', function(e) {
-  if (e.ctrlKey || e.metaKey) {
-    e.preventDefault();
-    setZoom(zoom + (e.deltaY > 0 ? -0.1 : 0.1));
-  }
-}, { passive: false });
-
-// Pinch zoom on mobile
-var lastPinch = 0;
-window.addEventListener('touchstart', function(e) {
-  if (e.touches.length === 2)
-    lastPinch = Math.hypot(
-      e.touches[0].clientX - e.touches[1].clientX,
-      e.touches[0].clientY - e.touches[1].clientY
-    );
-}, { passive: true });
-
-window.addEventListener('touchmove', function(e) {
-  if (e.touches.length === 2) {
-    var d = Math.hypot(
-      e.touches[0].clientX - e.touches[1].clientX,
-      e.touches[0].clientY - e.touches[1].clientY
-    );
-    setZoom(zoom + (d - lastPinch) * 0.005);
-    lastPinch = d;
-  }
-}, { passive: true });
 </script>
 </body>
 </html>
