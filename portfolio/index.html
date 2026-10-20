@@ -305,7 +305,17 @@ if(isSignInWithEmailLink(auth,window.location.href)){
   }
 }
 
-onAuthStateChanged(auth,u=>{if(u)window.location.href='portfolio.html';});
+onAuthStateChanged(auth,u=>{
+  // Only auto-redirect if user was already logged in (returning visitor within session)
+  // Fresh logins are handled by recordAndRedirect() which also saves to Firestore
+  if(u && !window._handlingLogin){
+    const loginMs=new Date(u.metadata.lastSignInTime).getTime();
+    // If logged in more than 30 seconds ago = returning session, redirect directly
+    if(Date.now()-loginMs > 30000){
+      window.location.href='portfolio.html';
+    }
+  }
+});
 
 window.sendMagicLink=async function(){
   const email=document.getElementById('emailInput').value.trim();
@@ -342,6 +352,7 @@ window.goBack=function(){
 window.signInWithGoogle=async function(){
   const btn=document.getElementById('btnGoogle');
   btn.style.opacity='0.7';btn.style.pointerEvents='none';hideError();
+  window._handlingLogin=true;
   try{
     const r=await signInWithPopup(auth,provider);
     recordAndRedirect(r.user);
